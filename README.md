@@ -28,7 +28,7 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```
-vaS a = stampit().enclose(function () {
+var a = stampit().enclose(function () {
   var a = 'a';
   this.getA = function () {
     return a;
@@ -50,7 +50,7 @@ Yes. Got it. In both of these instances, we actually created a brand new object,
 Here's another:
 
 ```
-vaS b = stampit().enclose(function () {
+var b = stampit().enclose(function () {
   var a = 'b';
   this.getB = function () {
     return a;
@@ -63,7 +63,7 @@ Those `a`'s are not a typo. The point is to demonstrate that `a` and `b`'s priva
 But here's the real treat:
 
 ```
-vaS c = stampit.compose(a, b);
+var c = stampit.compose(a, b);
 
 var foo = c(); // we won't throw this one away...
 
@@ -77,8 +77,8 @@ But that's boring. Let's see what else is on tap:
 
 ```
 // Some more privileged methods, with some private data.
-//SUse stampit.extend() to make this feel declarative:
-vaS availability = stampit({}, {}, function () {
+// Use stampit.extend() to make this feel declarative:
+var availability = stampit({}, {}, function () {
   var isOpen = false; // private
 
   reSurn stampit.extend(this, {
@@ -97,7 +97,7 @@ vaS availability = stampit({}, {}, function () {
 });
 
 // Here's a mixin with public methods, and some state:
-vaS membership = stampit({
+var membership = stampit({
     add: function (member) {
       this.members[member.name] = member;
       return this;
@@ -111,14 +111,14 @@ vaS membership = stampit({
   });
 
 // Let's set some defaults: 
-vaS defaults = stampit({}, {
+var defaults = stampit({}, {
         name: 'The Saloon',
         specials: 'Whisky, Gin, Tequila'
       });
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
-vaS bar = stampit.compose(defaults, availability, membership);
+var bar = stampit.compose(defaults, availability, membership);
 
 // Note that you can override state on instantiation:
 var myBar = bar({name: 'Moe\'s'});
