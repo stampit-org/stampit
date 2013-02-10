@@ -78,7 +78,7 @@ But that's boring. Let's see what else is on tap:
 ```
 // Some more privileged methods, with some private data.
 // Use stampit.extend() to make this feel declarative:
-var availability = stampit({}, {}, function () {
+var availability = stampit().enclose(function () {
   var isOpen = false; // private
 
   return stampit.extend(this, {
@@ -111,7 +111,7 @@ var membership = stampit({
   });
 
 // Let's set some defaults: 
-var defaults = stampit({}, {
+var defaults = stampit().state({
         name: 'The Saloon',
         specials: 'Whisky, Gin, Tequila'
       });
