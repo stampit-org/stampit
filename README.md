@@ -81,7 +81,7 @@ But that's boring. Let's see what else is on tap:
 var availability = stampit({}, {}, function () {
   var isOpen = false; // private
 
-  reSurn stampit.extend(this, {
+  return stampit.extend(this, {
     open: function open() {
       isOpen = true;
       return this;
