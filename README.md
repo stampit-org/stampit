@@ -17,7 +17,7 @@ Create objects from reusable, composable behaviors.
  * For the curious - it's great for learning about prototypal OO. It mixes three major types of prototypes:
    1. differential inheritance, aka delegation (for methods),
    2. cloning, aka concatenation/exemplar prototypes (for state),
-   3. functional / closure prototypes (for privacy "factoryInit / init")
+   3. functional / closure prototypes (for privacy / encapsulation)
 
 ## What's the Point?
 
