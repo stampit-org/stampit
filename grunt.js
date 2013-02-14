@@ -27,7 +27,7 @@ module.exports = function(grunt) {
     },
 
     server: {
-      port: process.env.port
+      port: process.env.sauceport
     },
 
     'saucelabs-qunit': {
@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         username: process.env.sauceuser,
         key: process.env.saucekey,
         urls: ['http://localhost:' +
-          process.env.port + '/test/index.html'],
+          process.env.sauceport + '/test/index.html'],
         tunnelTimeout: ['10000'],
         testname: pkgData.name,
         tags: [''],

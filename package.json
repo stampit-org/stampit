@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -23,6 +23,6 @@
     "grunt-saucelabs": "*"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "scripts/test.sh"
   }
 }
