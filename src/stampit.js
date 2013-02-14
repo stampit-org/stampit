@@ -6,7 +6,7 @@
  * Copyright (c) 2013 Eric Elliott
  * http://opensource.org/licenses/MIT
  **/
- 
+
 // Shim .forEach()
 if (!Array.prototype.forEach) {
   Array.prototype.forEach = function (fn, scope) {
@@ -17,7 +17,7 @@ if (!Array.prototype.forEach) {
     }
   };
 }
- 
+
 // Shim Object.create()
 if (!Object.create) {
   Object.create = function (o) {
@@ -37,9 +37,9 @@ if (!Function.prototype.bind) {
       // closest thing possible to the ECMAScript 5 internal IsCallable function
       throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
     }
- 
-    var aArgs = Array.prototype.slice.call(arguments, 1), 
-        fToBind = this, 
+
+    var aArgs = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
         fNOP = function () {},
         fBound = function () {
           return fToBind.apply(this instanceof fNOP && oThis
@@ -47,18 +47,18 @@ if (!Function.prototype.bind) {
                                  : oThis,
                                aArgs.concat(Array.prototype.slice.call(arguments)));
         };
- 
+
     fNOP.prototype = this.prototype;
     fBound.prototype = new fNOP();
- 
+
     return fBound;
   };
 }
 
- 
+
 (function (root) {
   'use strict';
- 
+
   var extend = function extend(obj) {
       var args = [].slice.call(arguments, 1);
       args.forEach(function (source) {
@@ -71,7 +71,7 @@ if (!Function.prototype.bind) {
       });
       return obj;
     },
- 
+
     stampit = function stampit(methods, state, enclose) {
       var fixed = {
           methods: methods || {},
@@ -80,23 +80,23 @@ if (!Function.prototype.bind) {
               {},
           enclose: enclose
         },
- 
+
         factory = function factory(properties, enclose) {
           var instance = extend(Object.create(fixed.methods || {}),
             fixed.state, properties),
             alt;
- 
+
           if (typeof fixed.enclose === 'function') {
             alt = fixed.enclose.call(instance);
           }
- 
+
           if (typeof enclose === 'function') {
             alt = enclose.call(alt || instance);
           }
- 
+
           return alt || instance;
         };
- 
+
       return extend(factory, {
         create: factory,
         fixed: fixed,
@@ -114,13 +114,13 @@ if (!Function.prototype.bind) {
         }
       });
     },
- 
+
     compose = function compose() {
       var args = [].slice.call(arguments),
         initFunctions = [],
         obj = stampit(),
         props = ['methods', 'state'];
- 
+
       args.forEach(function (source) {
         if (source) {
           props.forEach(function (prop) {
@@ -129,13 +129,13 @@ if (!Function.prototype.bind) {
                 source.fixed[prop]);
             }
           });
- 
+
           if (typeof source.fixed.enclose === 'function') {
             initFunctions.push(source.fixed.enclose);
           }
         }
       });
- 
+
       return stampit(obj.fixed.methods, obj.fixed.state, function () {
         initFunctions.forEach(function (fn) {
           fn.call(this);
@@ -146,12 +146,12 @@ if (!Function.prototype.bind) {
       compose: compose,
       extend: extend
     });
- 
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
   } else {
     root.stampit = api;
   }
-}((typeof module === 'undefined' && module.exports === void 0) ?
+}((typeof exports === 'undefined') ?
     window :
     this));
