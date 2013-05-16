@@ -129,7 +129,7 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 ## More chaining
 
-You can chain .methods() ...
+You can chain `.methods()` ...
 
 ```
 var obj = stampit().methods({
@@ -149,7 +149,7 @@ var obj = stampit().methods({
 }).create();
 ```
 
-And .state() ...
+And `.state()` ...
 
 ```
 var obj = stampit().state({
