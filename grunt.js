@@ -53,10 +53,25 @@ module.exports = function(grunt) {
           },
           {
             browserName: 'firefox'
+          },
+          {
+            browserName: 'android',
+            platform: 'Linux',
+            version: '4'
+          },
+          {
+            browserName: 'safari',
+            platform: 'Mac 10.8',
+            version: '6'
+          },
+          {
+            browserName: 'safari',
+            platform: 'Mac 10.6',
+            version: 5
           }
         ]
       }
-    }    
+    }
   });
   console.log(process.env.sauceuser);
   grunt.loadNpmTasks('grunt-saucelabs');

@@ -101,11 +101,13 @@ if (!Function.prototype.bind) {
         create: factory,
         fixed: fixed,
         methods: function (methods) {
-          fixed.methods = methods;
+          fixed.methods = fixed.methods ? extend(fixed.methods, methods) :
+            methods;
           return this;
         },
         state: function (state) {
-          fixed.state = state;
+          fixed.state = fixed.state ? extend(fixed.state, state) :
+            state;
           return this;
         },
         enclose: function (enclose) {

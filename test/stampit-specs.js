@@ -34,10 +34,24 @@ test('stampit().methods()', function () {
   var obj = stampit().methods({
     foo: function () {
       return 'foo';
+    },
+    methodOverride: function () {
+      return false;
+    }
+  }).methods({
+    bar: function () {
+      return 'bar'
+    },
+    methodOverride: function () {
+      return true;
     }
   }).create();
   ok(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
+  ok(obj.bar(),
+    'Should let you chain .methods() to add more.');
+  ok(obj.methodOverride(),
+    'Should let you override by chaining .methods().');
 });
 
 test('stampit({}, state)', function () {
@@ -50,10 +64,18 @@ test('stampit({}, state)', function () {
 
 test('stampit().state()', function () {
   var obj = stampit().state({
-    foo: {bar: 'bar'}
+    foo: {bar: 'bar'},
+    stateOverride: false
+  }).state({
+    bar: 'bar',
+    stateOverride: true
   }).create();
   equal(obj.foo.bar, 'bar',
     'Should set default state.');
+  equal(obj.bar, 'bar',
+    'Should set let you add by chaining .state().');
+  ok(obj.stateOverride,
+    'Should set let you override by chaining .state().');
 });
 
 test('stampit({}, {}, enclose)', function () {
@@ -85,7 +107,7 @@ test('stampit.compose()', function () {
         methodA: function () {
           return true;
         }
-      }, 
+      },
       { stateA: true },
       function () {
         var secret = 'a';
@@ -97,7 +119,7 @@ test('stampit.compose()', function () {
         methodB: function () {
           return true;
         }
-      }, 
+      },
       { stateB: true },
       function () {
         var secret = true;
@@ -109,7 +131,7 @@ test('stampit.compose()', function () {
         methodC: function () {
           return true;
         }
-      }, 
+      },
       { stateC: true },
       function () {
         var secret = true;
