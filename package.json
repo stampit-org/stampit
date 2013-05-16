@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",

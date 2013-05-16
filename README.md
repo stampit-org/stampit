@@ -9,11 +9,11 @@ Create objects from reusable, composable behaviors.
  * Compose factories together to create new factories.
 
  * Inherit methods and default state.
- 
+
  * Supports composable private state and privileged methods.
- 
+
  * State is cloned for each instance, so it won't be accidentally shared.
- 
+
  * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
    1. differential inheritance, aka delegation (for methods),
    2. cloning, aka concatenation/exemplar prototypes (for state),
@@ -110,7 +110,7 @@ var membership = stampit({
     members: {}
   });
 
-// Let's set some defaults: 
+// Let's set some defaults:
 var defaults = stampit().state({
         name: 'The Saloon',
         specials: 'Whisky, Gin, Tequila'
@@ -124,5 +124,39 @@ var bar = stampit.compose(defaults, availability, membership);
 var myBar = bar({name: 'Moe\'s'});
 
 // Silly, but proves that everything is as it should be.
-myBar.add({name: 'Homer' }).open().getMember('Homer'); 
+myBar.add({name: 'Homer' }).open().getMember('Homer');
+```
+
+## More chaining
+
+You can chain .methods() ...
+
+```
+var obj = stampit().methods({
+  foo: function () {
+    return 'foo';
+  },
+  methodOverride: function () {
+    return false;
+  }
+}).methods({
+  bar: function () {
+    return 'bar'
+  },
+  methodOverride: function () {
+    return true;
+  }
+}).create();
+```
+
+And .state() ...
+
+```
+var obj = stampit().state({
+  foo: {bar: 'bar'},
+  stateOverride: false
+}).state({
+  bar: 'bar',
+  stateOverride: true
+}).create();
 ```
