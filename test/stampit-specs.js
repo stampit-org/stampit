@@ -54,6 +54,17 @@ test('stampit().methods()', function () {
     'Should let you override by chaining .methods().');
 });
 
+test('stampit().methods(a, b)', function () {
+  var obj = stampit().methods({
+    a: function () { return 'a'; }
+  }, {
+    b: function () { return 'b'; }
+  }).create();
+
+  ok(obj.a() === 'a' && obj.b() === 'b',
+    'Should mixIn objects when multiple methods are passed.');
+});
+
 test('stampit({}, state)', function () {
   var obj = stampit({}, {
     foo: {bar: 'bar'}
@@ -76,6 +87,17 @@ test('stampit().state()', function () {
     'Should set let you add by chaining .state().');
   ok(obj.stateOverride,
     'Should set let you override by chaining .state().');
+});
+
+test('stampit().state(a, b)', function () {
+  var obj = stampit().state({
+    a: 'a'
+  }, {
+    b: 'b'
+  }).create();
+
+  ok(obj.a && obj.b,
+    'Should mixIn objects when multiple methods are passed.');
 });
 
 test('stampit({}, {}, enclose)', function () {

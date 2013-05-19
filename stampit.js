@@ -27,7 +27,7 @@ var stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
       state: state ?
-          JSON.parse(JSON.stringify(state)) :
+          JSON.parse(stringify(state)) :
           {},
       enclose: enclose
     },
@@ -51,14 +51,16 @@ var stampit = function stampit(methods, state, enclose) {
   return mixIn(factory, {
     create: factory,
     fixed: fixed,
-    methods: function (methods) {
-      fixed.methods = fixed.methods ? mixIn(fixed.methods, methods) :
-        methods;
+    methods: function () {
+      var obj = fixed.methods || {},
+        args = [obj].concat([].slice.call(arguments));
+      fixed.methods = mixIn.apply(this, args);
       return this;
     },
     state: function (state) {
-      fixed.state = fixed.state ? mixIn(fixed.state, state) :
-        state;
+      var obj = fixed.state || {},
+        args = [obj].concat([].slice.call(arguments));
+      fixed.state = mixIn.apply(this, args);
       return this;
     },
     enclose: function (enclose) {
@@ -95,6 +97,8 @@ var compose = function compose() {
     }, this));
   });
 };
+
+indexOf();
 
 module.exports = mixIn(stampit, {
   compose: compose,

@@ -25,6 +25,31 @@ return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require
 
 
 },{}],2:[function(require,module,exports){
+
+
+    function slice(arr, offset){
+        return Array.prototype.slice.call(arr, offset || 0);
+    }
+
+    /**
+     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
+     * @param {Function} fn  Function.
+     * @param {object} context   Execution context.
+     * @param {rest} args    Arguments (0...n arguments).
+     * @return {Function} Wrapped Function.
+     */
+    function bind(fn, context, args){
+        var argsArr = slice(arguments, 2); //curried args
+        return function(){
+            return fn.apply(context, argsArr.concat(slice(arguments)));
+        };
+    }
+
+    module.exports = bind;
+
+
+
+},{}],3:[function(require,module,exports){
 var shimIndexOf = function shimIndexOf() {
 
     if (!Array.prototype.indexOf) {
@@ -64,31 +89,6 @@ var shimIndexOf = function shimIndexOf() {
 
 module.exports = shimIndexOf;
 
-},{}],3:[function(require,module,exports){
-
-
-    function slice(arr, offset){
-        return Array.prototype.slice.call(arr, offset || 0);
-    }
-
-    /**
-     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
-     * @param {Function} fn  Function.
-     * @param {object} context   Execution context.
-     * @param {rest} args    Arguments (0...n arguments).
-     * @return {Function} Wrapped Function.
-     */
-    function bind(fn, context, args){
-        var argsArr = slice(arguments, 2); //curried args
-        return function(){
-            return fn.apply(context, argsArr.concat(slice(arguments)));
-        };
-    }
-
-    module.exports = bind;
-
-
-
 },{}],4:[function(require,module,exports){
 /**
  * Stampit
@@ -119,7 +119,7 @@ var stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
       state: state ?
-          JSON.parse(JSON.stringify(state)) :
+          JSON.parse(stringify(state)) :
           {},
       enclose: enclose
     },
@@ -143,14 +143,16 @@ var stampit = function stampit(methods, state, enclose) {
   return mixIn(factory, {
     create: factory,
     fixed: fixed,
-    methods: function (methods) {
-      fixed.methods = fixed.methods ? mixIn(fixed.methods, methods) :
-        methods;
+    methods: function () {
+      var obj = fixed.methods || {},
+        args = [obj].concat([].slice.call(arguments));
+      fixed.methods = mixIn.apply(this, args);
       return this;
     },
     state: function (state) {
-      fixed.state = fixed.state ? mixIn(fixed.state, state) :
-        state;
+      var obj = fixed.state || {},
+        args = [obj].concat([].slice.call(arguments));
+      fixed.state = mixIn.apply(this, args);
       return this;
     },
     enclose: function (enclose) {
@@ -188,13 +190,15 @@ var compose = function compose() {
   });
 };
 
+indexOf();
+
 module.exports = mixIn(stampit, {
   compose: compose,
   extend: mixIn,
   mixIn: mixIn
 });
 
-},{"mout/array/foreach":1,"mout/object/mixin":5,"./indexof":2,"mout/function/bind":3,"json-stringify-safe":6}],6:[function(require,module,exports){
+},{"mout/array/foreach":1,"mout/function/bind":2,"mout/object/mixin":5,"./indexof":3,"json-stringify-safe":6}],6:[function(require,module,exports){
 module.exports = stringify;
 
 function getSerialize (fn, decycle) {

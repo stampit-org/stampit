@@ -77,11 +77,11 @@ But that's boring. Let's see what else is on tap:
 
 ```
 // Some more privileged methods, with some private data.
-// Use stampit.extend() to make this feel declarative:
+// Use stampit.mixin() to make this feel declarative:
 var availability = stampit().enclose(function () {
   var isOpen = false; // private
 
-  return stampit.extend(this, {
+  return stampit.mixin(this, {
     open: function open() {
       isOpen = true;
       return this;
@@ -112,9 +112,9 @@ var membership = stampit({
 
 // Let's set some defaults:
 var defaults = stampit().state({
-        name: 'The Saloon',
-        specials: 'Whisky, Gin, Tequila'
-      });
+      name: 'The Saloon',
+      specials: 'Whisky, Gin, Tequila'
+    });
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
@@ -160,3 +160,27 @@ var obj = stampit().state({
   stateOverride: true
 }).create();
 ```
+
+## Pass multiple objects into .methods() and .state()
+
+Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn()` when you pass multiple objects into `.methods()` ...
+
+
+```
+  var obj = stampit().methods({
+    a: function () { return 'a'; }
+  }, {
+    b: function () { return 'b'; }
+  }).create();
+```
+
+Or `.state()` ...
+
+```
+  var obj = stampit().state({
+    a: 'a'
+  }, {
+    b: 'b'
+  }).create();
+```
+
