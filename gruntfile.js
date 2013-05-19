@@ -26,6 +26,17 @@ module.exports = function(grunt) {
       }
     },
 
+    lexicon: {
+      all: {
+        src: ["stampit.js"],
+        dest: "doc",
+        options: {
+          title: "Stampit API",
+          format: "markdown"
+        }
+      }
+    },
+
     connect: {
       server: {
         options: {
@@ -91,7 +102,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-lexicon');
 
-  grunt.registerTask('default', ['jshint', 'browserify']);
+  grunt.registerTask('default', ['jshint', 'lexicon', 'browserify']);
   grunt.registerTask('test', ['jshint', 'browserify', 'connect', 'saucelabs-qunit']);
 };

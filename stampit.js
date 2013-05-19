@@ -23,6 +23,20 @@ var create = function (o) {
   return new F();
 };
 
+/**
+ * Return a factory function that will produce new objects using the
+ * prototypes that are passed in or composed.
+ *
+ * @param  {Object} [methods] A map of method names and bodies for delegation.
+ * @param  {Object} [state]   A map of property names and values to clone for each new object.
+ * @param  {Function} [enclose] A closure (function) used to create private data and privileged methods.
+ * @return {Function} factory A factory to produce objects using the given prototypes.
+ * @return {Function} factory.create Just like calling the factory function.
+ * @return {Object} factory.fixed An object map containing the fixed prototypes.
+ * @return {Function} factory.methods Add methods to the methods prototype. Chainable.
+ * @return {Function} factory.state Add properties to the state prototype. Chainable.
+ * @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
+ */
 var stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
@@ -70,6 +84,14 @@ var stampit = function stampit(methods, state, enclose) {
   });
 };
 
+/**
+ * Take two or more factories produced from stampit() and
+ * combine them to produce a new factory. Combining overrides
+ * properties with last-in priority.
+ *
+ * @param {...Function} factory A factory produced by stampit().
+ * @return {Function} A new stampit factory composed from arguments.
+ */
 var compose = function compose() {
   var args = [].slice.call(arguments),
     initFunctions = [],
@@ -102,6 +124,17 @@ indexOf();
 
 module.exports = mixIn(stampit, {
   compose: compose,
+  /**
+   * Alias for mixIn
+   */
   extend: mixIn,
+  /**
+   * Take a destination object followed by one or more source objects,
+   * and copy the source object properties to the destination object,
+   * with last in priority overrides.
+   * @param {Object} destination An object to copy properties to.
+   * @param {...Object} source An object to copy properties from.
+   * @returns {Object}
+   */
   mixIn: mixIn
 });

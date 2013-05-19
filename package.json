@@ -27,7 +27,8 @@
     "grunt-saucelabs": "*",
     "grunt-browserify": "*",
     "grunt-contrib-jshint": "*",
-    "grunt-contrib-connect": "*"
+    "grunt-contrib-connect": "*",
+    "grunt-lexicon": "*"
   },
   "scripts": {
     "test": "scripts/test.sh"
