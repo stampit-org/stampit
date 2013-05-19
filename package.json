@@ -1,12 +1,12 @@
 {
   "name": "stampit",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
     "url": "http://ericleads.com"
   },
-  "main": "src/stampit.js",
+  "main": "./stampit.js",
   "keywords": [
     "objects",
     "prototypal",
@@ -18,9 +18,16 @@
     "type": "git",
     "url": "git@github.com:dilvie/stampit.git"
   },
+  "dependencies": {
+    "mout": "*",
+    "json-stringify-safe": "*"
+  },
   "devDependencies": {
     "grunt": "*",
-    "grunt-saucelabs": "*"
+    "grunt-saucelabs": "*",
+    "grunt-browserify": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-connect": "*"
   },
   "scripts": {
     "test": "scripts/test.sh"
