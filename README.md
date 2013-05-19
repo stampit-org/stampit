@@ -163,8 +163,7 @@ var obj = stampit().state({
 
 ## Pass multiple objects into .methods() and .state()
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn()` when you pass multiple objects into `.methods()` ...
-
+Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn()` when you pass multiple objects into `.methods()`. In other words, it will copy all of the properties from those objects to the `.methods` or `.state` prototype for the factory. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
 ```
   var obj = stampit().methods({
