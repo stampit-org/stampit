@@ -5,7 +5,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: '<json:package.json>',
     lint: {
-      all: ['./*.js', './dist/*.js', './test/test.js']
+      all: ['./stampit.js', './test/*.js']
     },
     jshint: {
       options: {
@@ -102,8 +102,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-lexicon');
+  // grunt.loadNpmTasks('grunt-lexicon');
 
-  grunt.registerTask('default', ['jshint', 'lexicon', 'browserify']);
+  grunt.registerTask('default', ['jshint', 'browserify']);
   grunt.registerTask('test', ['jshint', 'browserify', 'connect', 'saucelabs-qunit']);
 };

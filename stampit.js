@@ -7,7 +7,7 @@
  * http://opensource.org/licenses/MIT
  **/
 
-'use strict'
+'use strict';
 var forEach = require('mout/array/foreach');
 var bind = require('mout/function/bind');
 var mixIn = require('mout/object/mixin');

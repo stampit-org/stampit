@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -19,16 +19,16 @@
     "url": "git@github.com:dilvie/stampit.git"
   },
   "dependencies": {
-    "mout": "*",
-    "json-stringify-safe": "*"
+    "mout": "~0.5.0",
+    "json-stringify-safe": "~4.0.0"
   },
   "devDependencies": {
     "grunt": "*",
-    "grunt-saucelabs": "*",
-    "grunt-browserify": "*",
-    "grunt-contrib-jshint": "*",
-    "grunt-contrib-connect": "*",
-    "grunt-lexicon": "*"
+    "grunt": "~0.4.1",
+    "grunt-saucelabs": "~4.0.2",
+    "grunt-browserify": "~1.0.1",
+    "grunt-contrib-jshint": "~0.5.3",
+    "grunt-contrib-connect": "~0.3.0"
   },
   "scripts": {
     "test": "scripts/test.sh"
