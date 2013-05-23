@@ -99,10 +99,10 @@ module.exports = shimIndexOf;
  * http://opensource.org/licenses/MIT
  **/
 
-'use strict'
-var forEach = require('mout/array/foreach');
+'use strict';
+var forEach = require('mout/array/forEach');
 var bind = require('mout/function/bind');
-var mixIn = require('mout/object/mixin');
+var mixIn = require('mout/object/mixIn');
 var stringify = require('json-stringify-safe');
 var indexOf = require('./indexof'); // shim indexOf for stringify
 
@@ -231,7 +231,7 @@ module.exports = mixIn(stampit, {
   mixIn: mixIn
 });
 
-},{"mout/array/foreach":1,"mout/function/bind":2,"mout/object/mixin":5,"./indexof":3,"json-stringify-safe":6}],6:[function(require,module,exports){
+},{"mout/array/forEach":1,"mout/function/bind":2,"mout/object/mixIn":5,"./indexof":3,"json-stringify-safe":6}],6:[function(require,module,exports){
 module.exports = stringify;
 
 function getSerialize (fn, decycle) {
@@ -387,4 +387,6 @@ var forIn = require('./forIn');
 
 
 
-},{}]
+},{}]},{},[4])(4)
+});
+;

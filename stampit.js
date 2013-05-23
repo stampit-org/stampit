@@ -8,9 +8,9 @@
  **/
 
 'use strict';
-var forEach = require('mout/array/foreach');
+var forEach = require('mout/array/forEach');
 var bind = require('mout/function/bind');
-var mixIn = require('mout/object/mixin');
+var mixIn = require('mout/object/mixIn');
 var stringify = require('json-stringify-safe');
 var indexOf = require('./indexof'); // shim indexOf for stringify
 
