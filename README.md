@@ -27,7 +27,7 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
-```
+```js
 var a = stampit().enclose(function () {
   var a = 'a';
   this.getA = function () {
@@ -40,7 +40,7 @@ It uses function scope to encapsulate private data. Note that the getter must be
 
 Let's see if that worked:
 
-```
+```js
 a(); // Object -- so far so good.
 a().getA(); // "a"
 ```
@@ -49,7 +49,7 @@ Yes. Got it. In both of these instances, we actually created a brand new object,
 
 Here's another:
 
-```
+```js
 var b = stampit().enclose(function () {
   var a = 'b';
   this.getB = function () {
@@ -62,7 +62,7 @@ Those `a`'s are not a typo. The point is to demonstrate that `a` and `b`'s priva
 
 But here's the real treat:
 
-```
+```js
 var c = stampit.compose(a, b);
 
 var foo = c(); // we won't throw this one away...
@@ -75,7 +75,7 @@ WAT? Yeah. You just inherited privileged methods and private data from two sourc
 
 But that's boring. Let's see what else is on tap:
 
-```
+```js
 // Some more privileged methods, with some private data.
 // Use stampit.mixin() to make this feel declarative:
 var availability = stampit().enclose(function () {
@@ -131,7 +131,7 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 You can chain `.methods()` ...
 
-```
+```js
 var obj = stampit().methods({
   foo: function () {
     return 'foo';
@@ -151,7 +151,7 @@ var obj = stampit().methods({
 
 And `.state()` ...
 
-```
+```js
 var obj = stampit().state({
   foo: {bar: 'bar'},
   stateOverride: false
@@ -165,7 +165,7 @@ var obj = stampit().state({
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn()` when you pass multiple objects into `.methods()`. In other words, it will copy all of the properties from those objects to the `.methods` or `.state` prototype for the factory. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
-```
+```js
   var obj = stampit().methods({
     a: function () { return 'a'; }
   }, {
@@ -175,7 +175,7 @@ Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn
 
 Or `.state()` ...
 
-```
+```js
   var obj = stampit().state({
     a: 'a'
   }, {
@@ -192,15 +192,15 @@ Or `.state()` ...
 Return a factory function that will produce new objects using the
 prototypes that are passed in or composed.
 
-* @param {Object} [methods] A map of method names and bodies for delegation.
-* @param {Object} [state] A map of property names and values to clone for each new object.
-* @param {Function} [enclose] A closure (function) used to create private data and privileged methods.
-* @return {Function} factory A factory to produce objects using the given prototypes.
-* @return {Function} factory.create Just like calling the factory function.
-* @return {Object} factory.fixed An object map containing the fixed prototypes.
-* @return {Function} factory.methods Add methods to the methods prototype. Chainable.
-* @return {Function} factory.state Add properties to the state prototype. Chainable.
-* @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
+* `@param {Object} [methods]` A map of method names and bodies for delegation.
+* `@param {Object} [state]` A map of property names and values to clone for each new object.
+* `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
+* `@return {Function} factory` A factory to produce objects using the given prototypes.
+* `@return {Function} factory.create` Just like calling the factory function.
+* `@return {Object} factory.fixed` An object map containing the fixed prototypes.
+* `@return {Function} factory.methods` Add methods to the methods prototype. Chainable.
+* `@return {Function} factory.state` Add properties to the state prototype. Chainable.
+* `@return {Function} factory.enclose` Add or replace the closure prototype. Not chainable.
 
 
 ### compose ###
@@ -209,8 +209,8 @@ Take two or more factories produced from stampit() and
 combine them to produce a new factory. Combining overrides
 properties with last-in priority.
 
-* @param {...Function} factory A factory produced by stampit().
-* @return {Function} A new stampit factory composed from arguments.
+* `@param {...Function} factory` A factory produced by stampit().
+* `@return {Function}` A new stampit factory composed from arguments.
 
 
 ### mixIn ###
@@ -219,9 +219,9 @@ Take a destination object followed by one or more source objects,
 and copy the source object properties to the destination object,
 with last in priority overrides.
 
-* @param {Object} destination An object to copy properties to.
-* @param {...Object} source An object to copy properties from.
-* @returns {Object}
+* `@param {Object} destination` An object to copy properties to.
+* `@param {...Object} source` An object to copy properties from.
+* `@returns {Object}`
 
 ### extend ###
 
