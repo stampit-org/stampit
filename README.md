@@ -77,11 +77,11 @@ But that's boring. Let's see what else is on tap:
 
 ```js
 // Some more privileged methods, with some private data.
-// Use stampit.mixin() to make this feel declarative:
+// Use stampit.mixIn() to make this feel declarative:
 var availability = stampit().enclose(function () {
   var isOpen = false; // private
 
-  return stampit.mixin(this, {
+  return stampit.mixIn(this, {
     open: function open() {
       isOpen = true;
       return this;
