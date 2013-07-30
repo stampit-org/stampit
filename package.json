@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -12,6 +12,8 @@
     "prototypal",
     "object oriented",
     "browser",
+    "inheritance",
+    "oo",
     "node"
   ],
   "repository": {
@@ -23,7 +25,6 @@
     "json-stringify-safe": "~4.0.0"
   },
   "devDependencies": {
-    "grunt": "*",
     "grunt": "~0.4.1",
     "grunt-saucelabs": "~4.0.2",
     "grunt-browserify": "~1.0.1",
