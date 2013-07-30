@@ -160,18 +160,31 @@ var stampit = function stampit(methods, state, enclose) {
   return mixIn(factory, {
     create: factory,
     fixed: fixed,
-    methods: function () {
+    /**
+     * Take n objects and add them to the methods prototype.
+     * @return {Object} stamp  The factory in question (`this`).
+     */
+    methods: function methods() {
       var obj = fixed.methods || {},
         args = [obj].concat([].slice.call(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
-    state: function () {
+    /**
+     * Take n objects and add them to the state prototype.
+     * @return {Object} stamp  The factory in question (`this`).
+     */
+    state: function state() {
       var obj = fixed.state || {},
         args = [obj].concat([].slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
+    /**
+     * Take n functions, an array of functions, or n objects and add
+     * the functions to the enclose prototype.
+     * @return {Object} stamp  The factory in question (`this`).
+     */
     enclose: function enclose() {
       fixed.enclose = fixed.enclose
         .concat( extractFunctions.apply(null, arguments) );
@@ -247,7 +260,7 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixinchain.js":4,"mout/array/forEach":1,"mout/object/forOwn":5,"mout/object/mixIn":6,"./indexof":2,"json-stringify-safe":7}],4:[function(require,module,exports){
+},{"./mixinchain.js":4,"mout/array/forEach":1,"mout/object/mixIn":5,"mout/object/forOwn":6,"./indexof":2,"json-stringify-safe":7}],4:[function(require,module,exports){
 var forIn = require('mout/object/forIn');
 
 function copyProp(val, key){
@@ -295,27 +308,6 @@ function stringify(obj, fn, spaces, decycle) {
 stringify.getSerialize = getSerialize;
 
 },{}],5:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
-var forIn = require('./forIn');
-
-    /**
-     * Similar to Array/forEach but works over object properties and fixes Don't
-     * Enum bug on IE.
-     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
-     */
-    function forOwn(obj, fn, thisObj){
-        forIn(obj, function(val, key){
-            if (hasOwn(obj, key)) {
-                return fn.call(thisObj, obj[key], key, obj);
-            }
-        });
-    }
-
-    module.exports = forOwn;
-
-
-
-},{"./hasOwn":9,"./forIn":8}],6:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -345,7 +337,28 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":5}],8:[function(require,module,exports){
+},{"./forOwn":6}],6:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
+var forIn = require('./forIn');
+
+    /**
+     * Similar to Array/forEach but works over object properties and fixes Don't
+     * Enum bug on IE.
+     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+     */
+    function forOwn(obj, fn, thisObj){
+        forIn(obj, function(val, key){
+            if (hasOwn(obj, key)) {
+                return fn.call(thisObj, obj[key], key, obj);
+            }
+        });
+    }
+
+    module.exports = forOwn;
+
+
+
+},{"./hasOwn":9,"./forIn":8}],8:[function(require,module,exports){
 
 
     var _hasDontEnumBug,

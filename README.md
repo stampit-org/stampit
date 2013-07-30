@@ -161,9 +161,33 @@ var obj = stampit().state({
 }).create();
 ```
 
-## Pass multiple objects into .methods() and .state()
+And `.enclose()` ...
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()`, and ES6 `Object.mixIn()` when you pass multiple objects into `.methods()`. In other words, it will copy all of the properties from those objects to the `.methods` or `.state` prototype for the factory. The properties from later arguments in the list will override the same named properties of previously passed in objects.
+```js
+var obj = stampit().enclose(function () {
+  var secret = 'foo';
+
+  this.getSecret = function () {
+    return secret;
+  };
+}).enclose(function () {
+  this.a = true;
+}).enclose({
+  bar: function bar() {
+    this.b = true;
+  }
+}, {
+  baz: function baz() {
+    this.c = true;
+  }
+}).create();
+
+obj.getSecret && obj.a && obj.b && obj.c; // true
+```
+
+## Pass multiple objects into .methods(), .state(), or .enclose()
+
+Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the factory. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
 ```js
   var obj = stampit().methods({
@@ -187,7 +211,7 @@ Or `.state()` ...
 
 **Source: stampit.js**
 
-### stampit ###
+### stampit() ###
 
 Return a factory function that will produce new objects using the
 prototypes that are passed in or composed.
@@ -195,15 +219,36 @@ prototypes that are passed in or composed.
 * `@param {Object} [methods]` A map of method names and bodies for delegation.
 * `@param {Object} [state]` A map of property names and values to clone for each new object.
 * `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
-* `@return {Function} factory` A factory to produce objects using the given prototypes.
-* `@return {Function} factory.create` Just like calling the factory function.
-* `@return {Object} factory.fixed` An object map containing the fixed prototypes.
-* `@return {Function} factory.methods` Add methods to the methods prototype. Chainable.
-* `@return {Function} factory.state` Add properties to the state prototype. Chainable.
-* `@return {Function} factory.enclose` Add or replace the closure prototype. Not chainable.
+* `@return {Function} stamp` A factory to produce objects using the given prototypes.
+* `@return {Function} stamp.create` Just like calling the factory function.
+* `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
+* `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
+* `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
+* `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
+
+## Extending the prototypes ##
+
+### stamp.methods() ###
+
+Take n objects and add them to the methods prototype.
+* @return {Object} stamp  The factory in question (`this`).
+
+### stamp.state() ###
+
+Take n objects and add them to the state prototype.
+* @return {Object} stamp  The factory in question (`this`).
+
+### stamp.enclose() ###
+
+Take n functions, an array of functions, or n objects and add
+the functions to the enclose prototype.
+* @return {Object} stamp  The factory in question (`this`).
 
 
-### compose ###
+
+## Utility methods ##
+
+### stampit.compose() ###
 
 Take two or more factories produced from stampit() and
 combine them to produce a new factory. Combining overrides
@@ -213,7 +258,7 @@ properties with last-in priority.
 * `@return {Function}` A new stampit factory composed from arguments.
 
 
-### mixIn ###
+### stampit.mixIn() ###
 
 Take a destination object followed by one or more source objects,
 and copy the source object properties to the destination object,
@@ -223,12 +268,13 @@ with last in priority overrides.
 * `@param {...Object} source` An object to copy properties from.
 * `@returns {Object}`
 
-### extend ###
+
+### stampit.extend() ###
 
 Alias for `mixIn`.
 
 
-### convertConstructor (warning: experimental) ###
+### stampit.convertConstructor() Warning: experimental ###
 
 Take an old-fashioned JS constructor and return a stampit stamp 
 that you can freely compose with other stamps.
