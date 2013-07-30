@@ -228,7 +228,7 @@ with last in priority overrides.
 Alias for `mixIn`.
 
 
-### convertConstructor ###
+### convertConstructor (experimental, needs work) ###
 
 Take an old-fashioned JS constructor and return a stampit stamp 
 that you can freely compose with other stamps.
