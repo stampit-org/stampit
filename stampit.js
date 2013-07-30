@@ -147,5 +147,7 @@ module.exports = mixIn(stampit, {
    * @param {...Object} source An object to copy properties from.
    * @returns {Object}
    */
-  mixIn: mixIn
+  mixIn: mixIn,
+
+  convertConstructor: convertConstructor
 });

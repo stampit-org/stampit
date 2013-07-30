@@ -177,8 +177,7 @@ test('stampit.convertConstructor()', function () {
   Constructor.prototype.foo = function foo() { return 'foo'; };
 
   // The conversion
-  var oldskool = stampit().methods(Constructor.prototype)
-    .enclose(Constructor);
+  var oldskool = stampit.convertConstructor(Constructor);
 
   // Now you can compose with it just like any other stampit factory...
   var myThing = stampit.compose(oldskool).methods({
