@@ -98,12 +98,22 @@ var compose = function compose() {
     obj = stampit(),
     props = ['methods', 'state'];
 
-  forEach(args, function (source) {
+  forEach(args, function (source, index) {
     if (source) {
       forEach(props, function (prop) {
         if (source.fixed[prop]) {
-          obj.fixed[prop] = mixIn(obj.fixed[prop],
-            source.fixed[prop]);
+
+          // use create to connect full inheritance chain for first arg
+          if (index === 0 && prop === 'methods') {
+            obj.fixed.methods = create(source.fixed.methods);
+          }
+
+          // use mixIn to shallow merge methods for other args
+          // prototype chain will not be maintained!
+          else {
+            obj.fixed[prop] = mixIn(obj.fixed[prop],
+              source.fixed[prop]);
+          }
         }
       });
 
@@ -112,6 +122,7 @@ var compose = function compose() {
       }
     }
   });
+
 
   return stampit(obj.fixed.methods, obj.fixed.state, function () {
     forEach(initFunctions, bind(function (fn) {
