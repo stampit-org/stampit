@@ -5,7 +5,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: '<json:package.json>',
     lint: {
-      all: ['./stampit.js', './test/*.js']
+      all: ['./*.js', './test/*.js']
     },
     jshint: {
       options: {

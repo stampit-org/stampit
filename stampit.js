@@ -13,6 +13,7 @@ var bind = require('mout/function/bind');
 var mixIn = require('mout/object/mixIn');
 var stringify = require('json-stringify-safe');
 var indexOf = require('./indexof'); // shim indexOf for stringify
+var mixInChain = require('./mixinchain.js');
 
 var create = function (o) {
   if (arguments.length > 1) {
@@ -68,7 +69,7 @@ var stampit = function stampit(methods, state, enclose) {
     methods: function () {
       var obj = fixed.methods || {},
         args = [obj].concat([].slice.call(arguments));
-      fixed.methods = mixIn.apply(this, args);
+      fixed.methods = mixInChain.apply(this, args);
       return this;
     },
     state: function (state) {
@@ -95,17 +96,20 @@ var stampit = function stampit(methods, state, enclose) {
 var compose = function compose() {
   var args = [].slice.call(arguments),
     initFunctions = [],
-    obj = stampit(),
-    props = ['methods', 'state'];
+    obj = stampit();
 
   forEach(args, function (source) {
     if (source) {
-      forEach(props, function (prop) {
-        if (source.fixed[prop]) {
-          obj.fixed[prop] = mixIn(obj.fixed[prop],
-            source.fixed[prop]);
-        }
-      });
+
+      if (source.fixed.methods) {
+        obj.fixed.methods = mixInChain(obj.fixed.methods,
+          source.fixed.methods);
+      }
+
+      if (source.fixed.state) {
+        obj.fixed.state = mixIn(obj.fixed.state,
+          source.fixed.state);
+      }
 
       if (typeof source.fixed.enclose === 'function') {
         initFunctions.push(source.fixed.enclose);

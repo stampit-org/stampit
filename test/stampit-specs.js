@@ -179,11 +179,17 @@ test('stampit.convertConstructor()', function () {
   // The conversion
   var oldskool = stampit.convertConstructor(Constructor);
 
-  // Now you can compose with it just like any other stampit factory...
-  var myThing = stampit.compose(oldskool).methods({
-    bar: function bar() { return 'bar'; }
-   // your methods here...
-  });
+  // A new stamp to compose with...
+  var newskool = stampit().methods({
+      bar: function bar() { return 'bar'; }
+     // your methods here...
+    }).enclose(function () {
+      this.baz = 'baz';
+    });
+
+  // Now you can compose those old constructors just like you could
+  // with any other factory...
+  var myThing = stampit.compose(oldskool, newskool);
 
   var t = myThing();
 
@@ -195,4 +201,40 @@ test('stampit.convertConstructor()', function () {
 
   equal(t.bar(), 'bar',
     'Should be able to add new methods with .compose()');
+
+  equal(t.baz, 'baz',
+    'Should be able to add new methods with .compose()');
+
+});
+
+
+test('stampit.compose() with inheritance', function () {
+  var c, i, m, n1, n2, sm, sn;
+
+  // create an object with a prototype
+  n2 = function() {};
+  n2.prototype = {n2: true};
+
+  n1 = new n2;
+  n1.n1 = true;
+
+  // create a mixin that will get merged
+  m = {m: true};
+
+  stateProto = {stateProto: true};
+  state = Object.create(stateProto);
+  state.state = true;
+
+  // create and compose stampit objects
+  sn = stampit(n1);
+  sm = stampit(m);
+  c = stampit.compose(sn, sm).state(state);
+
+  // create instance
+  i = c();
+
+  ok(i.n1 && i.n2 && i.m, 'Should flatten nested prototypes.');
+
+  equal(i.stateProto, undefined,
+    'Should not flatten state prototypes.');
 });

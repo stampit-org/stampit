@@ -25,6 +25,31 @@ return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require
 
 
 },{}],2:[function(require,module,exports){
+
+
+    function slice(arr, offset){
+        return Array.prototype.slice.call(arr, offset || 0);
+    }
+
+    /**
+     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
+     * @param {Function} fn  Function.
+     * @param {object} context   Execution context.
+     * @param {rest} args    Arguments (0...n arguments).
+     * @return {Function} Wrapped Function.
+     */
+    function bind(fn, context, args){
+        var argsArr = slice(arguments, 2); //curried args
+        return function(){
+            return fn.apply(context, argsArr.concat(slice(arguments)));
+        };
+    }
+
+    module.exports = bind;
+
+
+
+},{}],3:[function(require,module,exports){
 var shimIndexOf = function shimIndexOf() {
 
     if (!Array.prototype.indexOf) {
@@ -64,31 +89,6 @@ var shimIndexOf = function shimIndexOf() {
 
 module.exports = shimIndexOf;
 
-},{}],3:[function(require,module,exports){
-
-
-    function slice(arr, offset){
-        return Array.prototype.slice.call(arr, offset || 0);
-    }
-
-    /**
-     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
-     * @param {Function} fn  Function.
-     * @param {object} context   Execution context.
-     * @param {rest} args    Arguments (0...n arguments).
-     * @return {Function} Wrapped Function.
-     */
-    function bind(fn, context, args){
-        var argsArr = slice(arguments, 2); //curried args
-        return function(){
-            return fn.apply(context, argsArr.concat(slice(arguments)));
-        };
-    }
-
-    module.exports = bind;
-
-
-
 },{}],4:[function(require,module,exports){
 /**
  * Stampit
@@ -105,6 +105,7 @@ var bind = require('mout/function/bind');
 var mixIn = require('mout/object/mixIn');
 var stringify = require('json-stringify-safe');
 var indexOf = require('./indexof'); // shim indexOf for stringify
+var mixInChain = require('./mixinchain.js');
 
 var create = function (o) {
   if (arguments.length > 1) {
@@ -160,7 +161,7 @@ var stampit = function stampit(methods, state, enclose) {
     methods: function () {
       var obj = fixed.methods || {},
         args = [obj].concat([].slice.call(arguments));
-      fixed.methods = mixIn.apply(this, args);
+      fixed.methods = mixInChain.apply(this, args);
       return this;
     },
     state: function (state) {
@@ -187,17 +188,20 @@ var stampit = function stampit(methods, state, enclose) {
 var compose = function compose() {
   var args = [].slice.call(arguments),
     initFunctions = [],
-    obj = stampit(),
-    props = ['methods', 'state'];
+    obj = stampit();
 
   forEach(args, function (source) {
     if (source) {
-      forEach(props, function (prop) {
-        if (source.fixed[prop]) {
-          obj.fixed[prop] = mixIn(obj.fixed[prop],
-            source.fixed[prop]);
-        }
-      });
+
+      if (source.fixed.methods) {
+        obj.fixed.methods = mixInChain(obj.fixed.methods,
+          source.fixed.methods);
+      }
+
+      if (source.fixed.state) {
+        obj.fixed.state = mixIn(obj.fixed.state,
+          source.fixed.state);
+      }
 
       if (typeof source.fixed.enclose === 'function') {
         initFunctions.push(source.fixed.enclose);
@@ -244,7 +248,27 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"mout/array/forEach":1,"mout/object/mixIn":5,"mout/function/bind":3,"./indexof":2,"json-stringify-safe":6}],6:[function(require,module,exports){
+},{"./mixinchain.js":5,"mout/array/forEach":1,"mout/function/bind":2,"mout/object/mixIn":6,"./indexof":3,"json-stringify-safe":7}],5:[function(require,module,exports){
+var forIn = require('mout/object/forIn');
+
+function copyProp(val, key){
+    this[key] = val;
+}
+
+module.exports = function mixInChain(target, objects){
+    var i = 0,
+        n = arguments.length,
+        obj;
+    while(++i < n){
+        obj = arguments[i];
+        if (obj != null) {
+            forIn(obj, copyProp, target);
+        }
+    }
+    return target;
+};
+
+},{"mout/object/forIn":8}],7:[function(require,module,exports){
 module.exports = stringify;
 
 function getSerialize (fn, decycle) {
@@ -271,7 +295,7 @@ function stringify(obj, fn, spaces, decycle) {
 
 stringify.getSerialize = getSerialize;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -301,42 +325,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":7}],7:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
-var forIn = require('./forIn');
-
-    /**
-     * Similar to Array/forEach but works over object properties and fixes Don't
-     * Enum bug on IE.
-     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
-     */
-    function forOwn(obj, fn, thisObj){
-        forIn(obj, function(val, key){
-            if (hasOwn(obj, key)) {
-                return fn.call(thisObj, obj[key], key, obj);
-            }
-        });
-    }
-
-    module.exports = forOwn;
-
-
-
-},{"./hasOwn":8,"./forIn":9}],8:[function(require,module,exports){
-
-
-    /**
-     * Safer Object.hasOwnProperty
-     */
-     function hasOwn(obj, prop){
-         return Object.prototype.hasOwnProperty.call(obj, prop);
-     }
-
-     module.exports = hasOwn;
-
-
-
-},{}],9:[function(require,module,exports){
+},{"./forOwn":9}],8:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -397,6 +386,41 @@ var forIn = require('./forIn');
     }
 
     module.exports = forIn;
+
+
+
+},{}],9:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
+var forIn = require('./forIn');
+
+    /**
+     * Similar to Array/forEach but works over object properties and fixes Don't
+     * Enum bug on IE.
+     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+     */
+    function forOwn(obj, fn, thisObj){
+        forIn(obj, function(val, key){
+            if (hasOwn(obj, key)) {
+                return fn.call(thisObj, obj[key], key, obj);
+            }
+        });
+    }
+
+    module.exports = forOwn;
+
+
+
+},{"./hasOwn":10,"./forIn":8}],10:[function(require,module,exports){
+
+
+    /**
+     * Safer Object.hasOwnProperty
+     */
+     function hasOwn(obj, prop){
+         return Object.prototype.hasOwnProperty.call(obj, prop);
+     }
+
+     module.exports = hasOwn;
 
 
 
