@@ -168,3 +168,27 @@ test('stampit.compose()', function () {
     d.methodC && d.stateC && d.getC,
     'Should compose all factory prototypes');
 });
+
+test('stampit.compose() with inheritance', function () {
+  var c, i, m, n1, n2, sm, sn;
+
+  // create an object with a prototype
+  n2 = function() {};
+  n2.prototype = {n2: true};
+
+  n1 = new n2;
+  n1.n1 = true;
+
+  // create a mixin that will get merged
+  m = {m: true};
+
+  // create and compose stampit objects
+  sn = stampit(n1);
+  sm = stampit(m);
+  c = stampit.compose(sn, sm);
+
+  // create instance
+  i = c();
+
+  ok(i.n1, i.n2, i.m, 'Should retain nested prototypes');
+});

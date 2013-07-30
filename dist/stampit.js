@@ -1,95 +1,5 @@
 (function(e){if("function"==typeof bootstrap)bootstrap("stampit",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeStampit=e}else"undefined"!=typeof window?window.stampit=e():global.stampit=e()})(function(){var define,ses,bootstrap,module,exports;
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
-
-
-    /**
-     * Array forEach
-     */
-    function forEach(arr, callback, thisObj) {
-        if (arr == null) {
-            return;
-        }
-        var i = -1,
-            len = arr.length;
-        while (++i < len) {
-            // we iterate over sparse items since there is no way to make it
-            // work properly on IE 7-8. see #64
-            if ( callback.call(thisObj, arr[i], i, arr) === false ) {
-                break;
-            }
-        }
-    }
-
-    module.exports = forEach;
-
-
-
-},{}],2:[function(require,module,exports){
-
-
-    function slice(arr, offset){
-        return Array.prototype.slice.call(arr, offset || 0);
-    }
-
-    /**
-     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
-     * @param {Function} fn  Function.
-     * @param {object} context   Execution context.
-     * @param {rest} args    Arguments (0...n arguments).
-     * @return {Function} Wrapped Function.
-     */
-    function bind(fn, context, args){
-        var argsArr = slice(arguments, 2); //curried args
-        return function(){
-            return fn.apply(context, argsArr.concat(slice(arguments)));
-        };
-    }
-
-    module.exports = bind;
-
-
-
-},{}],3:[function(require,module,exports){
-var shimIndexOf = function shimIndexOf() {
-
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
-            "use strict";
-            if (this == null) {
-                throw new TypeError();
-            }
-            var t = Object(this);
-            var len = t.length >>> 0;
-            if (len === 0) {
-                return -1;
-            }
-            var n = 0;
-            if (arguments.length > 1) {
-                n = Number(arguments[1]);
-                if (n != n) { // shortcut for verifying if it's NaN
-                    n = 0;
-                } else if (n != 0 && n != Infinity && n != -Infinity) {
-                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
-                }
-            }
-            if (n >= len) {
-                return -1;
-            }
-            var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-            for (; k < len; k++) {
-                if (k in t && t[k] === searchElement) {
-                    return k;
-                }
-            }
-            return -1;
-        }
-    }
-
-}
-
-module.exports = shimIndexOf;
-
-},{}],4:[function(require,module,exports){
 /**
  * Stampit
  **
@@ -190,12 +100,22 @@ var compose = function compose() {
     obj = stampit(),
     props = ['methods', 'state'];
 
-  forEach(args, function (source) {
+  forEach(args, function (source, index) {
     if (source) {
       forEach(props, function (prop) {
         if (source.fixed[prop]) {
-          obj.fixed[prop] = mixIn(obj.fixed[prop],
-            source.fixed[prop]);
+
+          // use create to connect full inheritance chain for first arg
+          if (index === 0 && prop === 'methods') {
+            obj.fixed.methods = create(source.fixed.methods);
+          }
+
+          // use mixIn to shallow merge methods for other args
+          // prototype chain will not be maintained!
+          else {
+            obj.fixed[prop] = mixIn(obj.fixed[prop],
+              source.fixed[prop]);
+          }
         }
       });
 
@@ -204,6 +124,7 @@ var compose = function compose() {
       }
     }
   });
+
 
   return stampit(obj.fixed.methods, obj.fixed.state, function () {
     forEach(initFunctions, bind(function (fn) {
@@ -231,7 +152,97 @@ module.exports = mixIn(stampit, {
   mixIn: mixIn
 });
 
-},{"mout/array/forEach":1,"mout/function/bind":2,"mout/object/mixIn":5,"./indexof":3,"json-stringify-safe":6}],6:[function(require,module,exports){
+},{"./indexof":5,"json-stringify-safe":6,"mout/array/forEach":2,"mout/function/bind":3,"mout/object/mixIn":4}],2:[function(require,module,exports){
+
+
+    /**
+     * Array forEach
+     */
+    function forEach(arr, callback, thisObj) {
+        if (arr == null) {
+            return;
+        }
+        var i = -1,
+            len = arr.length;
+        while (++i < len) {
+            // we iterate over sparse items since there is no way to make it
+            // work properly on IE 7-8. see #64
+            if ( callback.call(thisObj, arr[i], i, arr) === false ) {
+                break;
+            }
+        }
+    }
+
+    module.exports = forEach;
+
+
+
+},{}],3:[function(require,module,exports){
+
+
+    function slice(arr, offset){
+        return Array.prototype.slice.call(arr, offset || 0);
+    }
+
+    /**
+     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
+     * @param {Function} fn  Function.
+     * @param {object} context   Execution context.
+     * @param {rest} args    Arguments (0...n arguments).
+     * @return {Function} Wrapped Function.
+     */
+    function bind(fn, context, args){
+        var argsArr = slice(arguments, 2); //curried args
+        return function(){
+            return fn.apply(context, argsArr.concat(slice(arguments)));
+        };
+    }
+
+    module.exports = bind;
+
+
+
+},{}],5:[function(require,module,exports){
+var shimIndexOf = function shimIndexOf() {
+
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+            "use strict";
+            if (this == null) {
+                throw new TypeError();
+            }
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (len === 0) {
+                return -1;
+            }
+            var n = 0;
+            if (arguments.length > 1) {
+                n = Number(arguments[1]);
+                if (n != n) { // shortcut for verifying if it's NaN
+                    n = 0;
+                } else if (n != 0 && n != Infinity && n != -Infinity) {
+                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
+                }
+            }
+            if (n >= len) {
+                return -1;
+            }
+            var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+            for (; k < len; k++) {
+                if (k in t && t[k] === searchElement) {
+                    return k;
+                }
+            }
+            return -1;
+        }
+    }
+
+}
+
+module.exports = shimIndexOf;
+
+},{}],6:[function(require,module,exports){
 module.exports = stringify;
 
 function getSerialize (fn, decycle) {
@@ -258,7 +269,7 @@ function stringify(obj, fn, spaces, decycle) {
 
 stringify.getSerialize = getSerialize;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -309,7 +320,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./hasOwn":8,"./forIn":9}],8:[function(require,module,exports){
+},{"./forIn":9,"./hasOwn":8}],8:[function(require,module,exports){
 
 
     /**
@@ -387,6 +398,6 @@ var forIn = require('./forIn');
 
 
 
-},{}]},{},[4])(4)
+},{}]},{},[1])(1)
 });
 ;
