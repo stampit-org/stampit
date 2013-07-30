@@ -168,3 +168,32 @@ test('stampit.compose()', function () {
     d.methodC && d.stateC && d.getC,
     'Should compose all factory prototypes');
 });
+
+test('stampit.convertConstructor()', function () {
+  // The old constructor / class thing...
+  var Constructor = function Constructor() {
+    this.thing = 'initialized';
+  };
+  Constructor.prototype.foo = function foo() { return 'foo'; };
+
+  // The conversion
+  var oldskool = stampit().methods(Constructor.prototype)
+    .enclose(Constructor);
+
+  // Now you can compose with it just like any other stampit factory...
+  var myThing = stampit.compose(oldskool).methods({
+    bar: function bar() { return 'bar'; }
+   // your methods here...
+  });
+
+  var t = myThing();
+
+  equal(t.thing, 'initialized',
+    'Constructor should execute.');
+
+  equal(t.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  equal(t.bar(), 'bar',
+    'Should be able to add new methods with .compose()');
+});

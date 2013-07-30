@@ -120,6 +120,17 @@ var compose = function compose() {
   });
 };
 
+/**
+ * Take an old-fashioned JS constructor and return a stampit stamp
+ * that you can freely compose with other stamps.
+ * @param  {Function} Constructor 
+ * @return {Function}             A composable stampit factory
+ *                                (aka stamp).
+ */
+var convertConstructor = function convertConstructor(Constructor) {
+  return stampit().methods(Constructor.prototype).enclose(Constructor);
+};
+
 indexOf();
 
 module.exports = mixIn(stampit, {

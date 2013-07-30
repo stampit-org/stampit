@@ -226,3 +226,38 @@ with last in priority overrides.
 ### extend ###
 
 Alias for `mixIn`.
+
+
+### convertConstructor ###
+
+Take an old-fashioned JS constructor and return a stampit stamp 
+that you can freely compose with other stamps.
+
+ * @param  {Function} Constructor 
+ * @return {Function} A composable stampit factory (aka stamp).
+
+```js
+  // The old constructor / class thing...
+  var Constructor = function Constructor() {
+    this.thing = 'initialized';
+  };
+  Constructor.prototype.foo = function foo() { return 'foo'; };
+
+  // The conversion
+  var oldskool = stampit().methods(Constructor.prototype)
+    .enclose(Constructor);
+
+  // Now you can compose with it just like any other stampit factory...
+  var myThing = stampit.compose(oldskool).methods({
+    bar: function bar() { return 'bar'; }
+   // your methods here...
+  });
+
+  var t = myThing();
+
+  t.thing; // 'initialized',
+
+  t.foo(); // 'foo',
+
+  t.bar(); // 'bar',
+```
