@@ -190,5 +190,5 @@ test('stampit.compose() with inheritance', function () {
   // create instance
   i = c();
 
-  ok(i.n1, i.n2, i.m, 'Should retain nested prototypes');
+  ok(i.n1 && i.n2 && i.m, 'Should retain nested prototypes');
 });
