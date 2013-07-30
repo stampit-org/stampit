@@ -188,6 +188,9 @@ test('stampit.compose()', function () {
 test('stampit.convertConstructor()', function () {
   // The old constructor / class thing...
   var Constructor = function Constructor() {
+    if (!this instanceof Constructor) {
+      return new Constructor();
+    }
     this.thing = 'initialized';
   };
   Constructor.prototype.foo = function foo() { return 'foo'; };
@@ -206,8 +209,10 @@ test('stampit.convertConstructor()', function () {
   // Now you can compose those old constructors just like you could
   // with any other factory...
   var myThing = stampit.compose(oldskool, newskool);
+  var myThing2 = stampit.compose(newskool, oldskool);
 
   var t = myThing();
+  var t2 = myThing2();
 
   equal(t.thing, 'initialized',
     'Constructor should execute.');
@@ -221,6 +226,41 @@ test('stampit.convertConstructor()', function () {
   equal(t.baz, 'baz',
     'Should be able to add new methods with .compose()');
 
+  equal(t2.thing, 'initialized',
+    'Constructor should execute.');
+
+  equal(t2.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  equal(t2.bar(), 'bar',
+    'Should be able to add new methods with .compose()');
+
+  equal(t2.baz, 'baz',
+    'Should be able to add new methods with .compose()');
+
+});
+
+test('stampit.convertConstructor() with params', function () {
+  // The old constructor / class thing...
+  var Constructor = function Constructor(bionic, flamethrower) {
+    if (!this instanceof Constructor) {
+      return new Constructor();
+    }
+    this.thing = 'initialized';
+    this.bionic = bionic;
+    this.flamethrower = flamethrower;
+  };
+  Constructor.prototype.foo = function foo() { return 'foo'; };
+  var param1 = 'single param works';
+  var param2 = 'multiple params work';
+
+  var myThing = stampit.convertConstructor(Constructor,
+    param1,
+    param2);
+  var instance = myThing();
+
+  equal(instance.bionic, param1);
+  equal(instance.flamethrower, param2);
 });
 
 
