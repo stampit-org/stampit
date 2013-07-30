@@ -1,13 +1,11 @@
+'use strict';
 /*global module*/
 var pkgData = require('./package.json');
 module.exports = function(grunt) {
-  'use strict';
   grunt.initConfig({
     pkg: '<json:package.json>',
-    lint: {
-      all: ['./*.js', './test/*.js']
-    },
     jshint: {
+      all: ['./stampit.js', './test/stampit-specs.js'],
       options: {
         curly: true,
         eqeqeq: true,
@@ -104,6 +102,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   // grunt.loadNpmTasks('grunt-lexicon');
 
+  grunt.registerTask('hint', ['jshint']);
   grunt.registerTask('default', ['jshint', 'browserify']);
   grunt.registerTask('test', ['jshint', 'browserify', 'connect', 'saucelabs-qunit']);
 };

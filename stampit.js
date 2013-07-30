@@ -6,11 +6,10 @@
  * Copyright (c) 2013 Eric Elliott
  * http://opensource.org/licenses/MIT
  **/
-
 'use strict';
 var forEach = require('mout/array/forEach');
-var bind = require('mout/function/bind');
 var mixIn = require('mout/object/mixIn');
+var forOwn = require('mout/object/forOwn');
 var stringify = require('json-stringify-safe');
 var indexOf = require('./indexof'); // shim indexOf for stringify
 var mixInChain = require('./mixinchain.js');
@@ -49,18 +48,19 @@ var stampit = function stampit(methods, state, enclose) {
 
     factory = function factory(properties, enclose) {
       var instance = mixIn(create(fixed.methods || {}),
-        fixed.state, properties),
-        alt;
+        fixed.state, properties);
 
-      if (typeof fixed.enclose === 'function') {
-        alt = fixed.enclose.call(instance);
-      }
+      forOwn(fixed.enclose, function (fn) {
+        if (typeof fn === 'function') {
+          instance = fn.call(instance) || instance;
+        }
+      });
 
       if (typeof enclose === 'function') {
-        alt = enclose.call(alt || instance);
+        instance = enclose.call(instance) || instance;
       }
 
-      return alt || instance;
+      return instance;
     };
 
   return mixIn(factory, {
@@ -72,14 +72,23 @@ var stampit = function stampit(methods, state, enclose) {
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
-    state: function (state) {
+    state: function () {
       var obj = fixed.state || {},
         args = [obj].concat([].slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
     enclose: function (enclose) {
-      fixed.enclose = enclose;
+      var obj = fixed.enclose  || {},
+        args = [obj].concat([].slice.call(arguments));
+
+      fixed.enclose = fixed.enclose || {};
+
+      if (typeof enclose === 'function') {
+        [].push.call(fixed.enclose, enclose);
+      } else {
+        fixed.enclose = mixIn.apply(this, args);
+      }
       return this;
     }
   });
@@ -95,12 +104,10 @@ var stampit = function stampit(methods, state, enclose) {
  */
 var compose = function compose() {
   var args = [].slice.call(arguments),
-    initFunctions = [],
     obj = stampit();
 
   forEach(args, function (source) {
     if (source) {
-
       if (source.fixed.methods) {
         obj.fixed.methods = mixInChain(obj.fixed.methods,
           source.fixed.methods);
@@ -111,17 +118,15 @@ var compose = function compose() {
           source.fixed.state);
       }
 
-      if (typeof source.fixed.enclose === 'function') {
-        initFunctions.push(source.fixed.enclose);
+      if (source.fixed.enclose) {
+        obj.fixed.enclose = mixIn(obj.fixed.enclose,
+          source.fixed.enclose);        
       }
     }
   });
 
-  return stampit(obj.fixed.methods, obj.fixed.state, function () {
-    forEach(initFunctions, bind(function (fn) {
-      fn.call(this);
-    }, this));
-  });
+  return stampit(obj.fixed.methods, obj.fixed.state,
+    obj.fixed.enclose);
 };
 
 /**

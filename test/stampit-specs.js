@@ -1,3 +1,5 @@
+'use strict';
+/*global test, equal, ok, stampit*/
 test('stampit()', function () {
   equal(typeof stampit(), 'function',
     'Should produce a function.');
@@ -40,7 +42,7 @@ test('stampit().methods()', function () {
     }
   }).methods({
     bar: function () {
-      return 'bar'
+      return 'bar';
     },
     methodOverride: function () {
       return true;
@@ -209,20 +211,20 @@ test('stampit.convertConstructor()', function () {
 
 
 test('stampit.compose() with inheritance', function () {
-  var c, i, m, n1, n2, sm, sn;
+  var c, i, m, n1, N2, sm, sn;
+  var stateProto = {stateProto: true};
+  var state = Object.create(stateProto);
 
   // create an object with a prototype
-  n2 = function() {};
-  n2.prototype = {n2: true};
+  N2 = function() {};
+  N2.prototype = {n2: true};
 
-  n1 = new n2;
+  n1 = new N2();
   n1.n1 = true;
 
   // create a mixin that will get merged
   m = {m: true};
 
-  stateProto = {stateProto: true};
-  state = Object.create(stateProto);
   state.state = true;
 
   // create and compose stampit objects
