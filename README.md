@@ -228,7 +228,7 @@ with last in priority overrides.
 Alias for `mixIn`.
 
 
-### convertConstructor (experimental, needs work) ###
+### convertConstructor (warning: experimental) ###
 
 Take an old-fashioned JS constructor and return a stampit stamp 
 that you can freely compose with other stamps.
@@ -246,11 +246,17 @@ that you can freely compose with other stamps.
   // The conversion
   var oldskool = stampit.convertConstructor(Constructor);
 
-  // Now you can compose with it just like any other stampit factory...
-  var myThing = stampit.compose(oldskool).methods({
-    bar: function bar() { return 'bar'; }
-   // your methods here...
-  });
+  // A new stamp to compose with...
+  var newskool = stampit().methods({
+      bar: function bar() { return 'bar'; }
+     // your methods here...
+    }).enclose(function () {
+      this.baz = 'baz';
+    });
+
+  // Now you can compose those old constructors just like you could
+  // with any other factory...
+  var myThing = stampit.compose(oldskool, newskool);
 
   var t = myThing();
 
@@ -258,5 +264,5 @@ that you can freely compose with other stamps.
 
   t.foo(); // 'foo',
 
-  t.bar(); // 'bar',
+  t.bar(); // 'bar'
 ```
