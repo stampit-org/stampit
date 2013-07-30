@@ -90,6 +90,36 @@ var create = function (o) {
   return new F();
 };
 
+if(!Array.isArray) {
+  Array.isArray = function (vArg) {
+    return Object.prototype.toString.call(vArg) === "[object Array]";
+  };
+}
+
+var extractFunctions = function extractFunctions(arg) {
+  var arr = [],
+    args = [].slice.call(arguments);
+
+  if (typeof arg === 'function') {
+    arr = args.map(function (fn) {
+      if (typeof fn === 'function') {
+        return fn;
+      }
+    });
+  } else if (typeof arg === 'object') {
+    args.forEach(function (obj) {
+      forOwn(obj, function (fn) {
+        arr.push(fn);
+      });
+    });
+  } else if ( Array.isArray(arg) ) {
+    forEach(arg, function (fn) {
+      arr.push(fn);
+    });
+  }
+  return arr;
+};
+
 /**
  * Return a factory function that will produce new objects using the
  * prototypes that are passed in or composed.
@@ -110,22 +140,19 @@ var stampit = function stampit(methods, state, enclose) {
       state: state ?
           JSON.parse(stringify(state)) :
           {},
-      enclose: enclose
+      enclose: extractFunctions(enclose)
     },
 
-    factory = function factory(properties, enclose) {
+    factory = function factory(properties) {
       var instance = mixIn(create(fixed.methods || {}),
-        fixed.state, properties);
+        fixed.state, properties),
+        closures = fixed.enclose;
 
-      forOwn(fixed.enclose, function (fn) {
+      forEach(closures, function (fn) {
         if (typeof fn === 'function') {
           instance = fn.call(instance) || instance;
         }
       });
-
-      if (typeof enclose === 'function') {
-        instance = enclose.call(instance) || instance;
-      }
 
       return instance;
     };
@@ -145,17 +172,9 @@ var stampit = function stampit(methods, state, enclose) {
       fixed.state = mixIn.apply(this, args);
       return this;
     },
-    enclose: function (enclose) {
-      var obj = fixed.enclose  || {},
-        args = [obj].concat([].slice.call(arguments));
-
-      fixed.enclose = fixed.enclose || {};
-
-      if (typeof enclose === 'function') {
-        [].push.call(fixed.enclose, enclose);
-      } else {
-        fixed.enclose = mixIn.apply(this, args);
-      }
+    enclose: function enclose() {
+      fixed.enclose = fixed.enclose
+        .concat( extractFunctions.apply(null, arguments) );
       return this;
     }
   });
@@ -176,18 +195,18 @@ var compose = function compose() {
   forEach(args, function (source) {
     if (source) {
       if (source.fixed.methods) {
-        obj.fixed.methods = mixInChain(obj.fixed.methods,
+        obj.fixed.methods = mixInChain({}, obj.fixed.methods,
           source.fixed.methods);
       }
 
       if (source.fixed.state) {
-        obj.fixed.state = mixIn(obj.fixed.state,
+        obj.fixed.state = mixIn({}, obj.fixed.state,
           source.fixed.state);
       }
 
       if (source.fixed.enclose) {
-        obj.fixed.enclose = mixIn(obj.fixed.enclose,
-          source.fixed.enclose);        
+        obj.fixed.enclose = obj.fixed.enclose
+          .concat(source.fixed.enclose);
       }
     }
   });
@@ -228,7 +247,7 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixinchain.js":4,"mout/array/forEach":1,"mout/object/mixIn":5,"mout/object/forOwn":6,"./indexof":2,"json-stringify-safe":7}],4:[function(require,module,exports){
+},{"./mixinchain.js":4,"mout/array/forEach":1,"mout/object/forOwn":5,"mout/object/mixIn":6,"./indexof":2,"json-stringify-safe":7}],4:[function(require,module,exports){
 var forIn = require('mout/object/forIn');
 
 function copyProp(val, key){
@@ -276,6 +295,27 @@ function stringify(obj, fn, spaces, decycle) {
 stringify.getSerialize = getSerialize;
 
 },{}],5:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
+var forIn = require('./forIn');
+
+    /**
+     * Similar to Array/forEach but works over object properties and fixes Don't
+     * Enum bug on IE.
+     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+     */
+    function forOwn(obj, fn, thisObj){
+        forIn(obj, function(val, key){
+            if (hasOwn(obj, key)) {
+                return fn.call(thisObj, obj[key], key, obj);
+            }
+        });
+    }
+
+    module.exports = forOwn;
+
+
+
+},{"./hasOwn":9,"./forIn":8}],6:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -305,28 +345,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":6}],6:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
-var forIn = require('./forIn');
-
-    /**
-     * Similar to Array/forEach but works over object properties and fixes Don't
-     * Enum bug on IE.
-     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
-     */
-    function forOwn(obj, fn, thisObj){
-        forIn(obj, function(val, key){
-            if (hasOwn(obj, key)) {
-                return fn.call(thisObj, obj[key], key, obj);
-            }
-        });
-    }
-
-    module.exports = forOwn;
-
-
-
-},{"./hasOwn":9,"./forIn":8}],8:[function(require,module,exports){
+},{"./forOwn":5}],8:[function(require,module,exports){
 
 
     var _hasDontEnumBug,

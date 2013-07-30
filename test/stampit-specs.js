@@ -121,9 +121,22 @@ test('stampit().enclose()', function () {
     this.getSecret = function () {
       return secret;
     };
+  }).enclose(function () {
+    this.a = 'a';
+  }).enclose({
+    bar: function bar() {
+      this.b = 'b';
+    }
+  }, {
+    baz: function baz() {
+      this.c = 'c';
+    }
   }).create();
   equal(obj.getSecret(), 'foo',
     'Should set closure.');
+
+  ok(obj.a && obj.b && obj.c,
+    'Should allow chaining and take object literals.');
 });
 
 test('stampit.compose()', function () {
@@ -162,8 +175,9 @@ test('stampit.compose()', function () {
         this.getC = function () {
           return secret;
         };
-      }),
-    d = stampit.compose(a, b, c).create();
+      }), d;
+  
+  d = stampit.compose(a, b, c).create();
 
   ok(d.methodA && d.stateA && d.getA &&
     d.methodB && d.stateB && d.getB &&
