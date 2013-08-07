@@ -169,7 +169,10 @@ var compose = function compose() {
  *                                (aka stamp).
  */
 var convertConstructor = function convertConstructor(Constructor) {
-  return stampit().methods(Constructor.prototype).enclose(Constructor);
+  var params = [].slice.call(arguments).shift();
+  return stampit().methods(Constructor.prototype).enclose(function () {
+    Constructor.apply(this, params);
+  });
 };
 
 indexOf();
