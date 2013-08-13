@@ -3,7 +3,7 @@
 Create objects from reusable, composable behaviors.
 
 ## WARNING:
-Consider this a developer preview. Stampit is in production use right now, but there may be severe bugs.
+Consider this a developer preview. Stampit is in production use right now, but there may be severe bugs. Please add bug reports and contribute fixes if you are able.
 
 Known blocking issues:
 * `stampit.state()` is not instance safe in the current version. The last known working version was just v0.2.3.
