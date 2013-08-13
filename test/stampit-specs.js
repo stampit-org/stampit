@@ -1,5 +1,5 @@
 'use strict';
-/*global test, equal, ok, stampit*/
+/*global test, equal, ok, stampit, notEqual*/
 test('stampit()', function () {
   equal(typeof stampit(), 'function',
     'Should produce a function.');
@@ -17,7 +17,8 @@ test('.create()', function () {
 });
 
 test('.create(properties)', function () {
-  var obj = stampit({}, {foo: 'bar'}).create({foo: 'foo'});
+  var obj = stampit({}, {foo: 'bar'});
+  obj = obj.create({foo: 'foo'});
   equal(obj.foo, 'foo',
     'should override defaults.');
 });
@@ -206,8 +207,10 @@ test('stampit.convertConstructor()', function () {
   // Now you can compose those old constructors just like you could
   // with any other factory...
   var myThing = stampit.compose(oldskool, newskool);
+  var myThing2 = stampit.compose(newskool, oldskool);
 
   var t = myThing();
+  var u = myThing2();
 
   equal(t.thing, 'initialized',
     'Constructor should execute.');
@@ -219,6 +222,18 @@ test('stampit.convertConstructor()', function () {
     'Should be able to add new methods with .compose()');
 
   equal(t.baz, 'baz',
+    'Should be able to add new methods with .compose()');
+
+  equal(u.thing, 'initialized',
+    'Constructor should execute.');
+
+  equal(u.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  equal(u.bar(), 'bar',
+    'Should be able to add new methods with .compose()');
+
+  equal(u.baz, 'baz',
     'Should be able to add new methods with .compose()');
 
 });
@@ -253,4 +268,18 @@ test('stampit.compose() with inheritance', function () {
 
   equal(i.stateProto, undefined,
     'Should not flatten state prototypes.');
+});
+
+test('Deep state instance safety', function () {
+  // Make factory with some default state
+  var deep = {foo: 'foo', bar: 'bar'};
+  var stamp = stampit().state({deep: deep, baz: 'baz'});
+
+  // Create two instances
+  var o1 = stamp();
+  var o2 = stamp();
+
+  // Change one of the deep properties
+  o1.deep.foo = 'instance safety';
+  notEqual(o1.deep.foo, o2.deep.foo);
 });

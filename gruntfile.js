@@ -90,6 +90,7 @@ module.exports = function(grunt) {
     },
     browserify: {
       'dist/stampit.js': ['./stampit.js'],
+      'test/stampit.js': ['./stampit.js'],
       options: {
         standalone: 'stampit'
       }

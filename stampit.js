@@ -9,9 +9,9 @@
 'use strict';
 var forEach = require('mout/array/forEach');
 var mixIn = require('mout/object/mixIn');
+var merge = require('mout/object/merge');
+var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
-var stringify = require('json-stringify-safe');
-var indexOf = require('./indexof'); // shim indexOf for stringify
 var mixInChain = require('./mixinchain.js');
 
 var create = function (o) {
@@ -34,13 +34,13 @@ var extractFunctions = function extractFunctions(arg) {
     args = [].slice.call(arguments);
 
   if (typeof arg === 'function') {
-    arr = args.map(function (fn) {
+    arr = map(args, function (fn) {
       if (typeof fn === 'function') {
         return fn;
       }
     });
   } else if (typeof arg === 'object') {
-    args.forEach(function (obj) {
+    forEach(args, function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
@@ -70,15 +70,14 @@ var extractFunctions = function extractFunctions(arg) {
 var stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
-      state: state ?
-          JSON.parse(stringify(state)) :
-          {},
+      state: state,
       enclose: extractFunctions(enclose)
     },
 
     factory = function factory(properties) {
-      var instance = mixIn(create(fixed.methods || {}),
-        fixed.state, properties),
+      var state = merge({}, fixed.state),
+        instance = mixIn(create(fixed.methods || {}),
+          state, properties),
         closures = fixed.enclose;
 
       forEach(closures, function (fn) {
@@ -171,8 +170,6 @@ var compose = function compose() {
 var convertConstructor = function convertConstructor(Constructor) {
   return stampit().methods(Constructor.prototype).enclose(Constructor);
 };
-
-indexOf();
 
 module.exports = mixIn(stampit, {
   compose: compose,
