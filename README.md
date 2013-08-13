@@ -2,6 +2,12 @@
 
 Create objects from reusable, composable behaviors.
 
+## WARNING:
+Stampit is in production use right now, but there may be severe bugs.
+
+Known blocking issues:
+* stampit.state() is not instance safe in the current version. The last known working version was just v0.2.3.
+
 ## Features
 
  * Create functions (called factories) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
