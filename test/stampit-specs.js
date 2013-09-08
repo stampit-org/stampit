@@ -242,7 +242,7 @@ test('stampit.convertConstructor()', function () {
 test('stampit.compose() with inheritance', function () {
   var c, i, m, n1, N2, sm, sn;
   var stateProto = {stateProto: true};
-  var state = Object.create(stateProto);
+  var state = stampit(stateProto).create();
 
   // create an object with a prototype
   N2 = function() {};

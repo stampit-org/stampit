@@ -618,7 +618,7 @@ var stampit = function stampit(methods, state, enclose) {
      * Take n objects and add them to the methods prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    methods: function methods() {
+    methods: function stampMethods() {
       var obj = fixed.methods || {},
         args = [obj].concat([].slice.call(arguments));
       fixed.methods = mixInChain.apply(this, args);
@@ -628,7 +628,7 @@ var stampit = function stampit(methods, state, enclose) {
      * Take n objects and add them to the state prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    state: function state() {
+    state: function stampState() {
       var obj = fixed.state || {},
         args = [obj].concat([].slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
@@ -639,7 +639,7 @@ var stampit = function stampit(methods, state, enclose) {
      * the functions to the enclose prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    enclose: function enclose() {
+    enclose: function stampEnclose() {
       fixed.enclose = fixed.enclose
         .concat( extractFunctions.apply(null, arguments) );
       return this;
