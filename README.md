@@ -3,7 +3,7 @@
 Create objects from reusable, composable behaviors.
 
 ## WARNING:
-Consider this a developer preview. Stampit is in production use right now, but there may be severe bugs. Please add bug reports and contribute fixes if you are able.
+Consider this a developer preview. Stampit is in production use right now, but there may be bugs. Please add bug reports and contribute fixes if you are able.
 
 ### Known issues
 
