@@ -88,11 +88,19 @@ module.exports = function(grunt) {
         }
       }
     },
+
     browserify: {
       'dist/stampit.js': ['./stampit.js'],
       'test/stampit.js': ['./stampit.js'],
       options: {
         standalone: 'stampit'
+      }
+    },
+
+    uglify: {
+      dist: {
+          src: 'dist/stampit.js',
+          dest: 'dist/stampit.min.js'
       }
     }
   });
@@ -101,9 +109,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   // grunt.loadNpmTasks('grunt-lexicon');
 
   grunt.registerTask('hint', ['jshint']);
-  grunt.registerTask('default', ['jshint', 'browserify']);
+  grunt.registerTask('default', ['jshint', 'browserify', 'uglify']);
   grunt.registerTask('test', ['jshint', 'browserify', 'connect', 'saucelabs-qunit']);
 };
