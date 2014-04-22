@@ -23,6 +23,25 @@ test('.create(properties)', function () {
     'should override defaults.');
 });
 
+test('.construct()', function () {
+  var obj = stampit().enclose(function (notSecretYet, bar) {
+    var secret = notSecretYet;
+    var secretBar = bar;
+
+    this.getSecret = function () {
+      return secret;
+    };
+    this.getBar = function () {
+      return secretBar;
+    };
+  }).construct('foo', 'bar');
+
+  equal(obj.getSecret(), 'foo',
+    'Should pass variables to closures.');
+  equal(obj.getBar(), 'bar',
+    'Should pass variables to closures.');
+});
+
 test('stampit(methods)', function () {
   var obj = stampit({
     foo: function () {
