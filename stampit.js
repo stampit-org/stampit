@@ -78,11 +78,12 @@ var stampit = function stampit(methods, state, enclose) {
       var state = merge({}, fixed.state),
         instance = mixIn(create(fixed.methods || {}),
           state, properties),
-        closures = fixed.enclose;
+        closures = fixed.enclose,
+        args = [].slice.call(arguments);
 
       forEach(closures, function (fn) {
         if (typeof fn === 'function') {
-          instance = fn.call(instance) || instance;
+          instance = fn.apply(instance, args) || instance;
         }
       });
 
