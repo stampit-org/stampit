@@ -23,22 +23,22 @@ test('.create(properties)', function () {
     'should override defaults.');
 });
 
-test('.construct()', function () {
-  var obj = stampit().enclose(function (notSecretYet, bar) {
-    var secret = notSecretYet;
-    var secretBar = bar;
+test('factory args', function () {
+  var obj = stampit().enclose(function (a, b) {
+    var secretA = a;
+    var secretB = b;
 
-    this.getSecret = function () {
-      return secret;
+    this.getA = function () {
+      return secretA;
     };
-    this.getBar = function () {
-      return secretBar;
+    this.getB = function () {
+      return secretB;
     };
-  }).construct('foo', 'bar');
+  }).create('a', 'b');
 
-  equal(obj.getSecret(), 'foo',
+  equal(obj.getA(), 'a',
     'Should pass variables to closures.');
-  equal(obj.getBar(), 'bar',
+  equal(obj.getB(), 'b',
     'Should pass variables to closures.');
 });
 

@@ -74,11 +74,12 @@ var stampit = function stampit(methods, state, enclose) {
       enclose: extractFunctions(enclose)
     },
 
-    factory = function factory(properties, args) {
+    factory = function factory(properties) {
       var state = merge({}, fixed.state),
         instance = mixIn(create(fixed.methods || {}),
           state, properties),
-        closures = fixed.enclose;
+        closures = fixed.enclose,
+        args = [].slice.call(arguments);
 
       forEach(closures, function (fn) {
         if (typeof fn === 'function') {
@@ -90,9 +91,6 @@ var stampit = function stampit(methods, state, enclose) {
     };
 
   return mixIn(factory, {
-    construct: function construct() {
-      return factory({}, [].slice.call(arguments));
-    },
     create: factory,
     fixed: fixed,
     /**
