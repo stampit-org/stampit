@@ -13,6 +13,7 @@ var merge = require('mout/object/merge');
 var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
 var mixInChain = require('./mixinchain.js');
+var slice = [].slice;
 
 var create = function (o) {
   if (arguments.length > 1) {
@@ -79,7 +80,7 @@ var stampit = function stampit(methods, state, enclose) {
         instance = mixIn(create(fixed.methods || {}),
           state, properties),
         closures = fixed.enclose,
-        args = [].slice.call(arguments);
+        args = slice.call(arguments, 1);
 
       forEach(closures, function (fn) {
         if (typeof fn === 'function') {

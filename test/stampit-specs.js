@@ -34,7 +34,7 @@ test('factory args', function () {
     this.getB = function () {
       return secretB;
     };
-  }).create('a', 'b');
+  }).create(null, 'a', 'b');
 
   equal(obj.getA(), 'a',
     'Should pass variables to closures.');

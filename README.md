@@ -296,7 +296,15 @@ Alias for `mixIn`.
 ### stampit.convertConstructor() ###
 
 Take an old-fashioned JS constructor and return a stampit stamp 
-that you can freely compose with other stamps.
+that you can freely compose with other stamps. It is possible to
+use constructors that take arguments. Simply pass the arguments
+into the returned factory after the properties object:
+`var myInstance = myStamp(props, arg1, arg2);`
+
+Note that if you use this feature, it is **not safe** to compose
+the resulting stamp with other stamps willy-nilly, because if two
+different stamps depend on the argument passing feature, the arguments
+will probably clash with each other, producing very unexpected results.
 
  * @param  {Function} Constructor 
  * @return {Function} A composable stampit factory (aka stamp).
