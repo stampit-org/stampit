@@ -23,6 +23,25 @@ test('.create(properties)', function () {
     'should override defaults.');
 });
 
+test('factory args', function () {
+  var obj = stampit().enclose(function (a, b) {
+    var secretA = a;
+    var secretB = b;
+
+    this.getA = function () {
+      return secretA;
+    };
+    this.getB = function () {
+      return secretB;
+    };
+  }).create(null, 'a', 'b');
+
+  equal(obj.getA(), 'a',
+    'Should pass variables to closures.');
+  equal(obj.getB(), 'b',
+    'Should pass variables to closures.');
+});
+
 test('stampit(methods)', function () {
   var obj = stampit({
     foo: function () {

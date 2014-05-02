@@ -4,11 +4,9 @@ Create objects from reusable, composable behaviors.
 
 ## Status
 
-Consider this a developer preview. Stampit is in production use right now, but there may be bugs. Please add bug reports and contribute fixes if you are able.
+Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://ericleads.com/javascript-applications/), but it has been in production use for more than a year. The API has been quite stable. There will be no breaking changes going forward.
 
-### Known issues
-
- * `stampit.convertConstructor()` is an experimental feature that doesn't work for constructors that require parameters. If you need to do something that isn't supported, consider using `stampit().enclose()` to turn the constructor into a proper factory, instead.
+[Known Issues](https://github.com/dilvie/stampit/issues?state=open)
 
 
 ## Features
@@ -235,24 +233,36 @@ prototypes that are passed in or composed.
 * `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
 * `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
 
-## Extending the prototypes ##
+
+## The stamp object ##
 
 ### stamp.methods() ###
 
 Take n objects and add them to the methods prototype.
 * @return {Object} stamp  The factory in question (`this`).
 
+
 ### stamp.state() ###
 
 Take n objects and add them to the state prototype.
 * @return {Object} stamp  The factory in question (`this`).
 
-### stamp.enclose() ###
+
+### stamp.enclose([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
 the functions to the enclose prototype.
 * @return {Object} stamp  The factory in question (`this`).
 
+Functions passed into `.enclose()` are called any time an
+object is instantiated. That happens when the stamp function
+is invoked, or when the `.create()` method is called.
+
+### stamp.create([arg1] [,arg2] [,arg3...]) ###
+
+Just like calling `stamp()`, `stamp.create()` invokes the object
+creation factory and returns a new instance. Arguments are passed
+to all the functions passed into `.enclose()`.
 
 
 ## Utility methods ##
@@ -283,10 +293,18 @@ with last in priority overrides.
 Alias for `mixIn`.
 
 
-### stampit.convertConstructor() Warning: experimental ###
+### stampit.convertConstructor() ###
 
 Take an old-fashioned JS constructor and return a stampit stamp 
-that you can freely compose with other stamps.
+that you can freely compose with other stamps. It is possible to
+use constructors that take arguments. Simply pass the arguments
+into the returned factory after the properties object:
+`var myInstance = myStamp(props, arg1, arg2);`
+
+Note that if you use this feature, it is **not safe** to compose
+the resulting stamp with other stamps willy-nilly, because if two
+different stamps depend on the argument passing feature, the arguments
+will probably clash with each other, producing very unexpected results.
 
  * @param  {Function} Constructor 
  * @return {Function} A composable stampit factory (aka stamp).
