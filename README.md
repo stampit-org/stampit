@@ -11,9 +11,9 @@ Stampit was written as an example for the book, ["Programming JavaScript Applica
 
 ## Features
 
- * Create functions (called factories) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
+ * Create factory functions (called stamps) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
 
- * Compose factories together to create new factories.
+ * Compose stamps together to create new stamps.
 
  * Inherit methods and default state.
 
@@ -194,7 +194,7 @@ obj.getSecret && obj.a && obj.b && obj.c; // true
 
 ## Pass multiple objects into .methods(), .state(), or .enclose()
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the factory. The properties from later arguments in the list will override the same named properties of previously passed in objects.
+Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
 ```js
   var obj = stampit().methods({
@@ -220,14 +220,14 @@ Or `.state()` ...
 
 ### stampit() ###
 
-Return a factory function that will produce new objects using the
+Return a factory function (called a stamp) that will produce new objects using the
 prototypes that are passed in or composed.
 
 * `@param {Object} [methods]` A map of method names and bodies for delegation.
 * `@param {Object} [state]` A map of property names and values to clone for each new object.
 * `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
 * `@return {Function} stamp` A factory to produce objects using the given prototypes.
-* `@return {Function} stamp.create` Just like calling the factory function.
+* `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
 * `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
 * `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
 * `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
@@ -239,20 +239,20 @@ prototypes that are passed in or composed.
 ### stamp.methods() ###
 
 Take n objects and add them to the methods prototype.
-* @return {Object} stamp  The factory in question (`this`).
+* @return {Object} stamp  The stamp in question (`this`).
 
 
 ### stamp.state() ###
 
 Take n objects and add them to the state prototype.
-* @return {Object} stamp  The factory in question (`this`).
+* @return {Object} stamp  The stamp in question (`this`).
 
 
 ### stamp.enclose([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
 the functions to the enclose prototype.
-* @return {Object} stamp  The factory in question (`this`).
+* @return {Object} stamp  The stamp in question (`this`).
 
 Functions passed into `.enclose()` are called any time an
 object is instantiated. That happens when the stamp function
@@ -260,10 +260,11 @@ is invoked, or when the `.create()` method is called.
 
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
-Just like calling `stamp()`, `stamp.create()` invokes the object
-creation factory and returns a new instance. The first argument
-is an object containing properties you wish to set on the new
-objects. The remaining arguments are passed to all `.enclose()`
+Just like calling `stamp()`, `stamp.create()` invokes the stamp
+and returns a new instance. The first argument is an object
+containing properties you wish to set on the new objects.
+
+The remaining arguments are passed to all `.enclose()`
 functions. **WARNING** Avoid using two different `.enclose()`
 functions that expect different arguments. `.enclose()`
 functions that take arguments should not be considered safe to
@@ -276,12 +277,12 @@ anti-pattern that should be avoided, when possible.
 
 ### stampit.compose() ###
 
-Take two or more factories produced from stampit() and
-combine them to produce a new factory. Combining overrides
+Take two or more stamps produced from stampit() and
+combine them to produce a new stamp. Combining overrides
 properties with last-in priority.
 
-* `@param {...Function} factory` A factory produced by stampit().
-* `@return {Function}` A new stampit factory composed from arguments.
+* `@param {...Function} stamp` any number of stamps.
+* `@return {Function}` A new stamp composed from arguments.
 
 
 ### stampit.mixIn() ###
@@ -302,10 +303,10 @@ Alias for `mixIn`.
 
 ### stampit.convertConstructor() ###
 
-Take an old-fashioned JS constructor and return a stampit stamp 
-that you can freely compose with other stamps. It is possible to
+Take an old-fashioned JS constructor and return a stamp  that
+you can freely compose with other stamps. It is possible to
 use constructors that take arguments. Simply pass the arguments
-into the returned factory after the properties object:
+into the returned stamp after the properties object:
 `var myInstance = myStamp(props, arg1, arg2);`
 
 Note that if you use this feature, it is **not safe** to compose
@@ -335,7 +336,7 @@ will probably clash with each other, producing very unexpected results.
     });
 
   // Now you can compose those old constructors just like you could
-  // with any other factory...
+  // with any other stamp...
   var myThing = stampit.compose(oldskool, newskool);
 
   var t = myThing();
