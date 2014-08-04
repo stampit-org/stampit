@@ -1,5 +1,5 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stampit=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var forIn = _dereq_('mout/object/forIn');
+!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.stampit=e():"undefined"!=typeof global?global.stampit=e():"undefined"!=typeof self&&(self.stampit=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var forIn = require('mout/object/forIn');
 
 function copyProp(val, key){
     this[key] = val;
@@ -18,7 +18,7 @@ module.exports = function mixInChain(target, objects){
     return target;
 };
 
-},{"mout/object/forIn":14}],2:[function(_dereq_,module,exports){
+},{"mout/object/forIn":19}],2:[function(require,module,exports){
 
 
     /**
@@ -43,9 +43,8 @@ module.exports = function mixInChain(target, objects){
 
 
 
-},{}],3:[function(_dereq_,module,exports){
-var forEach = _dereq_('./forEach');
-var makeIterator = _dereq_('../function/makeIterator_');
+},{}],3:[function(require,module,exports){
+var makeIterator = require('../function/makeIterator_');
 
     /**
      * Array map
@@ -68,9 +67,61 @@ var makeIterator = _dereq_('../function/makeIterator_');
      module.exports = map;
 
 
-},{"../function/makeIterator_":4,"./forEach":2}],4:[function(_dereq_,module,exports){
-var prop = _dereq_('./prop');
-var deepMatches = _dereq_('../object/deepMatches');
+},{"../function/makeIterator_":6}],4:[function(require,module,exports){
+
+
+    /**
+     * Create slice of source array or array-like object
+     */
+    function slice(arr, start, end){
+        var len = arr.length;
+
+        if (start == null) {
+            start = 0;
+        } else if (start < 0) {
+            start = Math.max(len + start, 0);
+        } else {
+            start = Math.min(start, len);
+        }
+
+        if (end == null) {
+            end = len;
+        } else if (end < 0) {
+            end = Math.max(len + end, 0);
+        } else {
+            end = Math.min(end, len);
+        }
+
+        var result = [];
+        while (start < end) {
+            result.push(arr[start++]);
+        }
+
+        return result;
+    }
+
+    module.exports = slice;
+
+
+
+},{}],5:[function(require,module,exports){
+
+
+    /**
+     * Returns the first argument provided to it.
+     */
+    function identity(val){
+        return val;
+    }
+
+    module.exports = identity;
+
+
+
+},{}],6:[function(require,module,exports){
+var identity = require('./identity');
+var prop = require('./prop');
+var deepMatches = require('../object/deepMatches');
 
     /**
      * Converts argument into a valid iterator.
@@ -78,25 +129,24 @@ var deepMatches = _dereq_('../object/deepMatches');
      * callback/iterator providing a shortcut syntax.
      */
     function makeIterator(src, thisObj){
+        if (src == null) {
+            return identity;
+        }
         switch(typeof src) {
-            case 'object':
-                // typeof null == "object"
-                return (src != null)? function(val, key, target){
-                    return deepMatches(val, src);
+            case 'function':
+                // function is the first to improve perf (most common case)
+                // also avoid using `Function#call` if not needed, which boosts
+                // perf a lot in some cases
+                return (typeof thisObj !== 'undefined')? function(val, i, arr){
+                    return src.call(thisObj, val, i, arr);
                 } : src;
+            case 'object':
+                return function(val){
+                    return deepMatches(val, src);
+                };
             case 'string':
             case 'number':
                 return prop(src);
-            case 'function':
-                if (typeof thisObj === 'undefined') {
-                    return src;
-                } else {
-                    return function(val, i, arr){
-                        return src.call(thisObj, val, i, arr);
-                    };
-                }
-            default:
-                return src;
         }
     }
 
@@ -104,7 +154,7 @@ var deepMatches = _dereq_('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":13,"./prop":5}],5:[function(_dereq_,module,exports){
+},{"../object/deepMatches":18,"./identity":5,"./prop":7}],7:[function(require,module,exports){
 
 
     /**
@@ -120,10 +170,10 @@ var deepMatches = _dereq_('../object/deepMatches');
 
 
 
-},{}],6:[function(_dereq_,module,exports){
-var kindOf = _dereq_('./kindOf');
-var isPlainObject = _dereq_('./isPlainObject');
-var mixIn = _dereq_('../object/mixIn');
+},{}],8:[function(require,module,exports){
+var kindOf = require('./kindOf');
+var isPlainObject = require('./isPlainObject');
+var mixIn = require('../object/mixIn');
 
     /**
      * Clone native types.
@@ -171,11 +221,31 @@ var mixIn = _dereq_('../object/mixIn');
 
 
 
-},{"../object/mixIn":18,"./isPlainObject":11,"./kindOf":12}],7:[function(_dereq_,module,exports){
-var clone = _dereq_('./clone');
-var forOwn = _dereq_('../object/forOwn');
-var kindOf = _dereq_('./kindOf');
-var isPlainObject = _dereq_('./isPlainObject');
+},{"../object/mixIn":23,"./isPlainObject":15,"./kindOf":16}],9:[function(require,module,exports){
+var mixIn = require('../object/mixIn');
+
+    /**
+     * Create Object using prototypal inheritance and setting custom properties.
+     * - Mix between Douglas Crockford Prototypal Inheritance <http://javascript.crockford.com/prototypal.html> and the EcmaScript 5 `Object.create()` method.
+     * @param {object} parent    Parent Object.
+     * @param {object} [props] Object properties.
+     * @return {object} Created object.
+     */
+    function createObject(parent, props){
+        function F(){}
+        F.prototype = parent;
+        return mixIn(new F(), props);
+
+    }
+    module.exports = createObject;
+
+
+
+},{"../object/mixIn":23}],10:[function(require,module,exports){
+var clone = require('./clone');
+var forOwn = require('../object/forOwn');
+var kindOf = require('./kindOf');
+var isPlainObject = require('./isPlainObject');
 
     /**
      * Recursively clone native types.
@@ -221,8 +291,8 @@ var isPlainObject = _dereq_('./isPlainObject');
 
 
 
-},{"../object/forOwn":15,"./clone":6,"./isPlainObject":11,"./kindOf":12}],8:[function(_dereq_,module,exports){
-var isKind = _dereq_('./isKind');
+},{"../object/forOwn":20,"./clone":8,"./isPlainObject":15,"./kindOf":16}],11:[function(require,module,exports){
+var isKind = require('./isKind');
     /**
      */
     var isArray = Array.isArray || function (val) {
@@ -231,8 +301,18 @@ var isKind = _dereq_('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":9}],9:[function(_dereq_,module,exports){
-var kindOf = _dereq_('./kindOf');
+},{"./isKind":13}],12:[function(require,module,exports){
+var isKind = require('./isKind');
+    /**
+     */
+    function isFunction(val) {
+        return isKind(val, 'Function');
+    }
+    module.exports = isFunction;
+
+
+},{"./isKind":13}],13:[function(require,module,exports){
+var kindOf = require('./kindOf');
     /**
      * Check if value is from a specific "kind".
      */
@@ -242,8 +322,8 @@ var kindOf = _dereq_('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":12}],10:[function(_dereq_,module,exports){
-var isKind = _dereq_('./isKind');
+},{"./kindOf":16}],14:[function(require,module,exports){
+var isKind = require('./isKind');
     /**
      */
     function isObject(val) {
@@ -252,23 +332,22 @@ var isKind = _dereq_('./isKind');
     module.exports = isObject;
 
 
-},{"./isKind":9}],11:[function(_dereq_,module,exports){
+},{"./isKind":13}],15:[function(require,module,exports){
 
 
     /**
      * Checks if the value is created by the `Object` constructor.
      */
     function isPlainObject(value) {
-        return (!!value
-            && typeof value === 'object'
-            && value.constructor === Object);
+        return (!!value && typeof value === 'object' &&
+            value.constructor === Object);
     }
 
     module.exports = isPlainObject;
 
 
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],16:[function(require,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -290,9 +369,42 @@ var isKind = _dereq_('./isKind');
     module.exports = kindOf;
 
 
-},{}],13:[function(_dereq_,module,exports){
-var forOwn = _dereq_('./forOwn');
-var isArray = _dereq_('../lang/isArray');
+},{}],17:[function(require,module,exports){
+var kindOf = require('./kindOf');
+
+    var _win = this;
+
+    /**
+     * Convert array-like object into array
+     */
+    function toArray(val){
+        var ret = [],
+            kind = kindOf(val),
+            n;
+
+        if (val != null) {
+            if ( val.length == null || kind === 'String' || kind === 'Function' || kind === 'RegExp' || val === _win ) {
+                //string, regexp, function have .length but user probably just want
+                //to wrap value into an array..
+                ret[ret.length] = val;
+            } else {
+                //window returns true on isObject in IE7 and may have length
+                //property. `typeof NodeList` returns `function` on Safari so
+                //we can't use it (#58)
+                n = val.length;
+                while (n--) {
+                    ret[n] = val[n];
+                }
+            }
+        }
+        return ret;
+    }
+    module.exports = toArray;
+
+
+},{"./kindOf":16}],18:[function(require,module,exports){
+var forOwn = require('./forOwn');
+var isArray = require('../lang/isArray');
 
     function containsMatch(array, pattern) {
         var i = -1, length = array.length;
@@ -347,8 +459,8 @@ var isArray = _dereq_('../lang/isArray');
 
 
 
-},{"../lang/isArray":8,"./forOwn":15}],14:[function(_dereq_,module,exports){
-
+},{"../lang/isArray":11,"./forOwn":20}],19:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
 
     var _hasDontEnumBug,
         _dontEnums;
@@ -390,11 +502,25 @@ var isArray = _dereq_('../lang/isArray');
             }
         }
 
+
         if (_hasDontEnumBug) {
+            var ctor = obj.constructor,
+                isProto = !!ctor && obj === ctor.prototype;
+
             while (key = _dontEnums[i++]) {
-                // since we aren't using hasOwn check we need to make sure the
-                // property was overwritten
-                if (obj[key] !== Object.prototype[key]) {
+                // For constructor, if it is a prototype object the constructor
+                // is always non-enumerable unless defined otherwise (and
+                // enumerated above).  For non-prototype objects, it will have
+                // to be defined on this object, since it cannot be defined on
+                // any prototype objects.
+                //
+                // For other [[DontEnum]] properties, check if the value is
+                // different than Object prototype value.
+                if (
+                    (key !== 'constructor' ||
+                        (!isProto && hasOwn(obj, key))) &&
+                    obj[key] !== Object.prototype[key]
+                ) {
                     if (exec(fn, obj, key, thisObj) === false) {
                         break;
                     }
@@ -411,9 +537,9 @@ var isArray = _dereq_('../lang/isArray');
 
 
 
-},{}],15:[function(_dereq_,module,exports){
-var hasOwn = _dereq_('./hasOwn');
-var forIn = _dereq_('./forIn');
+},{"./hasOwn":21}],20:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
+var forIn = require('./forIn');
 
     /**
      * Similar to Array/forEach but works over object properties and fixes Don't
@@ -432,7 +558,7 @@ var forIn = _dereq_('./forIn');
 
 
 
-},{"./forIn":14,"./hasOwn":16}],16:[function(_dereq_,module,exports){
+},{"./forIn":19,"./hasOwn":21}],21:[function(require,module,exports){
 
 
     /**
@@ -446,10 +572,10 @@ var forIn = _dereq_('./forIn');
 
 
 
-},{}],17:[function(_dereq_,module,exports){
-var hasOwn = _dereq_('./hasOwn');
-var deepClone = _dereq_('../lang/deepClone');
-var isObject = _dereq_('../lang/isObject');
+},{}],22:[function(require,module,exports){
+var hasOwn = require('./hasOwn');
+var deepClone = require('../lang/deepClone');
+var isObject = require('../lang/isObject');
 
     /**
      * Deep merge objects.
@@ -488,8 +614,8 @@ var isObject = _dereq_('../lang/isObject');
 
 
 
-},{"../lang/deepClone":7,"../lang/isObject":10,"./hasOwn":16}],18:[function(_dereq_,module,exports){
-var forOwn = _dereq_('./forOwn');
+},{"../lang/deepClone":10,"../lang/isObject":14,"./hasOwn":21}],23:[function(require,module,exports){
+var forOwn = require('./forOwn');
 
     /**
     * Combine properties from all the objects into first one.
@@ -518,7 +644,7 @@ var forOwn = _dereq_('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":15}],19:[function(_dereq_,module,exports){
+},{"./forOwn":20}],24:[function(require,module,exports){
 /**
  * Stampit
  **
@@ -528,46 +654,36 @@ var forOwn = _dereq_('./forOwn');
  * http://opensource.org/licenses/MIT
  **/
 'use strict';
-var forEach = _dereq_('mout/array/forEach');
-var mixIn = _dereq_('mout/object/mixIn');
-var merge = _dereq_('mout/object/merge');
-var map = _dereq_('mout/array/map');
-var forOwn = _dereq_('mout/object/forOwn');
-var mixInChain = _dereq_('./mixinchain.js');
-var slice = [].slice;
-
-var create = function (o) {
-  if (arguments.length > 1) {
-    throw new Error('Object.create implementation only accepts the first parameter.');
-  }
-  function F() {}
-  F.prototype = o;
-  return new F();
-};
-
-if(!Array.isArray) {
-  Array.isArray = function (vArg) {
-    return Object.prototype.toString.call(vArg) === "[object Array]";
-  };
-}
+var forEach = require('mout/array/forEach'),
+  mixIn = require('mout/object/mixIn'),
+  merge = require('mout/object/merge'),
+  map = require('mout/array/map'),
+  forOwn = require('mout/object/forOwn'),
+  slice = require('mout/array/slice'),
+  isArray = require('mout/lang/isArray'),
+  isObject = require('mout/lang/isObject'),
+  isFunction = require('mout/lang/isFunction'),
+  toArray = require('mout/lang/toArray'),
+  createObject = require('mout/lang/createObject'),
+  mixInChain = require('./mixinchain.js');
 
 var extractFunctions = function extractFunctions(arg) {
   var arr = [],
-    args = [].slice.call(arguments);
+    args = toArray(arguments);
 
-  if (typeof arg === 'function') {
+  if ( isFunction(arg) ) {
     arr = map(args, function (fn) {
-      if (typeof fn === 'function') {
+      if ( isFunction(fn) ) {
         return fn;
       }
     });
-  } else if (typeof arg === 'object') {
+  } else if ( isObject(arg) ) {
     forEach(args, function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
     });
-  } else if ( Array.isArray(arg) ) {
+  } else if ( isArray(arg) ) {
     forEach(arg, function (fn) {
       arr.push(fn);
     });
@@ -597,14 +713,14 @@ var stampit = function stampit(methods, state, enclose) {
     },
 
     factory = function factory(properties) {
-      var state = merge({}, fixed.state),
-        instance = mixIn(create(fixed.methods || {}),
-          state, properties),
+      var state = merge({}, fixed.state, properties),
+        methods = fixed.methods || {},
+        instance = createObject(methods, state),
         closures = fixed.enclose,
-        args = slice.call(arguments, 1);
+        args = slice(arguments, 1);
 
       forEach(closures, function (fn) {
-        if (typeof fn === 'function') {
+        if ( isFunction(fn) ) {
           instance = fn.apply(instance, args) || instance;
         }
       });
@@ -621,7 +737,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var obj = fixed.methods || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(toArray(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
@@ -631,7 +747,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     state: function stampState() {
       var obj = fixed.state || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(toArray(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
@@ -657,7 +773,7 @@ var stampit = function stampit(methods, state, enclose) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 var compose = function compose() {
-  var args = [].slice.call(arguments),
+  var args = toArray(arguments),
     obj = stampit();
 
   forEach(args, function (source) {
@@ -713,6 +829,7 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixinchain.js":1,"mout/array/forEach":2,"mout/array/map":3,"mout/object/forOwn":15,"mout/object/merge":17,"mout/object/mixIn":18}]},{},[19])
-(19)
+},{"./mixinchain.js":1,"mout/array/forEach":2,"mout/array/map":3,"mout/array/slice":4,"mout/lang/createObject":9,"mout/lang/isArray":11,"mout/lang/isFunction":12,"mout/lang/isObject":14,"mout/lang/toArray":17,"mout/object/forOwn":20,"mout/object/merge":22,"mout/object/mixIn":23}]},{},[24])
+(24)
 });
+;
