@@ -257,7 +257,6 @@ test('stampit.convertConstructor()', function () {
 
 });
 
-
 test('stampit.compose() with inheritance', function () {
   var c, i, m, n1, N2, sm, sn;
   var stateProto = {stateProto: true};
@@ -287,6 +286,28 @@ test('stampit.compose() with inheritance', function () {
 
   equal(i.stateProto, undefined,
     'Should not flatten state prototypes.');
+});
+
+test('stampit.isStamp() with stamps', function () {
+  var emptyStamp = stampit();
+  var stateOnlyStamp = stampit().state({ a: 'b' });
+  var methodsOnlyStamp = stampit({ method: function () { }});
+  var closureOnlyStamp = stampit().enclose(function () { });
+
+  ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
+  ok(stampit.isStamp(stateOnlyStamp), 'State only stamp should be seen as stamp.');
+  ok(stampit.isStamp(methodsOnlyStamp), 'Methods only stamp should be seen as stamp.');
+  ok(stampit.isStamp(closureOnlyStamp), 'Closure only stamp should be seen as stamp.');
+});
+
+test('stampit.isStamp() with non stamps', function () {
+  var obj1;
+  var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
+  var obj3 = function () { this.enclose = this; };
+  var obj4 = function () { this.fixed = function () {}; };
+
+  ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
+    'Should not be seen as stamp.');
 });
 
 test('Deep state instance safety', function () {

@@ -20,11 +20,12 @@ var create = function (o) {
     throw new Error('Object.create implementation only accepts the first parameter.');
   }
   function F() {}
+
   F.prototype = o;
   return new F();
 };
 
-if(!Array.isArray) {
+if (!Array.isArray) {
   Array.isArray = function (vArg) {
     return Object.prototype.toString.call(vArg) === "[object Array]";
   };
@@ -46,7 +47,7 @@ var extractFunctions = function extractFunctions(arg) {
         arr.push(fn);
       });
     });
-  } else if ( Array.isArray(arg) ) {
+  } else if (Array.isArray(arg)) {
     forEach(arg, function (fn) {
       arr.push(fn);
     });
@@ -121,7 +122,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     enclose: function stampEnclose() {
       fixed.enclose = fixed.enclose
-        .concat( extractFunctions.apply(null, arguments) );
+        .concat(extractFunctions.apply(null, arguments));
       return this;
     }
   });
@@ -163,9 +164,24 @@ var compose = function compose() {
 };
 
 /**
+ * Check if an object is a stamp.
+ * @param {Object} obj An object to check.
+ * @returns {Boolean}
+ */
+var isStamp = function isStamp(obj) {
+  return (
+    typeof obj === 'function' &&
+    typeof obj.fixed === 'object' &&
+    typeof obj.methods === 'function' &&
+    typeof obj.state === 'function' &&
+    typeof obj.enclose === 'function'
+    );
+};
+
+/**
  * Take an old-fashioned JS constructor and return a stampit stamp
  * that you can freely compose with other stamps.
- * @param  {Function} Constructor 
+ * @param  {Function} Constructor
  * @return {Function}             A composable stampit factory
  *                                (aka stamp).
  */
@@ -188,6 +204,12 @@ module.exports = mixIn(stampit, {
    * @returns {Object}
    */
   mixIn: mixIn,
+  /**
+   * Check if an object is a stamp.
+   * @param {Object} obj An object to check.
+   * @returns {Boolean}
+   */
+  isStamp: isStamp,
 
   convertConstructor: convertConstructor
 });
