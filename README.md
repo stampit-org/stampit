@@ -258,11 +258,18 @@ Functions passed into `.enclose()` are called any time an
 object is instantiated. That happens when the stamp function
 is invoked, or when the `.create()` method is called.
 
-### stamp.create([arg1] [,arg2] [,arg3...]) ###
+### stamp.create([properties] [,arg2] [,arg3...]) ###
 
 Just like calling `stamp()`, `stamp.create()` invokes the object
-creation factory and returns a new instance. Arguments are passed
-to all the functions passed into `.enclose()`.
+creation factory and returns a new instance. The first argument
+is an object containing properties you wish to set on the new
+objects. The remaining arguments are passed to all `.enclose()`
+functions. **WARNING** Avoid using two different `.enclose()`
+functions that expect different arguments. `.enclose()`
+functions that take arguments should not be considered safe to
+compose with other `.enclose()` functions that also take
+arguments. Taking arguments with an `.enclose()` function is an
+anti-pattern that should be avoided, when possible.
 
 
 ## Utility methods ##
