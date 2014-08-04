@@ -7,46 +7,36 @@
  * http://opensource.org/licenses/MIT
  **/
 'use strict';
-var forEach = require('mout/array/forEach');
-var mixIn = require('mout/object/mixIn');
-var merge = require('mout/object/merge');
-var map = require('mout/array/map');
-var forOwn = require('mout/object/forOwn');
-var mixInChain = require('./mixinchain.js');
-var slice = [].slice;
-
-var create = function (o) {
-  if (arguments.length > 1) {
-    throw new Error('Object.create implementation only accepts the first parameter.');
-  }
-  function F() {}
-  F.prototype = o;
-  return new F();
-};
-
-if(!Array.isArray) {
-  Array.isArray = function (vArg) {
-    return Object.prototype.toString.call(vArg) === "[object Array]";
-  };
-}
+var forEach = require('mout/array/forEach'),
+  mixIn = require('mout/object/mixIn'),
+  merge = require('mout/object/merge'),
+  map = require('mout/array/map'),
+  forOwn = require('mout/object/forOwn'),
+  slice = require('mout/array/slice'),
+  isArray = require('mout/lang/isArray'),
+  isObject = require('mout/lang/isObject'),
+  isFunction = require('mout/lang/isFunction'),
+  toArray = require('mout/lang/toArray'),
+  createObject = require('mout/lang/createObject'),
+  mixInChain = require('./mixinchain.js');
 
 var extractFunctions = function extractFunctions(arg) {
   var arr = [],
-    args = [].slice.call(arguments);
+    args = toArray(arguments);
 
-  if (typeof arg === 'function') {
+  if ( isFunction(arg) ) {
     arr = map(args, function (fn) {
-      if (typeof fn === 'function') {
+      if ( isFunction(fn) ) {
         return fn;
       }
     });
-  } else if (typeof arg === 'object') {
+  } else if ( isObject(arg) ) {
     forEach(args, function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
     });
-  } else if ( Array.isArray(arg) ) {
+  } else if ( isArray(arg) ) {
     forEach(arg, function (fn) {
       arr.push(fn);
     });
@@ -76,14 +66,14 @@ var stampit = function stampit(methods, state, enclose) {
     },
 
     factory = function factory(properties) {
-      var state = merge({}, fixed.state),
-        instance = mixIn(create(fixed.methods || {}),
-          state, properties),
+      var state = merge({}, fixed.state, properties),
+        methods = fixed.methods || {},
+        instance = createObject(methods, state),
         closures = fixed.enclose,
-        args = slice.call(arguments, 1);
+        args = slice(arguments, 1);
 
       forEach(closures, function (fn) {
-        if (typeof fn === 'function') {
+        if ( isFunction(fn) ) {
           instance = fn.apply(instance, args) || instance;
         }
       });
@@ -100,7 +90,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var obj = fixed.methods || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(toArray(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
@@ -110,7 +100,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     state: function stampState() {
       var obj = fixed.state || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(toArray(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
@@ -136,7 +126,7 @@ var stampit = function stampit(methods, state, enclose) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 var compose = function compose() {
-  var args = [].slice.call(arguments),
+  var args = toArray(arguments),
     obj = stampit();
 
   forEach(args, function (source) {
