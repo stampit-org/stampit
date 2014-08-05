@@ -285,7 +285,7 @@ properties with last-in priority.
 * `@return {Function}` A new stamp composed from arguments.
 
 
-### stampit.mixIn() ###
+### stampit.mixIn(destObj, source1 [, sourc2] [, source3]...) ###
 
 Take a destination object followed by one or more source objects,
 and copy the source object properties to the destination object,
@@ -299,6 +299,14 @@ with last in priority overrides.
 ### stampit.extend() ###
 
 Alias for `mixIn`.
+
+
+### stampit.isStamp(obj) ###
+
+Take an object and return true if it's a stamp, false otherwise.
+
+* `@param {Object} destination` An object to copy properties to.
+* `@returns {Boolean}`
 
 
 ### stampit.convertConstructor() ###
