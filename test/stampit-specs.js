@@ -323,3 +323,14 @@ test('Deep state instance safety', function () {
   o1.deep.foo = 'instance safety';
   notEqual(o1.deep.foo, o2.deep.foo);
 });
+
+test('stampit.composeWith()', function () {
+  var fooStamp = stampit({}, { foo: 1, bar: 1 });
+  var barStamp = stampit({}, { foo: 2, baz: 2 });
+
+  var obj = fooStamp.composeWith(barStamp).create();
+
+  equal(obj.foo, 2);
+  equal(obj.bar, 1);
+  equal(obj.baz, 2);
+});
