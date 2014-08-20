@@ -192,6 +192,31 @@ var obj = stampit().enclose(function () {
 obj.getSecret && obj.a && obj.b && obj.c; // true
 ```
 
+And `.composeWith()` ...
+
+```js
+var stamp1 = stampit({
+  methodOverride: function () {
+    return false;
+  }
+}, {
+  stateOverride: 'foo'
+}, function () {
+  console.log('invoke 1');
+});
+var stamp2 = stampit().methods({
+  methodOverride: function () {
+    return true;
+  }
+}, {
+  stateOverride: 'bar'
+}, function () {
+  console.log('invoke 2');
+});
+stamp1.composeWith(stamp2);
+stamp1.create(); // outputs 'invoke 1' and 'invoke 2'.
+```
+
 ## Pass multiple objects into .methods(), .state(), or .enclose()
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. The properties from later arguments in the list will override the same named properties of previously passed in objects.
@@ -239,24 +264,35 @@ prototypes that are passed in or composed.
 ### stamp.methods() ###
 
 Take n objects and add them to the methods prototype.
-* @return {Object} stamp  The stamp in question (`this`).
+`* @return {Object} stamp`  The stamp in question (`this`).
 
 
 ### stamp.state() ###
 
 Take n objects and add them to the state prototype.
-* @return {Object} stamp  The stamp in question (`this`).
+`* @return {Object} stamp`  The stamp in question (`this`).
 
 
 ### stamp.enclose([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
 the functions to the enclose prototype.
-* @return {Object} stamp  The stamp in question (`this`).
+* `@return {Object} stamp`  The stamp in question (`this`).
 
 Functions passed into `.enclose()` are called any time an
 object is instantiated. That happens when the stamp function
 is invoked, or when the `.create()` method is called.
+
+
+### stamp.composeWith([stamps]) ###
+
+Take one or more stamps produced from stampit() and
+combine them to the stamp in question. Combining overrides
+properties with last-in priority.
+
+* `@param {[Function]|...Function} stamps` Any number of stamps.
+* `@return {Object} stamp`  The stamp in question (`this`).
+
 
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
@@ -281,7 +317,7 @@ Take two or more stamps produced from stampit() and
 combine them to produce a new stamp. Combining overrides
 properties with last-in priority.
 
-* `@param {...Function} stamp` any number of stamps.
+* `@param {[Function]|...Function} stamps` Any number of stamps.
 * `@return {Function}` A new stamp composed from arguments.
 
 

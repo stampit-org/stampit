@@ -124,6 +124,38 @@ var stampit = function stampit(methods, state, enclose) {
       fixed.enclose = fixed.enclose
         .concat(extractFunctions.apply(null, arguments));
       return this;
+    },
+    /**
+     * Takes one or more factories produced from stampit() and
+     * combine them to this factory. Combining overrides
+     * properties with last-in priority.
+     *
+     * @param {[Function]|...Function} factories Stampit factories.
+     * @return {Object} stamp  The factory in question (`this`).
+     */
+    composeWith: function composeWith(factories) {
+      var args = Array.isArray(factories) ? factories : [].slice.call(arguments),
+        obj = this;
+
+      forEach(args, function (source) {
+        if (source) {
+          if (source.fixed.methods) {
+            obj.fixed.methods = mixInChain({}, obj.fixed.methods,
+              source.fixed.methods);
+          }
+
+          if (source.fixed.state) {
+            obj.fixed.state = mixIn({}, obj.fixed.state,
+              source.fixed.state);
+          }
+
+          if (source.fixed.enclose) {
+            obj.fixed.enclose = obj.fixed.enclose
+              .concat(source.fixed.enclose);
+          }
+        }
+      });
+      return this;
     }
   });
 };
@@ -133,34 +165,12 @@ var stampit = function stampit(methods, state, enclose) {
  * combine them to produce a new factory. Combining overrides
  * properties with last-in priority.
  *
- * @param {...Function} factory A factory produced by stampit().
+ * @param {[Function]|...Function} factories A factory produced by stampit().
  * @return {Function} A new stampit factory composed from arguments.
  */
-var compose = function compose() {
-  var args = [].slice.call(arguments),
-    obj = stampit();
-
-  forEach(args, function (source) {
-    if (source) {
-      if (source.fixed.methods) {
-        obj.fixed.methods = mixInChain({}, obj.fixed.methods,
-          source.fixed.methods);
-      }
-
-      if (source.fixed.state) {
-        obj.fixed.state = mixIn({}, obj.fixed.state,
-          source.fixed.state);
-      }
-
-      if (source.fixed.enclose) {
-        obj.fixed.enclose = obj.fixed.enclose
-          .concat(source.fixed.enclose);
-      }
-    }
-  });
-
-  return stampit(obj.fixed.methods, obj.fixed.state,
-    obj.fixed.enclose);
+var compose = function compose(factories) {
+  return stampit().composeWith(
+    Array.isArray(factories) ? factories : [].slice.call(arguments));
 };
 
 /**
