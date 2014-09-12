@@ -15,7 +15,10 @@ var forOwn = require('mout/object/forOwn');
 var mixInChain = require('./mixinchain.js');
 var slice = [].slice;
 
-var create = function (o) {
+// Avoiding JSHist W003 violations.
+var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
+
+create = function (o) {
   if (arguments.length > 1) {
     throw new Error('Object.create implementation only accepts the first parameter.');
   }
@@ -31,28 +34,25 @@ if (!Array.isArray) {
   };
 }
 
-var extractFunctions = function extractFunctions(arg) {
-  var arr = [],
-    args = [].slice.call(arguments);
-
+extractFunctions = function extractFunctions(arg) {
   if (typeof arg === 'function') {
-    arr = map(args, function (fn) {
+    return map(slice.call(arguments), function (fn) {
       if (typeof fn === 'function') {
         return fn;
       }
     });
   } else if (typeof arg === 'object') {
-    forEach(args, function (obj) {
+    var arr = [];
+    forEach(slice.call(arguments), function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
     });
+    return arr;
   } else if (Array.isArray(arg)) {
-    forEach(arg, function (fn) {
-      arr.push(fn);
-    });
+    return slice.call(arg);
   }
-  return arr;
+  return [];
 };
 
 /**
@@ -69,7 +69,7 @@ var extractFunctions = function extractFunctions(arg) {
  * @return {Function} factory.state Add properties to the state prototype. Chainable.
  * @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
  */
-var stampit = function stampit(methods, state, enclose) {
+stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
       state: state,
@@ -101,7 +101,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var obj = fixed.methods || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
@@ -111,56 +111,62 @@ var stampit = function stampit(methods, state, enclose) {
      */
     state: function stampState() {
       var obj = fixed.state || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
     /**
      * Take n functions, an array of functions, or n objects and add
      * the functions to the enclose prototype.
-     * @return {Object} stamp  The factory in question (`this`).
+     * @return {Object} The factory in question (`this`).
      */
     enclose: function stampEnclose() {
       fixed.enclose = fixed.enclose
         .concat(extractFunctions.apply(null, arguments));
       return this;
+    },
+    /**
+     * Take one or more factories produced from stampit() and
+     * combine them with `this` to produce and return a new factory.
+     * Combining overrides properties with last-in priority.
+     * @param {[Function]|...Function} factories Stampit factories.
+     * @return {Function} A new stampit factory composed from arguments.
+     */
+    compose: function (factories) {
+      var args = Array.isArray(factories) ? factories : slice.call(arguments);
+      args = [this].concat(args);
+      return compose(args);
     }
   });
 };
 
 /**
  * Take two or more factories produced from stampit() and
- * combine them to produce a new factory. Combining overrides
- * properties with last-in priority.
- *
- * @param {...Function} factory A factory produced by stampit().
+ * combine them to produce a new factory.
+ * Combining overrides properties with last-in priority.
+ * @param {[Function]|...Function} factories A factory produced by stampit().
  * @return {Function} A new stampit factory composed from arguments.
  */
-var compose = function compose() {
-  var args = [].slice.call(arguments),
-    obj = stampit();
-
-  forEach(args, function (source) {
-    if (source) {
+compose = function compose(factories) {
+  factories = Array.isArray(factories) ? factories : slice.call(arguments);
+  var result = stampit(),
+    f = result.fixed;
+  forEach(factories, function (source) {
+    if (source && source.fixed) {
       if (source.fixed.methods) {
-        obj.fixed.methods = mixInChain({}, obj.fixed.methods,
-          source.fixed.methods);
+        f.methods = mixInChain(f.methods, source.fixed.methods);
       }
 
       if (source.fixed.state) {
-        obj.fixed.state = mixIn({}, obj.fixed.state,
-          source.fixed.state);
+        f.state = mixIn(f.state || {}, source.fixed.state);
       }
 
       if (source.fixed.enclose) {
-        obj.fixed.enclose = obj.fixed.enclose
-          .concat(source.fixed.enclose);
+        f.enclose = f.enclose.concat(source.fixed.enclose);
       }
     }
   });
-
-  return stampit(obj.fixed.methods, obj.fixed.state,
-    obj.fixed.enclose);
+  return result;
 };
 
 /**
@@ -168,7 +174,7 @@ var compose = function compose() {
  * @param {Object} obj An object to check.
  * @returns {Boolean}
  */
-var isStamp = function isStamp(obj) {
+isStamp = function isStamp(obj) {
   return (
     typeof obj === 'function' &&
     typeof obj.fixed === 'object' &&
@@ -185,7 +191,7 @@ var isStamp = function isStamp(obj) {
  * @return {Function}             A composable stampit factory
  *                                (aka stamp).
  */
-var convertConstructor = function convertConstructor(Constructor) {
+convertConstructor = function convertConstructor(Constructor) {
   return stampit().methods(Constructor.prototype).enclose(Constructor);
 };
 
