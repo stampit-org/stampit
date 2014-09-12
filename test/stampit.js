@@ -553,27 +553,24 @@ if (!Array.isArray) {
 }
 
 var extractFunctions = function extractFunctions(arg) {
-  var arr = [],
-    args = [].slice.call(arguments);
-
   if (typeof arg === 'function') {
-    arr = map(args, function (fn) {
+    return map(slice.call(arguments), function (fn) {
       if (typeof fn === 'function') {
         return fn;
       }
     });
   } else if (typeof arg === 'object') {
-    forEach(args, function (obj) {
+    var arr = [];
+    forEach(slice.call(arguments), function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
     });
+    return arr;
   } else if (Array.isArray(arg)) {
-    forEach(arg, function (fn) {
-      arr.push(fn);
-    });
+    return slice.call(arg);
   }
-  return arr;
+  return [];
 };
 
 /**
@@ -622,7 +619,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var obj = fixed.methods || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
@@ -632,7 +629,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     state: function stampState() {
       var obj = fixed.state || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
@@ -658,30 +655,28 @@ var stampit = function stampit(methods, state, enclose) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 var compose = function compose() {
-  var args = [].slice.call(arguments),
-    obj = stampit();
+  var
+    methods = {},
+    state = {},
+    enclose = [];
 
-  forEach(args, function (source) {
+  forEach(slice.call(arguments), function (source) {
     if (source) {
       if (source.fixed.methods) {
-        obj.fixed.methods = mixInChain({}, obj.fixed.methods,
-          source.fixed.methods);
+        methods = mixInChain({}, methods, source.fixed.methods);
       }
 
       if (source.fixed.state) {
-        obj.fixed.state = mixIn({}, obj.fixed.state,
-          source.fixed.state);
+        state = mixIn({}, state, source.fixed.state);
       }
 
       if (source.fixed.enclose) {
-        obj.fixed.enclose = obj.fixed.enclose
-          .concat(source.fixed.enclose);
+        enclose = enclose.concat(source.fixed.enclose);
       }
     }
   });
 
-  return stampit(obj.fixed.methods, obj.fixed.state,
-    obj.fixed.enclose);
+  return stampit(methods, state, enclose);
 };
 
 /**
