@@ -33,7 +33,7 @@ if (!Array.isArray) {
 
 var extractFunctions = function extractFunctions(arg) {
   var arr = [],
-    args = [].slice.call(arguments);
+    args = slice.call(arguments);
 
   if (typeof arg === 'function') {
     arr = map(args, function (fn) {
@@ -101,7 +101,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var obj = fixed.methods || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.methods = mixInChain.apply(this, args);
       return this;
     },
@@ -111,7 +111,7 @@ var stampit = function stampit(methods, state, enclose) {
      */
     state: function stampState() {
       var obj = fixed.state || {},
-        args = [obj].concat([].slice.call(arguments));
+        args = [obj].concat(slice.call(arguments));
       fixed.state = mixIn.apply(this, args);
       return this;
     },
@@ -137,7 +137,7 @@ var stampit = function stampit(methods, state, enclose) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 var compose = function compose() {
-  var args = [].slice.call(arguments),
+  var args = slice.call(arguments),
     obj = stampit();
 
   forEach(args, function (source) {
