@@ -155,7 +155,7 @@ var myStamp = stampit().methods({
   methodOverride: function () {
     return true;
   }
-}).create();
+});
 ```
 
 And `.state()` ...
@@ -167,7 +167,7 @@ myStamp.state({
 }).state({
   bar: 'bar',
   stateOverride: true
-}).create();
+});
 ```
 
 And `.enclose()` ...
@@ -189,8 +189,9 @@ myStamp.enclose(function () {
   baz: function baz() {
     this.c = true;
   }
-}).create();
+});
 
+var obj = myStamp.create();
 obj.getSecret && obj.a && obj.b && obj.c; // true
 ```
 
