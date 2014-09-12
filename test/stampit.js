@@ -537,7 +537,7 @@ var mixInChain = _dereq_('./mixinchain.js');
 var slice = [].slice;
 
 // Avoiding JSHist W003 violations.
-var create, extractFunctions, stampit, composeThis, compose, isStamp, convertConstructor;
+var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
 
 create = function (o) {
   if (arguments.length > 1) {
@@ -639,7 +639,7 @@ stampit = function stampit(methods, state, enclose) {
     /**
      * Take n functions, an array of functions, or n objects and add
      * the functions to the enclose prototype.
-     * @return {Object} stamp  The factory in question (`this`).
+     * @return {Object} The factory in question (`this`).
      */
     enclose: function stampEnclose() {
       fixed.enclose = fixed.enclose
@@ -648,38 +648,17 @@ stampit = function stampit(methods, state, enclose) {
     },
     /**
      * Take two or more factories produced from stampit() and
-     * combine them with `this` one to produce a new factory.
+     * combine them with `this` to produce and return a new factory.
      * Combining overrides properties with last-in priority.
      * @param {[Function]|...Function} factories Stampit factories.
-     * @return {Object} stamp  The factory in question (`this`).
+     * @return {Function} A new stampit factory composed from arguments.
      */
-    compose: function stampCompose(factories) {
+    compose: function (factories) {
       var args = Array.isArray(factories) ? factories : slice.call(arguments);
-      return composeThis(this, args);
+      args = [this].concat(args);
+      return compose(args);
     }
   });
-};
-
-composeThis = function composeThis(self, factories) {
-  forEach(factories, function (source) {
-    if (source && source.fixed) {
-      if (source.fixed.methods) {
-        self.fixed.methods =
-          mixInChain(self.fixed.methods, source.fixed.methods);
-      }
-
-      if (source.fixed.state) {
-        self.fixed.state =
-          mixIn(self.fixed.state || {}, source.fixed.state);
-      }
-
-      if (source.fixed.enclose) {
-        self.fixed.enclose =
-          self.fixed.enclose.concat(source.fixed.enclose);
-      }
-    }
-  });
-  return self;
 };
 
 /**
@@ -690,8 +669,25 @@ composeThis = function composeThis(self, factories) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 compose = function compose(factories) {
-  var args = Array.isArray(factories) ? factories : slice.call(arguments);
-  return composeThis(stampit(), args);
+  factories = Array.isArray(factories) ? factories : slice.call(arguments);
+  var result = stampit(),
+    f = result.fixed;
+  forEach(factories, function (source) {
+    if (source && source.fixed) {
+      if (source.fixed.methods) {
+        f.methods = mixInChain(f.methods, source.fixed.methods);
+      }
+
+      if (source.fixed.state) {
+        f.state = mixIn(f.state || {}, source.fixed.state);
+      }
+
+      if (source.fixed.enclose) {
+        f.enclose = f.enclose.concat(source.fixed.enclose);
+      }
+    }
+  });
+  return result;
 };
 
 /**
