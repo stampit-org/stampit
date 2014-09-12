@@ -647,7 +647,7 @@ stampit = function stampit(methods, state, enclose) {
       return this;
     },
     /**
-     * Take two or more factories produced from stampit() and
+     * Take one or more factories produced from stampit() and
      * combine them with `this` to produce and return a new factory.
      * Combining overrides properties with last-in priority.
      * @param {[Function]|...Function} factories Stampit factories.

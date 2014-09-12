@@ -136,10 +136,12 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 ## More chaining
 
-You can chain `.methods()` ...
+You can change the stamp in question (`this`) using chaining methods.
+
+Chain `.methods()` ...
 
 ```js
-var obj = stampit().methods({
+var myStamp = stampit().methods({
   foo: function () {
     return 'foo';
   },
@@ -159,7 +161,7 @@ var obj = stampit().methods({
 And `.state()` ...
 
 ```js
-var obj = stampit().state({
+myStamp.state({
   foo: {bar: 'bar'},
   stateOverride: false
 }).state({
@@ -171,7 +173,7 @@ var obj = stampit().state({
 And `.enclose()` ...
 
 ```js
-var obj = stampit().enclose(function () {
+myStamp.enclose(function () {
   var secret = 'foo';
 
   this.getSecret = function () {
@@ -192,7 +194,13 @@ var obj = stampit().enclose(function () {
 obj.getSecret && obj.a && obj.b && obj.c; // true
 ```
 
-## Pass multiple objects into .methods(), .state(), or .enclose()
+And `.compose()`. But unlike the other chaining methods this one creates a new stamp object.
+
+```js
+var newStamp = baseStamp.compose(myStamp);
+```
+
+## Pass multiple objects into .methods(), .state(), .enclose(), or .compose().
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
@@ -214,6 +222,12 @@ Or `.state()` ...
   }).create();
 ```
 
+Or even `.compose()` ...
+
+```js
+  var obj = abstractStamp.compose(concreteStamp, additionalStamp, utilityStamp).create();
+```
+
 # Stampit API #
 
 **Source: stampit.js**
@@ -232,31 +246,41 @@ prototypes that are passed in or composed.
 * `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
 * `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
 * `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
+* `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
 
 
 ## The stamp object ##
 
 ### stamp.methods() ###
 
-Take n objects and add them to the methods prototype.
+Take n objects and add them to the methods prototype. Changes `this` object.
 * @return {Object} stamp  The stamp in question (`this`).
 
 
 ### stamp.state() ###
 
-Take n objects and add them to the state prototype.
+Take n objects and add them to the state prototype. Changes `this` object.
 * @return {Object} stamp  The stamp in question (`this`).
 
 
 ### stamp.enclose([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
-the functions to the enclose prototype.
+the functions to the enclose prototype. Changes `this` object.
 * @return {Object} stamp  The stamp in question (`this`).
 
 Functions passed into `.enclose()` are called any time an
 object is instantiated. That happens when the stamp function
 is invoked, or when the `.create()` method is called.
+
+
+### stamp.compose([arg1] [,arg2] [,arg3...]) ###
+
+Take one or more factories produced from stampit() and
+combine them with `this` to produce and return a new factory object.
+Combining overrides properties with last-in priority.
+ * @return {Function} A new stampit factory composed from arguments.
+
 
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
