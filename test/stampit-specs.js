@@ -159,6 +159,34 @@ test('stampit().enclose()', function () {
     'Should allow chaining and take object literals.');
 });
 
+test('stampit().compose()', function () {
+  var closuresCalled = 0,
+    a = stampit({
+        method: function () {
+          return false;
+        }
+      },
+      { state: false },
+      function () {
+        closuresCalled++;
+      }),
+    b = stampit({
+        method: function () {
+          return true;
+        }
+      },
+      { state: true },
+      function () {
+        closuresCalled++;
+      }),
+    d;
+
+  d = a.compose(b).create();
+
+  ok(d.method() && d.state, 'Last stamp must win.');
+  equal(closuresCalled, 2, 'Each stamp closure must be called.');
+});
+
 test('stampit.compose()', function () {
   var a = stampit({
         methodA: function () {
