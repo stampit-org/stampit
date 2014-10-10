@@ -9,6 +9,11 @@ Stampit was written as an example for the book, ["Programming JavaScript Applica
 [Known Issues](https://github.com/dilvie/stampit/issues?state=open)
 
 
+## Contribute
+
+[![Hack ericelliott/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=ericelliott%2Fstampit&file_to_open=README.md)
+
+
 ## Features
 
  * Create factory functions (called stamps) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
