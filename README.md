@@ -16,6 +16,21 @@ Press the hack button to open this project in the Nitrous.IO online IDE.
 
 [![Hack ericelliott/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=ericelliott%2Fstampit&file_to_open=README.md)
 
+## Install
+
+Stampit can be [installed via npm](https://www.npmjs.com/package/stampit)
+
+```shell
+npm install stampit
+```
+
+or bower
+
+```shell
+bower install stampit
+```
+
+or by [downloading the latest release](https://github.com/ericelliott/stampit/releases).
 
 ## Features
 
