@@ -5,7 +5,7 @@ Create objects from reusable, composable behaviors.
 
 ## Status
 
-Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://ericleads.com/javascript-applications/), but it has been in production use for more than a year. The API has been quite stable. There will be no breaking changes going forward.
+Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com), but it has been in production use with millions of monthly users for more than a year. The API has been quite stable. There will be no breaking changes going forward.
 
 [Known Issues](https://github.com/dilvie/stampit/issues?state=open)
 
