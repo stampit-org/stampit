@@ -34,6 +34,10 @@ bower install stampit
 
 or [gem install](https://github.com/brettimus/stampitjs-rails)
 
+```shell
+gem install stampitjs-rails
+```
+
 or by [downloading the latest release](https://github.com/ericelliott/stampit/releases).
 
 ## Features
