@@ -598,9 +598,8 @@ stampit = function stampit(methods, state, enclose) {
     },
 
     factory = function factory(properties) {
-      var state = merge({}, fixed.state),
-        instance = mixIn(create(fixed.methods || {}),
-          state, properties),
+      var state = merge({}, fixed.state, properties),
+        instance = mixIn(create(fixed.methods || {}), state),
         closures = fixed.enclose,
         args = slice.call(arguments, 1);
 
@@ -631,9 +630,8 @@ stampit = function stampit(methods, state, enclose) {
      * @return {Object} stamp  The factory in question (`this`).
      */
     state: function stampState() {
-      var obj = fixed.state || {},
-        args = [obj].concat(slice.call(arguments));
-      fixed.state = mixIn.apply(this, args);
+      var args = [fixed.state || {}].concat(slice.call(arguments));
+      fixed.state = merge.apply(this, args);
       return this;
     },
     /**
@@ -679,7 +677,7 @@ compose = function compose(factories) {
       }
 
       if (source.fixed.state) {
-        f.state = mixIn(f.state || {}, source.fixed.state);
+        f.state = merge(f.state || {}, source.fixed.state);
       }
 
       if (source.fixed.enclose) {
