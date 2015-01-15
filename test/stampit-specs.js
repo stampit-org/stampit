@@ -338,16 +338,103 @@ test('stampit.isStamp() with non stamps', function () {
     'Should not be seen as stamp.');
 });
 
-test('Deep state instance safety', function () {
-  // Make factory with some default state
+test('State is being cloned on object creation', function () {
+  var stamp1 = stampit().state({ foo: 'foo', bar: 'bar' });
+  var stamp2 = stampit(null, { foo: 'foo', bar: 'bar' });
+
+  var o1 = stamp1();
+  var o2 = stamp1();
+  o1.foo = 'instance safety';
+  notEqual(o1.foo, o2.foo);
+
+  o1 = stamp2();
+  o2 = stamp2();
+  o1.foo = 'instance safety';
+  notEqual(o1.foo, o2.foo);
+});
+
+test('Deep state is being cloned on object creation', function () {
   var deep = {foo: 'foo', bar: 'bar'};
-  var stamp = stampit().state({deep: deep, baz: 'baz'});
+  var stamp1 = stampit().state({ deep: deep, baz: 'baz' });
+  var stamp2 = stampit(null, { deep: deep, baz: 'baz' });
 
-  // Create two instances
-  var o1 = stamp();
-  var o2 = stamp();
-
-  // Change one of the deep properties
+  var o1 = stamp1();
+  var o2 = stamp1();
   o1.deep.foo = 'instance safety';
   notEqual(o1.deep.foo, o2.deep.foo);
+
+  o1 = stamp2();
+  o2 = stamp2();
+  o1.deep.foo = 'instance safety';
+  notEqual(o1.deep.foo, o2.deep.foo);
+});
+
+test('The stamp(state) is merged into object created', function () {
+  var stamp1 = stampit().state({ foo: 'foo', bar: 'bar' });
+  var stamp2 = stampit(null, { foo: 'foo', bar: 'bar' });
+
+  var o1 = stamp1({ foo: 'override', baz: 'baz' });
+  var o2 = stamp2({ foo: 'override', baz: 'baz' });
+
+  equal(o1.foo, 'override');
+  equal(o1.bar, 'bar');
+  equal(o1.baz, 'baz');
+  equal(o2.foo, 'override');
+  equal(o2.bar, 'bar');
+  equal(o2.baz, 'baz');
+});
+
+test('The stamp(state) is deep merged into object created', function () {
+  var stamp1 = stampit().state({ deep: { foo: 'foo', bar: 'bar' } });
+  var stamp2 = stampit(null, { deep: { foo: 'foo', bar: 'bar' } });
+
+  var o1 = stamp1({ deep: { foo: 'override', baz: 'baz' } });
+  var o2 = stamp2({ deep: { foo: 'override', baz: 'baz' } });
+
+  equal(o1.deep.foo, 'override');
+  equal(o1.deep.bar, 'bar');
+  equal(o1.deep.baz, 'baz');
+  equal(o2.deep.foo, 'override');
+  equal(o2.deep.bar, 'bar');
+  equal(o2.deep.baz, 'baz');
+});
+
+test('The stampit.state(state) is merged into stamp', function () {
+  var stamp = stampit().state({ foo: 'foo', bar: 'bar' });
+  stamp.state({ foo: 'override', baz: 'baz' });
+  var o = stamp();
+
+  equal(o.foo, 'override');
+  equal(o.bar, 'bar');
+  equal(o.baz, 'baz');
+});
+
+test('The stampit.state(state) is deep merged into stamp', function () {
+  var stamp = stampit().state({ deep: { foo: 'foo', bar: 'bar' } });
+  stamp.state({ deep: { foo: 'override', baz: 'baz' } });
+  var o = stamp();
+
+  equal(o.deep.foo, 'override');
+  equal(o.deep.bar, 'bar');
+  equal(o.deep.baz, 'baz');
+});
+
+test('The stamp.compose() should merge state', function () {
+  var stamp = stampit(null, { foo: 'foo', bar: 'bar' })
+    .compose(stampit(null, { foo: 'override', baz: 'baz' }));
+  var o = stamp();
+
+  equal(o.foo, 'override');
+  equal(o.bar, 'bar');
+  equal(o.baz, 'baz');
+});
+
+test('The stamp.compose() should deep merge state', function () {
+  var stamp = stampit(null, { deep: { foo: 'foo', bar: 'bar' } })
+    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' } }));
+  var o = stamp();
+
+  equal(o.deep.foo, 'override');
+  equal(o.deep.bar, 'bar');
+  equal(o.deep.baz, 'baz');
 });
