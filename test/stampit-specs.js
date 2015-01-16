@@ -285,14 +285,16 @@ module('Oldskool');
 
 test('stampit.convertConstructor()', function () {
   // The old constructor / class thing...
+  var BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
+  var Base = function () { this.base = 'base'; };
+  Base.prototype = new BaseOfBase();
   var Constructor = function Constructor() {
     this.thing = 'initialized';
   };
+  Constructor.prototype = new Base();
   Constructor.prototype.foo = function foo() {
     return 'foo';
   };
-  Constructor.prototype.__proto__ = { base: 'base' };
-  Constructor.prototype.__proto__.__proto__ = { baseOfBase: 'baseOfBase' };
 
   // The conversion
   var oldskool = stampit.convertConstructor(Constructor);
@@ -322,7 +324,7 @@ test('stampit.convertConstructor()', function () {
     'Constructor prototype should be mixed in.');
 
   equal(t.base, 'base',
-    'Prototype chain should be mixed in.');
+    'Prototype should be mixed in.');
 
   equal(t.baseOfBase, 'baseOfBase',
     'Prototype chain should be mixed in.');
@@ -340,7 +342,7 @@ test('stampit.convertConstructor()', function () {
     'Constructor prototype should be mixed in.');
 
   equal(u.base, 'base',
-    'Prototype chain should be mixed in.');
+    'Prototype should be mixed in.');
 
   equal(u.baseOfBase, 'baseOfBase',
     'Prototype chain should be mixed in.');

@@ -71,14 +71,14 @@ extractFunctions = function extractFunctions(arg) {
  */
 stampit = function stampit(methods, state, enclose) {
   var fixed = {
-      methods: methods || {},
-      state: state,
+      methods: mixIn({}, methods),
+      state: merge({}, state),
       enclose: extractFunctions(enclose)
     },
 
     factory = function factory(properties) {
       var state = merge({}, fixed.state, properties),
-        instance = mixIn(create(fixed.methods || {}), state),
+        instance = mixIn(create(fixed.methods), state),
         closures = fixed.enclose,
         args = slice.call(arguments, 1);
 
@@ -99,9 +99,8 @@ stampit = function stampit(methods, state, enclose) {
      * @return {Object} stamp  The factory in question (`this`).
      */
     methods: function stampMethods() {
-      var obj = fixed.methods || {},
-        args = [obj].concat(slice.call(arguments));
-      fixed.methods = mixInChain.apply(this, args);
+      var args = [fixed.methods].concat(slice.call(arguments));
+      fixed.methods = mixIn.apply(this, args);
       return this;
     },
     /**
@@ -109,7 +108,7 @@ stampit = function stampit(methods, state, enclose) {
      * @return {Object} stamp  The factory in question (`this`).
      */
     state: function stampState() {
-      var args = [fixed.state || {}].concat(slice.call(arguments));
+      var args = [fixed.state].concat(slice.call(arguments));
       fixed.state = merge.apply(this, args);
       return this;
     },
@@ -152,7 +151,7 @@ compose = function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       if (source.fixed.methods) {
-        f.methods = mixInChain(f.methods, source.fixed.methods);
+        f.methods = mixIn(f.methods, source.fixed.methods);
       }
 
       if (source.fixed.state) {
@@ -190,7 +189,10 @@ isStamp = function isStamp(obj) {
  *                                (aka stamp).
  */
 convertConstructor = function convertConstructor(Constructor) {
-  return stampit().methods(Constructor.prototype).enclose(Constructor);
+  var stamp = stampit();
+  mixInChain(stamp.fixed.methods, Constructor.prototype);
+  stamp.enclose(Constructor);
+  return stamp;
 };
 
 module.exports = mixIn(stampit, {
