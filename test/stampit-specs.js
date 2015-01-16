@@ -1,5 +1,8 @@
 'use strict';
 /*global test, equal, ok, stampit, notEqual*/
+
+module('Basics');
+
 test('stampit()', function () {
   equal(typeof stampit(), 'function',
     'Should produce a function.');
@@ -41,6 +44,8 @@ test('factory args', function () {
   equal(obj.getB(), 'b',
     'Should pass variables to closures.');
 });
+
+module('Basics Methods');
 
 test('stampit(methods)', function () {
   var obj = stampit({
@@ -87,6 +92,8 @@ test('stampit().methods(a, b)', function () {
     'Should mixIn objects when multiple methods are passed.');
 });
 
+module('Basics State');
+
 test('stampit({}, state)', function () {
   var obj = stampit({}, {
     foo: {bar: 'bar'}
@@ -121,6 +128,8 @@ test('stampit().state(a, b)', function () {
   ok(obj.a && obj.b,
     'Should mixIn objects when multiple methods are passed.');
 });
+
+module('Basics Enclose');
 
 test('stampit({}, {}, enclose)', function () {
   var obj = stampit({}, {}, function () {
@@ -158,6 +167,32 @@ test('stampit().enclose()', function () {
   ok(obj.a && obj.b && obj.c,
     'Should allow chaining and take object literals.');
 });
+
+module('Basics isStamp');
+
+test('stampit.isStamp() with stamps', function () {
+  var emptyStamp = stampit();
+  var stateOnlyStamp = stampit().state({ a: 'b' });
+  var methodsOnlyStamp = stampit({ method: function () { }});
+  var closureOnlyStamp = stampit().enclose(function () { });
+
+  ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
+  ok(stampit.isStamp(stateOnlyStamp), 'State only stamp should be seen as stamp.');
+  ok(stampit.isStamp(methodsOnlyStamp), 'Methods only stamp should be seen as stamp.');
+  ok(stampit.isStamp(closureOnlyStamp), 'Closure only stamp should be seen as stamp.');
+});
+
+test('stampit.isStamp() with non stamps', function () {
+  var obj1;
+  var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
+  var obj3 = function () { this.enclose = this; };
+  var obj4 = function () { this.fixed = function () {}; };
+
+  ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
+    'Should not be seen as stamp.');
+});
+
+module('Compose');
 
 test('stampit().compose()', function () {
   var closuresCalled = 0,
@@ -233,6 +268,37 @@ test('stampit.compose()', function () {
     'Should compose all factory prototypes');
 });
 
+test('stampit.compose() with inheritance', function () {
+  var c, i, m, n1, N2, sm, sn;
+  var stateProto = {stateProto: true};
+  var state = stampit(stateProto).create();
+
+  // create an object with a prototype
+  N2 = function() {};
+  N2.prototype = {n2: true};
+
+  n1 = new N2();
+  n1.n1 = true;
+
+  // create a mixin that will get merged
+  m = {m: true};
+
+  state.state = true;
+
+  // create and compose stampit objects
+  sn = stampit(n1);
+  sm = stampit(m);
+  c = stampit.compose(sn, sm).state(state);
+
+  // create instance
+  i = c();
+
+  ok(i.n1 && i.n2 && i.m, 'Should flatten nested prototypes.');
+
+  equal(i.stateProto, undefined,
+    'Should not flatten state prototypes.');
+});
+
 test('stampit.convertConstructor()', function () {
   // The old constructor / class thing...
   var Constructor = function Constructor() {
@@ -245,11 +311,11 @@ test('stampit.convertConstructor()', function () {
 
   // A new stamp to compose with...
   var newskool = stampit().methods({
-      bar: function bar() { return 'bar'; }
-     // your methods here...
-    }).enclose(function () {
-      this.baz = 'baz';
-    });
+    bar: function bar() { return 'bar'; }
+    // your methods here...
+  }).enclose(function () {
+    this.baz = 'baz';
+  });
 
   // Now you can compose those old constructors just like you could
   // with any other factory...
@@ -282,61 +348,9 @@ test('stampit.convertConstructor()', function () {
 
   equal(u.baz, 'baz',
     'Should be able to add new methods with .compose()');
-
 });
 
-test('stampit.compose() with inheritance', function () {
-  var c, i, m, n1, N2, sm, sn;
-  var stateProto = {stateProto: true};
-  var state = stampit(stateProto).create();
-
-  // create an object with a prototype
-  N2 = function() {};
-  N2.prototype = {n2: true};
-
-  n1 = new N2();
-  n1.n1 = true;
-
-  // create a mixin that will get merged
-  m = {m: true};
-
-  state.state = true;
-
-  // create and compose stampit objects
-  sn = stampit(n1);
-  sm = stampit(m);
-  c = stampit.compose(sn, sm).state(state);
-
-  // create instance
-  i = c();
-
-  ok(i.n1 && i.n2 && i.m, 'Should flatten nested prototypes.');
-
-  equal(i.stateProto, undefined,
-    'Should not flatten state prototypes.');
-});
-
-test('stampit.isStamp() with stamps', function () {
-  var emptyStamp = stampit();
-  var stateOnlyStamp = stampit().state({ a: 'b' });
-  var methodsOnlyStamp = stampit({ method: function () { }});
-  var closureOnlyStamp = stampit().enclose(function () { });
-
-  ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
-  ok(stampit.isStamp(stateOnlyStamp), 'State only stamp should be seen as stamp.');
-  ok(stampit.isStamp(methodsOnlyStamp), 'Methods only stamp should be seen as stamp.');
-  ok(stampit.isStamp(closureOnlyStamp), 'Closure only stamp should be seen as stamp.');
-});
-
-test('stampit.isStamp() with non stamps', function () {
-  var obj1;
-  var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
-  var obj3 = function () { this.enclose = this; };
-  var obj4 = function () { this.fixed = function () {}; };
-
-  ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
-    'Should not be seen as stamp.');
-});
+module('State safety');
 
 test('State is being cloned on object creation', function () {
   var stamp1 = stampit().state({ foo: 'foo', bar: 'bar' });
