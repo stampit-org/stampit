@@ -102,6 +102,16 @@ module.exports = function(grunt) {
           src: 'dist/stampit.js',
           dest: 'dist/stampit.min.js'
       }
+    },
+
+    watch: {
+      options: {
+        livereload: true
+      },
+      scripts: {
+        files: ['./stampit.js', './test/stampit-specs.js', './mixinchain.js'],
+        tasks: ['default']
+      }
     }
   });
 
@@ -110,6 +120,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   // grunt.loadNpmTasks('grunt-lexicon');
 
   grunt.registerTask('hint', ['jshint']);
