@@ -20,29 +20,10 @@ test('.create()', function () {
 });
 
 test('.create(properties)', function () {
-  var obj = stampit({}, {foo: 'bar'});
-  obj = obj.create({foo: 'foo'});
+  var obj = stampit({}, { foo: 'bar' });
+  obj = obj.create({ foo: 'foo' });
   equal(obj.foo, 'foo',
     'should override defaults.');
-});
-
-test('factory args', function () {
-  var obj = stampit().enclose(function (a, b) {
-    var secretA = a;
-    var secretB = b;
-
-    this.getA = function () {
-      return secretA;
-    };
-    this.getB = function () {
-      return secretB;
-    };
-  }).create(null, 'a', 'b');
-
-  equal(obj.getA(), 'a',
-    'Should pass variables to closures.');
-  equal(obj.getB(), 'b',
-    'Should pass variables to closures.');
 });
 
 module('Basics Methods');
@@ -83,9 +64,13 @@ test('stampit().methods()', function () {
 
 test('stampit().methods(a, b)', function () {
   var obj = stampit().methods({
-    a: function () { return 'a'; }
+    a: function () {
+      return 'a';
+    }
   }, {
-    b: function () { return 'b'; }
+    b: function () {
+      return 'b';
+    }
   }).create();
 
   ok(obj.a() === 'a' && obj.b() === 'b',
@@ -96,7 +81,7 @@ module('Basics State');
 
 test('stampit({}, state)', function () {
   var obj = stampit({}, {
-    foo: {bar: 'bar'}
+    foo: { bar: 'bar' }
   }).create();
   equal(obj.foo.bar, 'bar',
     'Should set default state.');
@@ -104,7 +89,7 @@ test('stampit({}, state)', function () {
 
 test('stampit().state()', function () {
   var obj = stampit().state({
-    foo: {bar: 'bar'},
+    foo: { bar: 'bar' },
     stateOverride: false
   }).state({
     bar: 'bar',
@@ -168,13 +153,36 @@ test('stampit().enclose()', function () {
     'Should allow chaining and take object literals.');
 });
 
+test('stampit().enclose(args)', function () {
+  var obj = stampit().enclose(function (a, b) {
+    var secretA = a;
+    var secretB = b;
+
+    this.getA = function () {
+      return secretA;
+    };
+    this.getB = function () {
+      return secretB;
+    };
+  }).create(null, 'a', 'b');
+
+  equal(obj.getA(), 'a',
+    'Should pass variables to closures.');
+  equal(obj.getB(), 'b',
+    'Should pass variables to closures.');
+});
+
 module('Basics isStamp');
 
 test('stampit.isStamp() with stamps', function () {
   var emptyStamp = stampit();
   var stateOnlyStamp = stampit().state({ a: 'b' });
-  var methodsOnlyStamp = stampit({ method: function () { }});
-  var closureOnlyStamp = stampit().enclose(function () { });
+  var methodsOnlyStamp = stampit({
+    method: function () {
+    }
+  });
+  var closureOnlyStamp = stampit().enclose(function () {
+  });
 
   ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
   ok(stampit.isStamp(stateOnlyStamp), 'State only stamp should be seen as stamp.');
@@ -185,8 +193,13 @@ test('stampit.isStamp() with stamps', function () {
 test('stampit.isStamp() with non stamps', function () {
   var obj1;
   var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
-  var obj3 = function () { this.enclose = this; };
-  var obj4 = function () { this.fixed = function () {}; };
+  var obj3 = function () {
+    this.enclose = this;
+  };
+  var obj4 = function () {
+    this.fixed = function () {
+    };
+  };
 
   ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
     'Should not be seen as stamp.');
@@ -259,7 +272,7 @@ test('stampit.compose()', function () {
           return secret;
         };
       }), d;
-  
+
   d = stampit.compose(a, b, c).create();
 
   ok(d.methodA && d.stateA && d.getA &&
@@ -275,7 +288,9 @@ test('stampit.convertConstructor()', function () {
   var Constructor = function Constructor() {
     this.thing = 'initialized';
   };
-  Constructor.prototype.foo = function foo() { return 'foo'; };
+  Constructor.prototype.foo = function foo() {
+    return 'foo';
+  };
   Constructor.prototype.__proto__ = { base: 'base' };
   Constructor.prototype.__proto__.__proto__ = { baseOfBase: 'baseOfBase' };
 
@@ -284,7 +299,9 @@ test('stampit.convertConstructor()', function () {
 
   // A new stamp to compose with...
   var newskool = stampit().methods({
-    bar: function bar() { return 'bar'; }
+    bar: function bar() {
+      return 'bar';
+    }
     // your methods here...
   }).enclose(function () {
     this.baz = 'baz';
@@ -353,7 +370,7 @@ test('State is being cloned on object creation', function () {
 });
 
 test('Deep state is being cloned on object creation', function () {
-  var deep = {foo: 'foo', bar: 'bar'};
+  var deep = { foo: 'foo', bar: 'bar' };
   var stamp1 = stampit().state({ deep: deep, baz: 'baz' });
   var stamp2 = stampit(null, { deep: deep, baz: 'baz' });
 
