@@ -268,37 +268,6 @@ test('stampit.compose()', function () {
     'Should compose all factory prototypes');
 });
 
-test('stampit.compose() with inheritance', function () {
-  var c, i, m, n1, N2, sm, sn;
-  var stateProto = {stateProto: true};
-  var state = stampit(stateProto).create();
-
-  // create an object with a prototype
-  N2 = function() {};
-  N2.prototype = {n2: true};
-
-  n1 = new N2();
-  n1.n1 = true;
-
-  // create a mixin that will get merged
-  m = {m: true};
-
-  state.state = true;
-
-  // create and compose stampit objects
-  sn = stampit(n1);
-  sm = stampit(m);
-  c = stampit.compose(sn, sm).state(state);
-
-  // create instance
-  i = c();
-
-  ok(i.n1 && i.n2 && i.m, 'Should flatten nested prototypes.');
-
-  equal(i.stateProto, undefined,
-    'Should not flatten state prototypes.');
-});
-
 module('Oldskool');
 
 test('stampit.convertConstructor()', function () {
