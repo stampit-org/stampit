@@ -39,27 +39,34 @@ test('stampit(methods)', function () {
 });
 
 test('stampit().methods()', function () {
-  var obj = stampit().methods({
+  var obj = stampit({
     foo: function () {
       return 'foo';
     },
     methodOverride: function () {
       return false;
-    }
+    },
+    prop1: 1
   }).methods({
     bar: function () {
       return 'bar';
     },
     methodOverride: function () {
       return true;
-    }
+    },
+    prop2: 2
   }).create();
+
   ok(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
-  ok(obj.bar(),
+  ok(obj.bar() && !obj.hasOwnProperty('bar'),
     'Should let you chain .methods() to add more.');
-  ok(obj.methodOverride(),
+  ok(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
     'Should let you override by chaining .methods().');
+  ok(!obj.prop1 && !obj.hasOwnProperty('prop1'),
+    'Should not mix properties.');
+  ok(!obj.prop2 && !obj.hasOwnProperty('prop1'),
+    'Should not mix properties.');
 });
 
 test('stampit().methods(a, b)', function () {
@@ -191,7 +198,7 @@ test('stampit.isStamp() with stamps', function () {
 });
 
 test('stampit.isStamp() with non stamps', function () {
-  var obj1;
+  var obj1 = undefined;
   var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
   var obj3 = function () {
     this.enclose = this;
