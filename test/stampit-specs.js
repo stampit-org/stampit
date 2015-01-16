@@ -95,19 +95,26 @@ test('stampit({}, state)', function () {
 });
 
 test('stampit().state()', function () {
-  var obj = stampit().state({
+  var obj = stampit(null, {
     foo: { bar: 'bar' },
-    stateOverride: false
+    stateOverride: false,
+    func1: function(){}
   }).state({
     bar: 'bar',
-    stateOverride: true
+    stateOverride: true,
+    func2: function(){}
   }).create();
+
   equal(obj.foo.bar, 'bar',
     'Should set default state.');
   equal(obj.bar, 'bar',
     'Should set let you add by chaining .state().');
   ok(obj.stateOverride,
     'Should set let you override by chaining .state().');
+  ok(obj.func1,
+    'Should mix functions.');
+  ok(obj.func2,
+    'Should mix functions.');
 });
 
 test('stampit().state(a, b)', function () {
@@ -198,7 +205,7 @@ test('stampit.isStamp() with stamps', function () {
 });
 
 test('stampit.isStamp() with non stamps', function () {
-  var obj1 = undefined;
+  var obj1;
   var obj2 = { state: {}, methods: {}, enclose: {}, fixed: {} };
   var obj3 = function () {
     this.enclose = this;
@@ -293,8 +300,12 @@ module('Oldskool');
 test('stampit.convertConstructor()', function () {
   // The old constructor / class thing...
   var BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
+  BaseOfBase.prototype.baseOfBaseFunc = function () { return 'baseOfBaseFunc'; };
+
   var Base = function () { this.base = 'base'; };
   Base.prototype = new BaseOfBase();
+  Base.prototype.baseFunc = function () { return 'baseFunc'; };
+
   var Constructor = function Constructor() {
     this.thing = 'initialized';
   };
@@ -331,10 +342,16 @@ test('stampit.convertConstructor()', function () {
     'Constructor prototype should be mixed in.');
 
   equal(t.base, 'base',
-    'Prototype should be mixed in.');
+    'Prototype property should be mixed in.');
+
+  equal(t.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
 
   equal(t.baseOfBase, 'baseOfBase',
     'Prototype chain should be mixed in.');
+
+  equal(t.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype chain function should be mixed in.');
 
   equal(t.bar(), 'bar',
     'Should be able to add new methods with .compose()');
@@ -351,6 +368,9 @@ test('stampit.convertConstructor()', function () {
   equal(u.base, 'base',
     'Prototype should be mixed in.');
 
+  equal(u.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
+
   equal(u.baseOfBase, 'baseOfBase',
     'Prototype chain should be mixed in.');
 
@@ -359,6 +379,10 @@ test('stampit.convertConstructor()', function () {
 
   equal(u.baz, 'baz',
     'Should be able to add new methods with .compose()');
+
+  equal(u.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype chain function should be mixed in.');
+
 });
 
 module('State safety');
@@ -462,4 +486,48 @@ test('The stamp.compose() should deep merge state', function () {
   equal(o.deep.foo, 'override');
   equal(o.deep.bar, 'bar');
   equal(o.deep.baz, 'baz');
+});
+
+module('Immutability');
+
+test('Basic stamp immutability', function () {
+  var methods = { f: function F1() {} };
+  var state = { s: { deep: 1 } };
+  var stamp1 = stampit(methods, state);
+
+  methods.f = function F2() {};
+  state = { s: { deep: 2 } };
+  var stamp2 = stampit(methods, state);
+
+  notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
+  notEqual(stamp1.fixed.methods.f, stamp2.fixed.methods.f);
+  notEqual(stamp1.fixed.state, stamp2.fixed.state);
+  notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
+  notEqual(stamp1.fixed.state.s.deep, stamp2.fixed.state.s.deep);
+});
+
+test('Complex stamp immutability', function () {
+  var methods = { f: function F1() {} };
+  var state = { s: { deep: 1 } };
+  var stamp1 = stampit(methods, state);
+  var stamp2 = stampit(methods, state);
+
+  notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
+  notEqual(stamp1.fixed.state, stamp2.fixed.state);
+  notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
+});
+
+test('Basic object immutability', function () {
+  var methods = { f: function F1() {} };
+  var state = { s: { deep: 1 } };
+  var o1 = stampit(methods, state)();
+
+  methods.f = function F2() {};
+  state = { s: { deep: 2 } };
+  var o2 = stampit(methods, state)();
+
+  notEqual(o1, o2);
+  notEqual(o1.f, o2.f);
+  notEqual(o1.s, o2.s);
+  notEqual(o1.s.deep, o2.s.deep);
 });

@@ -109,7 +109,7 @@ module.exports = function(grunt) {
         livereload: true
       },
       scripts: {
-        files: ['./stampit.js', './test/stampit-specs.js', './mixinchain.js'],
+        files: ['./stampit.js', './test/stampit-specs.js', './mixer.js', './merger.js'],
         tasks: ['default']
       }
     }

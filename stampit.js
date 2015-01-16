@@ -8,17 +8,23 @@
  **/
 'use strict';
 var forEach = require('mout/array/forEach');
-var mixIn = require('mout/object/mixIn');
-var merge = require('mout/object/merge');
 var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
-var mixInChain = require('./mixinchain.js');
 var slice = [].slice;
+
+var mixer = require('./mixer');
+var mixIn = mixer();
+var mixInFunc = mixer(mixer.copyFunc);
+var mixInFuncChain = mixer(mixer.copyFunc, mixer.chain);
+
+var merger = require('./merger');
+var merge = merger();
+var mergeChain = merger(merger.copyAll, merger.chain);
 
 // Avoiding JSHist W003 violations.
 var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
 
-create = function (o) {
+create = Object.create || function (o) {
   if (arguments.length > 1) {
     throw new Error('Object.create implementation only accepts the first parameter.');
   }
@@ -71,7 +77,7 @@ extractFunctions = function extractFunctions(arg) {
  */
 stampit = function stampit(methods, state, enclose) {
   var fixed = {
-      methods: mixIn({}, methods),
+      methods: mixInFunc({}, methods),
       state: merge({}, state),
       enclose: extractFunctions(enclose)
     },
@@ -100,7 +106,7 @@ stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var args = [fixed.methods].concat(slice.call(arguments));
-      fixed.methods = mixIn.apply(this, args);
+      mixInFunc.apply(this, args);
       return this;
     },
     /**
@@ -151,7 +157,7 @@ compose = function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       if (source.fixed.methods) {
-        f.methods = mixIn(f.methods, source.fixed.methods);
+        f.methods = mixInFunc(f.methods, source.fixed.methods);
       }
 
       if (source.fixed.state) {
@@ -190,7 +196,8 @@ isStamp = function isStamp(obj) {
  */
 convertConstructor = function convertConstructor(Constructor) {
   var stamp = stampit();
-  mixInChain(stamp.fixed.methods, Constructor.prototype);
+  mixInFuncChain(stamp.fixed.methods, Constructor.prototype);
+  stamp.fixed.state = mergeChain(stamp.fixed.state, Constructor.prototype);
   stamp.enclose(Constructor);
   return stamp;
 };
