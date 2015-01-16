@@ -299,12 +299,16 @@ test('stampit.compose() with inheritance', function () {
     'Should not flatten state prototypes.');
 });
 
+module('Oldskool');
+
 test('stampit.convertConstructor()', function () {
   // The old constructor / class thing...
   var Constructor = function Constructor() {
     this.thing = 'initialized';
   };
   Constructor.prototype.foo = function foo() { return 'foo'; };
+  Constructor.prototype.__proto__ = { base: 'base' };
+  Constructor.prototype.__proto__.__proto__ = { baseOfBase: 'baseOfBase' };
 
   // The conversion
   var oldskool = stampit.convertConstructor(Constructor);
@@ -331,6 +335,12 @@ test('stampit.convertConstructor()', function () {
   equal(t.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
+  equal(t.base, 'base',
+    'Prototype chain should be mixed in.');
+
+  equal(t.baseOfBase, 'baseOfBase',
+    'Prototype chain should be mixed in.');
+
   equal(t.bar(), 'bar',
     'Should be able to add new methods with .compose()');
 
@@ -342,6 +352,12 @@ test('stampit.convertConstructor()', function () {
 
   equal(u.foo(), 'foo',
     'Constructor prototype should be mixed in.');
+
+  equal(u.base, 'base',
+    'Prototype chain should be mixed in.');
+
+  equal(u.baseOfBase, 'baseOfBase',
+    'Prototype chain should be mixed in.');
 
   equal(u.bar(), 'bar',
     'Should be able to add new methods with .compose()');
