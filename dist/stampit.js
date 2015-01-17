@@ -1,9 +1,9 @@
-!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.stampit=e():"undefined"!=typeof global?global.stampit=e():"undefined"!=typeof self&&(self.stampit=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stampit=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
-var deepClone = require('mout/lang/deepClone');
-var isObject = require('mout/lang/isObject');
-var forOwn = require('mout/object/forOwn');
-var forIn = require('mout/object/forIn');
+var deepClone = _dereq_('mout/lang/deepClone');
+var isObject = _dereq_('mout/lang/isObject');
+var forOwn = _dereq_('mout/object/forOwn');
+var forIn = _dereq_('mout/object/forIn');
 
 /**
  * Creates merge functions of all kinds.
@@ -57,10 +57,10 @@ module.exports.copyProp = function (val) {
 module.exports.copyFunc = function leaveFunc(val) {
   return typeof val === 'function';
 };
-},{"mout/lang/deepClone":8,"mout/lang/isObject":11,"mout/object/forIn":15,"mout/object/forOwn":16}],2:[function(require,module,exports){
+},{"mout/lang/deepClone":8,"mout/lang/isObject":11,"mout/object/forIn":15,"mout/object/forOwn":16}],2:[function(_dereq_,module,exports){
 "use strict";
-var forOwn = require('mout/object/forOwn');
-var forIn = require('mout/object/forIn');
+var forOwn = _dereq_('mout/object/forOwn');
+var forIn = _dereq_('mout/object/forIn');
 
 function copy(shouldCopy) {
   return function (val, key) {
@@ -108,7 +108,7 @@ module.exports.copyProp = function (val) {
 module.exports.copyFunc = function (val) {
   return typeof val === 'function';
 };
-},{"mout/object/forIn":15,"mout/object/forOwn":16}],3:[function(require,module,exports){
+},{"mout/object/forIn":15,"mout/object/forOwn":16}],3:[function(_dereq_,module,exports){
 
 
     /**
@@ -133,9 +133,9 @@ module.exports.copyFunc = function (val) {
 
 
 
-},{}],4:[function(require,module,exports){
-var forEach = require('./forEach');
-var makeIterator = require('../function/makeIterator_');
+},{}],4:[function(_dereq_,module,exports){
+var forEach = _dereq_('./forEach');
+var makeIterator = _dereq_('../function/makeIterator_');
 
     /**
      * Array map
@@ -158,9 +158,9 @@ var makeIterator = require('../function/makeIterator_');
      module.exports = map;
 
 
-},{"../function/makeIterator_":5,"./forEach":3}],5:[function(require,module,exports){
-var prop = require('./prop');
-var deepMatches = require('../object/deepMatches');
+},{"../function/makeIterator_":5,"./forEach":3}],5:[function(_dereq_,module,exports){
+var prop = _dereq_('./prop');
+var deepMatches = _dereq_('../object/deepMatches');
 
     /**
      * Converts argument into a valid iterator.
@@ -194,7 +194,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":14,"./prop":6}],6:[function(require,module,exports){
+},{"../object/deepMatches":14,"./prop":6}],6:[function(_dereq_,module,exports){
 
 
     /**
@@ -210,10 +210,10 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{}],7:[function(require,module,exports){
-var kindOf = require('./kindOf');
-var isPlainObject = require('./isPlainObject');
-var mixIn = require('../object/mixIn');
+},{}],7:[function(_dereq_,module,exports){
+var kindOf = _dereq_('./kindOf');
+var isPlainObject = _dereq_('./isPlainObject');
+var mixIn = _dereq_('../object/mixIn');
 
     /**
      * Clone native types.
@@ -261,11 +261,11 @@ var mixIn = require('../object/mixIn');
 
 
 
-},{"../object/mixIn":18,"./isPlainObject":12,"./kindOf":13}],8:[function(require,module,exports){
-var clone = require('./clone');
-var forOwn = require('../object/forOwn');
-var kindOf = require('./kindOf');
-var isPlainObject = require('./isPlainObject');
+},{"../object/mixIn":18,"./isPlainObject":12,"./kindOf":13}],8:[function(_dereq_,module,exports){
+var clone = _dereq_('./clone');
+var forOwn = _dereq_('../object/forOwn');
+var kindOf = _dereq_('./kindOf');
+var isPlainObject = _dereq_('./isPlainObject');
 
     /**
      * Recursively clone native types.
@@ -311,8 +311,8 @@ var isPlainObject = require('./isPlainObject');
 
 
 
-},{"../object/forOwn":16,"./clone":7,"./isPlainObject":12,"./kindOf":13}],9:[function(require,module,exports){
-var isKind = require('./isKind');
+},{"../object/forOwn":16,"./clone":7,"./isPlainObject":12,"./kindOf":13}],9:[function(_dereq_,module,exports){
+var isKind = _dereq_('./isKind');
     /**
      */
     var isArray = Array.isArray || function (val) {
@@ -321,8 +321,8 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":10}],10:[function(require,module,exports){
-var kindOf = require('./kindOf');
+},{"./isKind":10}],10:[function(_dereq_,module,exports){
+var kindOf = _dereq_('./kindOf');
     /**
      * Check if value is from a specific "kind".
      */
@@ -332,8 +332,8 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":13}],11:[function(require,module,exports){
-var isKind = require('./isKind');
+},{"./kindOf":13}],11:[function(_dereq_,module,exports){
+var isKind = _dereq_('./isKind');
     /**
      */
     function isObject(val) {
@@ -342,7 +342,7 @@ var isKind = require('./isKind');
     module.exports = isObject;
 
 
-},{"./isKind":10}],12:[function(require,module,exports){
+},{"./isKind":10}],12:[function(_dereq_,module,exports){
 
 
     /**
@@ -358,7 +358,7 @@ var isKind = require('./isKind');
 
 
 
-},{}],13:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -380,9 +380,9 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],14:[function(require,module,exports){
-var forOwn = require('./forOwn');
-var isArray = require('../lang/isArray');
+},{}],14:[function(_dereq_,module,exports){
+var forOwn = _dereq_('./forOwn');
+var isArray = _dereq_('../lang/isArray');
 
     function containsMatch(array, pattern) {
         var i = -1, length = array.length;
@@ -437,7 +437,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":9,"./forOwn":16}],15:[function(require,module,exports){
+},{"../lang/isArray":9,"./forOwn":16}],15:[function(_dereq_,module,exports){
 
 
     var _hasDontEnumBug,
@@ -501,9 +501,9 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],16:[function(require,module,exports){
-var hasOwn = require('./hasOwn');
-var forIn = require('./forIn');
+},{}],16:[function(_dereq_,module,exports){
+var hasOwn = _dereq_('./hasOwn');
+var forIn = _dereq_('./forIn');
 
     /**
      * Similar to Array/forEach but works over object properties and fixes Don't
@@ -522,7 +522,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":15,"./hasOwn":17}],17:[function(require,module,exports){
+},{"./forIn":15,"./hasOwn":17}],17:[function(_dereq_,module,exports){
 
 
     /**
@@ -536,8 +536,8 @@ var forIn = require('./forIn');
 
 
 
-},{}],18:[function(require,module,exports){
-var forOwn = require('./forOwn');
+},{}],18:[function(_dereq_,module,exports){
+var forOwn = _dereq_('./forOwn');
 
     /**
     * Combine properties from all the objects into first one.
@@ -566,7 +566,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":16}],19:[function(require,module,exports){
+},{"./forOwn":16}],19:[function(_dereq_,module,exports){
 /**
  * Stampit
  **
@@ -576,17 +576,17 @@ var forOwn = require('./forOwn');
  * http://opensource.org/licenses/MIT
  **/
 'use strict';
-var forEach = require('mout/array/forEach');
-var map = require('mout/array/map');
-var forOwn = require('mout/object/forOwn');
+var forEach = _dereq_('mout/array/forEach');
+var map = _dereq_('mout/array/map');
+var forOwn = _dereq_('mout/object/forOwn');
 var slice = [].slice;
 
-var mixer = require('./mixer');
+var mixer = _dereq_('./mixer');
 var mixIn = mixer();
 var mixInFunc = mixer(mixer.copyFunc);
 var mixInFuncChain = mixer(mixer.copyFunc, mixer.chain);
 
-var merger = require('./merger');
+var merger = _dereq_('./merger');
 var merge = merger();
 var mergeChain = merger(merger.copyAll, merger.chain);
 
@@ -799,4 +799,3 @@ module.exports = mixIn(stampit, {
 },{"./merger":1,"./mixer":2,"mout/array/forEach":3,"mout/array/map":4,"mout/object/forOwn":16}]},{},[19])
 (19)
 });
-;

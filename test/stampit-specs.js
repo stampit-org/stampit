@@ -10,9 +10,7 @@ test('stampit()', function () {
 
 test('.create()', function () {
   var stamp = stampit({
-    foo: function () {
-      return 'foo';
-    }
+    foo: function () { return 'foo'; }
   });
 
   equal(stamp.create().foo(), 'foo',
@@ -22,6 +20,7 @@ test('.create()', function () {
 test('.create(properties)', function () {
   var obj = stampit({}, { foo: 'bar' });
   obj = obj.create({ foo: 'foo' });
+  
   equal(obj.foo, 'foo',
     'should override defaults.');
 });
@@ -30,30 +29,21 @@ module('Basics Methods');
 
 test('stampit(methods)', function () {
   var obj = stampit({
-    foo: function () {
-      return 'foo';
-    }
+    foo: function () { return 'foo'; }
   }).create();
+  
   ok(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
 });
 
 test('stampit().methods()', function () {
   var obj = stampit({
-    foo: function () {
-      return 'foo';
-    },
-    methodOverride: function () {
-      return false;
-    },
+    foo: function () { return 'foo'; },
+    methodOverride: function () { return false; },
     prop1: 1
   }).methods({
-    bar: function () {
-      return 'bar';
-    },
-    methodOverride: function () {
-      return true;
-    },
+    bar: function () { return 'bar'; },
+    methodOverride: function () { return true; },
     prop2: 2
   }).create();
 
@@ -71,13 +61,9 @@ test('stampit().methods()', function () {
 
 test('stampit().methods(a, b)', function () {
   var obj = stampit().methods({
-    a: function () {
-      return 'a';
-    }
+    a: function () { return 'a'; }
   }, {
-    b: function () {
-      return 'b';
-    }
+    b: function () { return 'b'; }
   }).create();
 
   ok(obj.a() === 'a' && obj.b() === 'b',
@@ -87,9 +73,8 @@ test('stampit().methods(a, b)', function () {
 module('Basics State');
 
 test('stampit({}, state)', function () {
-  var obj = stampit({}, {
-    foo: { bar: 'bar' }
-  }).create();
+  var obj = stampit({}, { foo: { bar: 'bar' } }).create();
+  
   equal(obj.foo.bar, 'bar',
     'Should set default state.');
 });
@@ -133,11 +118,9 @@ module('Basics Enclose');
 test('stampit({}, {}, enclose)', function () {
   var obj = stampit({}, {}, function () {
     var secret = 'foo';
-
-    this.getSecret = function () {
-      return secret;
-    };
+    this.getSecret = function () { return secret; };
   }).create();
+  
   equal(obj.getSecret(), 'foo',
     'Should set closure.');
 });
@@ -145,24 +128,17 @@ test('stampit({}, {}, enclose)', function () {
 test('stampit().enclose()', function () {
   var obj = stampit().enclose(function () {
     var secret = 'foo';
-
-    this.getSecret = function () {
-      return secret;
-    };
+    this.getSecret = function () { return secret; };
   }).enclose(function () {
     this.a = 'a';
   }).enclose({
-    bar: function bar() {
-      this.b = 'b';
-    }
+    bar: function bar() { this.b = 'b'; }
   }, {
-    baz: function baz() {
-      this.c = 'c';
-    }
+    baz: function baz() { this.c = 'c'; }
   }).create();
+  
   equal(obj.getSecret(), 'foo',
     'Should set closure.');
-
   ok(obj.a && obj.b && obj.c,
     'Should allow chaining and take object literals.');
 });
@@ -171,13 +147,8 @@ test('stampit().enclose(args)', function () {
   var obj = stampit().enclose(function (a, b) {
     var secretA = a;
     var secretB = b;
-
-    this.getA = function () {
-      return secretA;
-    };
-    this.getB = function () {
-      return secretB;
-    };
+    this.getA = function () { return secretA; };
+    this.getB = function () { return secretB; };
   }).create(null, 'a', 'b');
 
   equal(obj.getA(), 'a',
@@ -192,11 +163,9 @@ test('stampit.isStamp() with stamps', function () {
   var emptyStamp = stampit();
   var stateOnlyStamp = stampit().state({ a: 'b' });
   var methodsOnlyStamp = stampit({
-    method: function () {
-    }
+    method: function () {}
   });
-  var closureOnlyStamp = stampit().enclose(function () {
-  });
+  var closureOnlyStamp = stampit().enclose(function () {});
 
   ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
   ok(stampit.isStamp(stateOnlyStamp), 'State only stamp should be seen as stamp.');
@@ -211,8 +180,7 @@ test('stampit.isStamp() with non stamps', function () {
     this.enclose = this;
   };
   var obj4 = function () {
-    this.fixed = function () {
-    };
+    this.fixed = function () { };
   };
 
   ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
@@ -224,18 +192,14 @@ module('Compose');
 test('stampit().compose()', function () {
   var closuresCalled = 0,
     a = stampit({
-        method: function () {
-          return false;
-        }
+        method: function () { return false; }
       },
       { state: false },
       function () {
         closuresCalled++;
       }),
     b = stampit({
-        method: function () {
-          return true;
-        }
+        method: function () { return true; }
       },
       { state: true },
       function () {
@@ -251,40 +215,28 @@ test('stampit().compose()', function () {
 
 test('stampit.compose()', function () {
   var a = stampit({
-        methodA: function () {
-          return true;
-        }
+        methodA: function () { return true; }
       },
       { stateA: true },
       function () {
         var secret = 'a';
-        this.getA = function () {
-          return secret;
-        };
+        this.getA = function () { return secret; };
       }),
     b = stampit({
-        methodB: function () {
-          return true;
-        }
+        methodB: function () { return true; }
       },
       { stateB: true },
       function () {
         var secret = true;
-        this.getB = function () {
-          return secret;
-        };
+        this.getB = function () { return secret; };
       }),
     c = stampit({
-        methodC: function () {
-          return true;
-        }
+        methodC: function () { return true; }
       },
       { stateC: true },
       function () {
         var secret = true;
-        this.getC = function () {
-          return secret;
-        };
+        this.getC = function () { return secret; };
       }), d;
 
   d = stampit.compose(a, b, c).create();
@@ -310,20 +262,16 @@ test('stampit.convertConstructor()', function () {
     this.thing = 'initialized';
   };
   Constructor.prototype = new Base();
-  Constructor.prototype.foo = function foo() {
-    return 'foo';
-  };
+  Constructor.prototype.foo = function foo() { return 'foo'; };
 
   // The conversion
   var oldskool = stampit.convertConstructor(Constructor);
 
   // A new stamp to compose with...
   var newskool = stampit().methods({
-    bar: function bar() {
-      return 'bar';
-    }
+    bar: function bar() { return 'bar'; }
     // your methods here...
-  }).enclose(function () {
+  }).enclose(function () { 
     this.baz = 'baz';
   });
 
@@ -348,10 +296,10 @@ test('stampit.convertConstructor()', function () {
     'Prototype function should be mixed in.');
 
   equal(t.baseOfBase, 'baseOfBase',
-    'Prototype chain should be mixed in.');
+    'Prototype property chain should be mixed in.');
 
   equal(t.baseOfBaseFunc(), 'baseOfBaseFunc',
-    'Prototype chain function should be mixed in.');
+    'Prototype function chain should be mixed in.');
 
   equal(t.bar(), 'bar',
     'Should be able to add new methods with .compose()');
@@ -366,13 +314,16 @@ test('stampit.convertConstructor()', function () {
     'Constructor prototype should be mixed in.');
 
   equal(u.base, 'base',
-    'Prototype should be mixed in.');
+    'Prototype property should be mixed in.');
 
   equal(u.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 
   equal(u.baseOfBase, 'baseOfBase',
-    'Prototype chain should be mixed in.');
+    'Prototype property chain should be mixed in.');
+
+  equal(u.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype function chain should be mixed in.');
 
   equal(u.bar(), 'bar',
     'Should be able to add new methods with .compose()');
@@ -382,48 +333,38 @@ test('stampit.convertConstructor()', function () {
 
   equal(u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype chain function should be mixed in.');
-
 });
 
 module('State safety');
 
-test('State is being cloned on object creation', function () {
-  var stamp1 = stampit().state({ foo: 'foo', bar: 'bar' });
-  var stamp2 = stampit(null, { foo: 'foo', bar: 'bar' });
-
-  var o1 = stamp1();
-  var o2 = stamp1();
-  o1.foo = 'instance safety';
-  notEqual(o1.foo, o2.foo);
-
-  o1 = stamp2();
-  o2 = stamp2();
-  o1.foo = 'instance safety';
-  notEqual(o1.foo, o2.foo);
-});
-
-test('Deep state is being cloned on object creation', function () {
+test('Stamp state deep cloned for object created', function () {
   var deep = { foo: 'foo', bar: 'bar' };
-  var stamp1 = stampit().state({ deep: deep, baz: 'baz' });
-  var stamp2 = stampit(null, { deep: deep, baz: 'baz' });
+  var stamp1 = stampit().state({ deep: deep, foo: 'foo' });
+  var stamp2 = stampit(null, { deep: deep, foo: 'foo' });
 
   var o1 = stamp1();
   var o2 = stamp1();
-  o1.deep.foo = 'instance safety';
+  o1.foo = 'another value';
+  notEqual(o1.foo, o2.foo);
+  o1.deep.foo = 'another value';
   notEqual(o1.deep.foo, o2.deep.foo);
 
   o1 = stamp2();
   o2 = stamp2();
-  o1.deep.foo = 'instance safety';
+  o1.foo = 'another value';
+  notEqual(o1.foo, o2.foo);
+  o1.deep.foo = 'another value';
   notEqual(o1.deep.foo, o2.deep.foo);
 });
 
-test('The stamp(state) is merged into object created', function () {
-  var stamp1 = stampit().state({ foo: 'foo', bar: 'bar' });
-  var stamp2 = stampit(null, { foo: 'foo', bar: 'bar' });
+test('stamp(state) deep merge into object created', function () {
+  var deep = { foo: 'foo', bar: 'bar' };
+  var stamp1 = stampit().state({ deep: deep, foo: 'foo', bar: 'bar' });
+  var stamp2 = stampit(null, { deep: deep, foo: 'foo', bar: 'bar' });
 
-  var o1 = stamp1({ foo: 'override', baz: 'baz' });
-  var o2 = stamp2({ foo: 'override', baz: 'baz' });
+  var deep2 = { foo: 'override', baz: 'baz' };
+  var o1 = stamp1({ deep: deep2, foo: 'override', baz: 'baz' });
+  var o2 = stamp2({ deep: deep2, foo: 'override', baz: 'baz' });
 
   equal(o1.foo, 'override');
   equal(o1.bar, 'bar');
@@ -431,15 +372,6 @@ test('The stamp(state) is merged into object created', function () {
   equal(o2.foo, 'override');
   equal(o2.bar, 'bar');
   equal(o2.baz, 'baz');
-});
-
-test('The stamp(state) is deep merged into object created', function () {
-  var stamp1 = stampit().state({ deep: { foo: 'foo', bar: 'bar' } });
-  var stamp2 = stampit(null, { deep: { foo: 'foo', bar: 'bar' } });
-
-  var o1 = stamp1({ deep: { foo: 'override', baz: 'baz' } });
-  var o2 = stamp2({ deep: { foo: 'override', baz: 'baz' } });
-
   equal(o1.deep.foo, 'override');
   equal(o1.deep.bar, 'bar');
   equal(o1.deep.baz, 'baz');
@@ -448,41 +380,27 @@ test('The stamp(state) is deep merged into object created', function () {
   equal(o2.deep.baz, 'baz');
 });
 
-test('The stampit.state(state) is merged into stamp', function () {
-  var stamp = stampit().state({ foo: 'foo', bar: 'bar' });
-  stamp.state({ foo: 'override', baz: 'baz' });
+test('stampit.state(state) deep merge into stamp', function () {
+  var stamp = stampit().state({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' });
+  stamp.state({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
   var o = stamp();
 
   equal(o.foo, 'override');
   equal(o.bar, 'bar');
   equal(o.baz, 'baz');
-});
-
-test('The stampit.state(state) is deep merged into stamp', function () {
-  var stamp = stampit().state({ deep: { foo: 'foo', bar: 'bar' } });
-  stamp.state({ deep: { foo: 'override', baz: 'baz' } });
-  var o = stamp();
-
   equal(o.deep.foo, 'override');
   equal(o.deep.bar, 'bar');
   equal(o.deep.baz, 'baz');
 });
 
-test('The stamp.compose() should merge state', function () {
-  var stamp = stampit(null, { foo: 'foo', bar: 'bar' })
-    .compose(stampit(null, { foo: 'override', baz: 'baz' }));
+test('stamp.compose() deep merge state', function () {
+  var stamp = stampit(null, { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
+    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
   var o = stamp();
 
   equal(o.foo, 'override');
   equal(o.bar, 'bar');
   equal(o.baz, 'baz');
-});
-
-test('The stamp.compose() should deep merge state', function () {
-  var stamp = stampit(null, { deep: { foo: 'foo', bar: 'bar' } })
-    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' } }));
-  var o = stamp();
-
   equal(o.deep.foo, 'override');
   equal(o.deep.bar, 'bar');
   equal(o.deep.baz, 'baz');
@@ -506,7 +424,7 @@ test('Basic stamp immutability', function () {
   notEqual(stamp1.fixed.state.s.deep, stamp2.fixed.state.s.deep);
 });
 
-test('Complex stamp immutability', function () {
+test('Stamp immutability made of same source', function () {
   var methods = { f: function F1() {} };
   var state = { s: { deep: 1 } };
   var stamp1 = stampit(methods, state);
