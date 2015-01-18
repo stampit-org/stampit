@@ -12,14 +12,16 @@ var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
 var slice = [].slice;
 
-var mixer = require('./mixer');
-var mixIn = mixer();
-var mixInFunc = mixer(mixer.copyFunc);
-var mixInFuncChain = mixer(mixer.copyFunc, mixer.chain);
+function isFunction(val) {
+  return typeof val === 'function';
+}
 
-var merger = require('./merger');
-var merge = merger();
-var mergeChain = merger(merger.copyAll, merger.chain);
+var mixer = require('./mixer');
+var mixIn = mixer.getMixin(); // Regular mixin function.
+var mixInFunctions = mixer.getMixin(isFunction); // mixin for functions only.
+var mixInChainFunctions = mixer.getMixin(isFunction, true); // mixin for functions including prototype chain.
+var merge = mixer.getMerger(); // Regular object merger function.
+var mergeChain = mixer.getMerger(null, true); // merge objects including prototype chain properties.
 
 // Avoiding JSHist W003 violations.
 var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
@@ -41,9 +43,9 @@ if (!Array.isArray) {
 }
 
 extractFunctions = function extractFunctions(arg) {
-  if (typeof arg === 'function') {
+  if (isFunction(arg)) {
     return map(slice.call(arguments), function (fn) {
-      if (typeof fn === 'function') {
+      if (isFunction(fn)) {
         return fn;
       }
     });
@@ -77,7 +79,7 @@ extractFunctions = function extractFunctions(arg) {
  */
 stampit = function stampit(methods, state, enclose) {
   var fixed = {
-      methods: mixInFunc({}, methods),
+      methods: mixInFunctions({}, methods),
       state: merge({}, state),
       enclose: extractFunctions(enclose)
     },
@@ -89,7 +91,7 @@ stampit = function stampit(methods, state, enclose) {
         args = slice.call(arguments, 1);
 
       forEach(closures, function (fn) {
-        if (typeof fn === 'function') {
+        if (isFunction(fn)) {
           instance = fn.apply(instance, args) || instance;
         }
       });
@@ -106,7 +108,7 @@ stampit = function stampit(methods, state, enclose) {
      */
     methods: function stampMethods() {
       var args = [fixed.methods].concat(slice.call(arguments));
-      mixInFunc.apply(this, args);
+      mixInFunctions.apply(this, args);
       return this;
     },
     /**
@@ -157,7 +159,7 @@ compose = function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       if (source.fixed.methods) {
-        f.methods = mixInFunc(f.methods, source.fixed.methods);
+        f.methods = mixInFunctions(f.methods, source.fixed.methods);
       }
 
       if (source.fixed.state) {
@@ -179,12 +181,12 @@ compose = function compose(factories) {
  */
 isStamp = function isStamp(obj) {
   return (
-    typeof obj === 'function' &&
-    typeof obj.fixed === 'object' &&
-    typeof obj.methods === 'function' &&
-    typeof obj.state === 'function' &&
-    typeof obj.enclose === 'function'
-    );
+    isFunction(obj) &&
+    isFunction(obj.methods) &&
+    isFunction(obj.state) &&
+    isFunction(obj.enclose) &&
+    typeof obj.fixed === 'object'
+  );
 };
 
 /**
@@ -196,7 +198,7 @@ isStamp = function isStamp(obj) {
  */
 convertConstructor = function convertConstructor(Constructor) {
   var stamp = stampit();
-  mixInFuncChain(stamp.fixed.methods, Constructor.prototype);
+  mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
   stamp.fixed.state = mergeChain(stamp.fixed.state, Constructor.prototype);
   stamp.enclose(Constructor);
   return stamp;
