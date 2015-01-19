@@ -381,8 +381,9 @@ test('stamp(state) deep merge into object created', function () {
 });
 
 test('stampit.state(state) deep merge into stamp', function () {
-  var stamp = stampit().state({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' });
-  stamp.state({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
+  var stamp = stampit()
+    .state({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
+    .state({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
   var o = stamp();
 
   equal(o.foo, 'override');
@@ -422,6 +423,7 @@ test('Basic stamp immutability', function () {
   notEqual(stamp1.fixed.state, stamp2.fixed.state);
   notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
   notEqual(stamp1.fixed.state.s.deep, stamp2.fixed.state.s.deep);
+  notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
 });
 
 test('Stamp immutability made of same source', function () {
@@ -433,6 +435,7 @@ test('Stamp immutability made of same source', function () {
   notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
   notEqual(stamp1.fixed.state, stamp2.fixed.state);
   notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
+  notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
 });
 
 test('Basic object immutability', function () {
@@ -448,4 +451,17 @@ test('Basic object immutability', function () {
   notEqual(o1.f, o2.f);
   notEqual(o1.s, o2.s);
   notEqual(o1.s.deep, o2.s.deep);
+});
+
+test('Stamp chaining functions immutability', function () {
+  var stamp1 = stampit();
+  var stamp2 = stamp1.methods({ f: function F1() {} });
+  var stamp3 = stamp2.state( { s: { deep: 1 } });
+  var stamp4 = stamp3.state(function () { });
+  var stamp5 = stamp4.compose(stampit());
+
+  notEqual(stamp1, stamp2);
+  notEqual(stamp2, stamp3);
+  notEqual(stamp3, stamp4);
+  notEqual(stamp4, stamp5);
 });
