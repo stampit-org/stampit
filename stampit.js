@@ -127,7 +127,7 @@ stampit = function stampit(methods, state, enclose) {
       instance = mixIn(create(fixed.methods), state);
 
     if (fixed.enclose.length > 0) {
-      args = args && slice.call(arguments, 1);
+      args = args === undefined ? undefined : slice.call(arguments, 1);
       forEach(fixed.enclose, function (fn) {
         if (isFunction(fn)) {
           instance = fn.apply(instance, args) || instance;

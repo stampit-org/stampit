@@ -546,6 +546,7 @@ var forOwn = require('./forOwn');
 var forEach = require('mout/array/forEach');
 var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
+var deepClone = require('mout/lang/deepClone');
 var slice = [].slice;
 
 function isFunction(val) {
@@ -657,20 +658,21 @@ stampit = function stampit(methods, state, enclose) {
   addState(fixed, state);
   addEnclose(fixed, enclose);
 
-  var factory = function factory(properties) {
-      var state = merge({}, fixed.state, properties),
-        instance = mixIn(create(fixed.methods), state),
-        closures = fixed.enclose,
-        args = slice.call(arguments, 1);
+  var factory = function factory(properties, args) {
+    var state = properties ? merge({}, fixed.state, properties) : deepClone(fixed.state),
+      instance = mixIn(create(fixed.methods), state);
 
-      forEach(closures, function (fn) {
+    if (fixed.enclose.length > 0) {
+      args = args === undefined ? undefined : slice.call(arguments, 1);
+      forEach(fixed.enclose, function (fn) {
         if (isFunction(fn)) {
           instance = fn.apply(instance, args) || instance;
         }
       });
+    }
 
-      return instance;
-    };
+    return instance;
+  };
 
   return mixIn(factory, {
     create: factory,
@@ -769,7 +771,7 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/object/forOwn":15}]},{},[18])
+},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/object/forOwn":15}]},{},[18])
 (18)
 });
 ;

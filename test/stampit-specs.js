@@ -149,11 +149,11 @@ test('stampit().enclose(args)', function () {
     var secretB = b;
     this.getA = function () { return secretA; };
     this.getB = function () { return secretB; };
-  }).create(null, 'a', 'b');
+  }).create(null, null, 0);
 
-  equal(obj.getA(), 'a',
+  equal(obj.getA(), null,
     'Should pass variables to closures.');
-  equal(obj.getB(), 'b',
+  equal(obj.getB(), 0,
     'Should pass variables to closures.');
 });
 
