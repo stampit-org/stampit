@@ -250,6 +250,38 @@ test('stampit.compose()', function () {
 module('Oldskool');
 
 test('stampit.convertConstructor()', function () {
+  var Base = function () { this.base = 'base'; };
+  Base.prototype.baseFunc = function () { return 'baseFunc'; };
+
+  var Constructor = function Constructor() { this.thing = 'initialized'; };
+  Constructor.staticFunc = function () {};
+  Constructor.staticProp = 'static';
+  Constructor.prototype = new Base();
+  Constructor.prototype.foo = function foo() { return 'foo'; };
+
+  var oldskool = stampit.convertConstructor(Constructor);
+  var obj = oldskool();
+
+  equal(obj.thing, 'initialized',
+    'Constructor should execute.');
+
+  ok(obj.staticFunc,
+    'Non prototype functions should be mixed in.');
+
+  equal(obj.staticProp, 'static',
+    'Non prototype properties should be mixed in.');
+
+  equal(obj.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  equal(obj.base, 'base',
+    'Prototype property should be mixed in.');
+
+  equal(obj.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
+});
+
+test('stampit.convertConstructor() composed', function () {
   // The old constructor / class thing...
   var BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
   BaseOfBase.prototype.baseOfBaseFunc = function () { return 'baseOfBaseFunc'; };
@@ -271,7 +303,7 @@ test('stampit.convertConstructor()', function () {
   var newskool = stampit().methods({
     bar: function bar() { return 'bar'; }
     // your methods here...
-  }).enclose(function () { 
+  }).enclose(function () {
     this.baz = 'baz';
   });
 

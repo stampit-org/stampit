@@ -205,6 +205,7 @@ function isStamp(obj) {
 function convertConstructor(Constructor) {
   var stamp = stampit();
   mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
+  mixIn(stamp.fixed.state, Constructor);
   stamp.fixed.state = mergeChain(stamp.fixed.state, Constructor.prototype);
   addEnclose(stamp.fixed, Constructor);
   return stamp;
