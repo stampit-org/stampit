@@ -4,15 +4,18 @@ var forOwn = require('mout/object/forOwn');
 var forIn = require('mout/object/forIn');
 var deepClone = require('mout/lang/deepClone');
 var isObject = require('mout/lang/isObject');
+var isFunction = require('mout/lang/isFunction');
 
 /**
  * Creates mixin functions of all kinds.
- * @param {function(object, string)} filter    Function which filters value and key.
- * @param {boolean} chain    Loop through prototype properties too.
- * @param {function(object)} getTarget    Converts an object object to a target.
- * @param {function(object, object)} getValue    Converts src and dst values to a new value.
+ * @param {object} opts    Options.
+ * @param {function(object, string)} opts.filter    Function which filters value and key.
+ * @param {boolean} opts.chain    Loop through prototype properties too.
+ * @param {function(object)} opts.getTarget    Converts an object object to a target.
+ * @param {function(object, object)} opts.getValue    Converts src and dst values to a new value.
  */
-var mixer = function (filter, chain, getTarget, getValue) {
+var mixer = function (opts) {
+  opts = opts || {};
   /**
    * Combine properties from all the objects into first one.
    * - This method affects target object in place, if you want to create a new Object pass an empty object as first param.
@@ -20,62 +23,84 @@ var mixer = function (filter, chain, getTarget, getValue) {
    * @param {object[]} objects    Objects to be combined (0...n objects).
    * @return {object} Target Object.
    */
-  return function mixIn(target, objects){
-    var loop = chain ? forIn : forOwn;
+  return function mixIn(target, objects) {
+    var loop = opts.chain ? forIn : forOwn;
     var i = 0,
       n = arguments.length,
       obj;
-    target = getTarget ? getTarget(target) : target;
-    
-    while(++i < n){
+    target = opts.getTarget ? opts.getTarget(target) : target;
+
+    while (++i < n) {
       obj = arguments[i];
       if (obj) {
         loop(
-          obj, 
+          obj,
           function (val, key) {
-          if (filter && !filter(val, key)) {
-            return;
-          }
-          
-          this[key] = getValue ? getValue(val, this[key]) : val;
-        },
-        target);
+            if (opts.filter && !opts.filter(val, key)) {
+              return;
+            }
+
+            this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
+          },
+          target);
       }
     }
     return target;
   }
 };
 
+var merge = mixer({
+  getTarget: deepClone,
+  getValue: mergeSourceToTarget
+});
+
+function mergeSourceToTarget(srcVal, targetVal) {
+  if (isObject(srcVal) && isObject(targetVal)) {
+    // inception, deep merge objects
+    return merge(targetVal, srcVal);
+  } else {
+    // make sure arrays, regexp, date, objects are cloned
+    return deepClone(srcVal);
+  }
+}
+
+module.exports = mixer;
 
 /**
- * Creates merge functions of all kinds.
- * @param {function(object, string)} filter    Function which filters value and key.
- * @param {boolean} chain    Loop through prototype properties too.
+ * Regular mixin function.
  */
-var merger = function (filter, chain) {
-  var merge = mixer(
-    filter, 
-    chain, 
-    function (target) {
-      return deepClone(target);
-    },
-    function (srcVal, targetVal) {
-      if (isObject(srcVal) && isObject(targetVal)) {
-        // inception, deep merge objects
-        return merge(targetVal, srcVal);
-      } else {
-        // make sure arrays, regexp, date, objects are cloned
-        return deepClone(srcVal);
-      }
-    }
-  );
-  
-  return merge;
-};
+module.exports.mixIn = mixer();
 
-module.exports.getMixin = mixer;
-module.exports.getMerger = merger;
-},{"mout/lang/deepClone":7,"mout/lang/isObject":10,"mout/object/forIn":14,"mout/object/forOwn":15}],2:[function(require,module,exports){
+/**
+ * mixin for functions only.
+ */
+module.exports.mixInFunctions = mixer({
+  filter: isFunction
+});
+
+/**
+ * mixin for functions including prototype chain.
+ */
+module.exports.mixInChainFunctions = mixer({
+  filter: isFunction,
+  chain: true
+});
+
+/**
+ * Regular object merger function.
+ */
+module.exports.merge = merge;
+
+/**
+ * merge objects including prototype chain properties.
+ */
+module.exports.mergeChain = mixer({
+  getTarget: deepClone,
+  getValue: mergeSourceToTarget,
+  chain: true
+});
+
+},{"mout/lang/deepClone":7,"mout/lang/isFunction":9,"mout/lang/isObject":11,"mout/object/forIn":15,"mout/object/forOwn":16}],2:[function(require,module,exports){
 
 
     /**
@@ -161,7 +186,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":13,"./prop":5}],5:[function(require,module,exports){
+},{"../object/deepMatches":14,"./prop":5}],5:[function(require,module,exports){
 
 
     /**
@@ -228,7 +253,7 @@ var mixIn = require('../object/mixIn');
 
 
 
-},{"../object/mixIn":17,"./isPlainObject":11,"./kindOf":12}],7:[function(require,module,exports){
+},{"../object/mixIn":18,"./isPlainObject":12,"./kindOf":13}],7:[function(require,module,exports){
 var clone = require('./clone');
 var forOwn = require('../object/forOwn');
 var kindOf = require('./kindOf');
@@ -278,7 +303,7 @@ var isPlainObject = require('./isPlainObject');
 
 
 
-},{"../object/forOwn":15,"./clone":6,"./isPlainObject":11,"./kindOf":12}],8:[function(require,module,exports){
+},{"../object/forOwn":16,"./clone":6,"./isPlainObject":12,"./kindOf":13}],8:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -288,7 +313,17 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":9}],9:[function(require,module,exports){
+},{"./isKind":10}],9:[function(require,module,exports){
+var isKind = require('./isKind');
+    /**
+     */
+    function isFunction(val) {
+        return isKind(val, 'Function');
+    }
+    module.exports = isFunction;
+
+
+},{"./isKind":10}],10:[function(require,module,exports){
 var kindOf = require('./kindOf');
     /**
      * Check if value is from a specific "kind".
@@ -299,7 +334,7 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":12}],10:[function(require,module,exports){
+},{"./kindOf":13}],11:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -309,7 +344,7 @@ var isKind = require('./isKind');
     module.exports = isObject;
 
 
-},{"./isKind":9}],11:[function(require,module,exports){
+},{"./isKind":10}],12:[function(require,module,exports){
 
 
     /**
@@ -325,7 +360,7 @@ var isKind = require('./isKind');
 
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -347,7 +382,7 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var forOwn = require('./forOwn');
 var isArray = require('../lang/isArray');
 
@@ -404,7 +439,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":8,"./forOwn":15}],14:[function(require,module,exports){
+},{"../lang/isArray":8,"./forOwn":16}],15:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -468,7 +503,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -489,7 +524,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":14,"./hasOwn":16}],16:[function(require,module,exports){
+},{"./forIn":15,"./hasOwn":17}],17:[function(require,module,exports){
 
 
     /**
@@ -503,7 +538,7 @@ var forIn = require('./forIn');
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -533,7 +568,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":15}],18:[function(require,module,exports){
+},{"./forOwn":16}],19:[function(require,module,exports){
 /**
  * Stampit
  **
@@ -547,18 +582,10 @@ var forEach = require('mout/array/forEach');
 var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
+var isFunction = require('mout/lang/isFunction');
 var slice = [].slice;
 
-function isFunction(val) {
-  return typeof val === 'function';
-}
-
 var mixer = require('./mixer');
-var mixIn = mixer.getMixin(); // Regular mixin function.
-var mixInFunctions = mixer.getMixin(isFunction); // mixin for functions only.
-var mixInChainFunctions = mixer.getMixin(isFunction, true); // mixin for functions including prototype chain.
-var merge = mixer.getMerger(); // Regular object merger function.
-var mergeChain = mixer.getMerger(null, true); // merge objects including prototype chain properties.
 
 // Avoiding JSHist W003 violations.
 var stampit;
@@ -598,12 +625,12 @@ function extractFunctions(arg) {
 
 function addMethods(fixed, methods) {
   var args = [fixed.methods].concat(methods);
-  mixInFunctions.apply(null, args);
+  mixer.mixInFunctions.apply(null, args);
   return fixed.methods;
 }
 function addState(fixed, states) {
   var args = [fixed.state].concat(states);
-  fixed.state = merge.apply(null, args);
+  fixed.state = mixer.merge.apply(null, args);
   return fixed.state;
 }
 function addEnclose(fixed, encloses) {
@@ -659,8 +686,8 @@ stampit = function stampit(methods, state, enclose) {
   addEnclose(fixed, enclose);
 
   var factory = function factory(properties, args) {
-    var state = properties ? merge({}, fixed.state, properties) : deepClone(fixed.state),
-      instance = mixIn(create(fixed.methods), state);
+    var state = properties ? mixer.merge({}, fixed.state, properties) : deepClone(fixed.state),
+      instance = mixer.mixIn(create(fixed.methods), state);
 
     if (fixed.enclose.length > 0) {
       args = args === undefined ? undefined : slice.call(arguments, 1);
@@ -674,7 +701,7 @@ stampit = function stampit(methods, state, enclose) {
     return instance;
   };
 
-  return mixIn(factory, {
+  return mixer.mixIn(factory, {
     create: factory,
     fixed: fixed,
     /**
@@ -740,18 +767,19 @@ function isStamp(obj) {
  */
 function convertConstructor(Constructor) {
   var stamp = stampit();
-  mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  stamp.fixed.state = mergeChain(stamp.fixed.state, Constructor.prototype);
+  mixer.mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
+  mixer.mixIn(stamp.fixed.state, Constructor);
+  stamp.fixed.state = mixer.mergeChain(stamp.fixed.state, Constructor.prototype);
   addEnclose(stamp.fixed, Constructor);
   return stamp;
 }
 
-module.exports = mixIn(stampit, {
+module.exports = mixer.mixIn(stampit, {
   compose: compose,
   /**
    * Alias for mixIn
    */
-  extend: mixIn,
+  extend: mixer.mixIn,
   /**
    * Take a destination object followed by one or more source objects,
    * and copy the source object properties to the destination object,
@@ -760,7 +788,7 @@ module.exports = mixIn(stampit, {
    * @param {...Object} source An object to copy properties from.
    * @returns {Object}
    */
-  mixIn: mixIn,
+  mixIn: mixer.mixIn,
   /**
    * Check if an object is a stamp.
    * @param {Object} obj An object to check.
@@ -771,7 +799,7 @@ module.exports = mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/object/forOwn":15}]},{},[18])
-(18)
+},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isFunction":9,"mout/object/forOwn":16}]},{},[19])
+(19)
 });
 ;

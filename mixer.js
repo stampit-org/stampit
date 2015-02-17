@@ -3,15 +3,18 @@ var forOwn = require('mout/object/forOwn');
 var forIn = require('mout/object/forIn');
 var deepClone = require('mout/lang/deepClone');
 var isObject = require('mout/lang/isObject');
+var isFunction = require('mout/lang/isFunction');
 
 /**
  * Creates mixin functions of all kinds.
- * @param {function(object, string)} filter    Function which filters value and key.
- * @param {boolean} chain    Loop through prototype properties too.
- * @param {function(object)} getTarget    Converts an object object to a target.
- * @param {function(object, object)} getValue    Converts src and dst values to a new value.
+ * @param {object} opts    Options.
+ * @param {function(object, string)} opts.filter    Function which filters value and key.
+ * @param {boolean} opts.chain    Loop through prototype properties too.
+ * @param {function(object)} opts.getTarget    Converts an object object to a target.
+ * @param {function(object, object)} opts.getValue    Converts src and dst values to a new value.
  */
-var mixer = function (filter, chain, getTarget, getValue) {
+var mixer = function (opts) {
+  opts = opts || {};
   /**
    * Combine properties from all the objects into first one.
    * - This method affects target object in place, if you want to create a new Object pass an empty object as first param.
@@ -19,56 +22,79 @@ var mixer = function (filter, chain, getTarget, getValue) {
    * @param {object[]} objects    Objects to be combined (0...n objects).
    * @return {object} Target Object.
    */
-  return function mixIn(target, objects){
-    var loop = chain ? forIn : forOwn;
+  return function mixIn(target, objects) {
+    var loop = opts.chain ? forIn : forOwn;
     var i = 0,
       n = arguments.length,
       obj;
-    target = getTarget ? getTarget(target) : target;
-    
-    while(++i < n){
+    target = opts.getTarget ? opts.getTarget(target) : target;
+
+    while (++i < n) {
       obj = arguments[i];
       if (obj) {
         loop(
-          obj, 
+          obj,
           function (val, key) {
-          if (filter && !filter(val, key)) {
-            return;
-          }
-          
-          this[key] = getValue ? getValue(val, this[key]) : val;
-        },
-        target);
+            if (opts.filter && !opts.filter(val, key)) {
+              return;
+            }
+
+            this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
+          },
+          target);
       }
     }
     return target;
   }
 };
 
+var merge = mixer({
+  getTarget: deepClone,
+  getValue: mergeSourceToTarget
+});
+
+function mergeSourceToTarget(srcVal, targetVal) {
+  if (isObject(srcVal) && isObject(targetVal)) {
+    // inception, deep merge objects
+    return merge(targetVal, srcVal);
+  } else {
+    // make sure arrays, regexp, date, objects are cloned
+    return deepClone(srcVal);
+  }
+}
+
+module.exports = mixer;
 
 /**
- * Creates merge functions of all kinds.
- * @param {function(object, string)} filter    Function which filters value and key.
- * @param {boolean} chain    Loop through prototype properties too.
+ * Regular mixin function.
  */
-var merger = function (filter, chain) {
-  var merge = mixer(
-    filter, 
-    chain,
-    deepClone,
-    function (srcVal, targetVal) {
-      if (isObject(srcVal) && isObject(targetVal)) {
-        // inception, deep merge objects
-        return merge(targetVal, srcVal);
-      } else {
-        // make sure arrays, regexp, date, objects are cloned
-        return deepClone(srcVal);
-      }
-    }
-  );
-  
-  return merge;
-};
+module.exports.mixIn = mixer();
 
-module.exports.getMixin = mixer;
-module.exports.getMerger = merger;
+/**
+ * mixin for functions only.
+ */
+module.exports.mixInFunctions = mixer({
+  filter: isFunction
+});
+
+/**
+ * mixin for functions including prototype chain.
+ */
+module.exports.mixInChainFunctions = mixer({
+  filter: isFunction,
+  chain: true
+});
+
+/**
+ * Regular object merger function.
+ */
+module.exports.merge = merge;
+
+/**
+ * merge objects including prototype chain properties.
+ */
+module.exports.mergeChain = mixer({
+  getTarget: deepClone,
+  getValue: mergeSourceToTarget,
+  chain: true
+});

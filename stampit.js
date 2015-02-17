@@ -11,18 +11,10 @@ var forEach = require('mout/array/forEach');
 var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
+var isFunction = require('mout/lang/isFunction');
 var slice = [].slice;
 
-function isFunction(val) {
-  return typeof val === 'function';
-}
-
 var mixer = require('./mixer');
-var mixIn = mixer.getMixin(); // Regular mixin function.
-var mixInFunctions = mixer.getMixin(isFunction); // mixin for functions only.
-var mixInChainFunctions = mixer.getMixin(isFunction, true); // mixin for functions including prototype chain.
-var merge = mixer.getMerger(); // Regular object merger function.
-var mergeChain = mixer.getMerger(null, true); // merge objects including prototype chain properties.
 
 // Avoiding JSHist W003 violations.
 var stampit;
@@ -62,12 +54,12 @@ function extractFunctions(arg) {
 
 function addMethods(fixed, methods) {
   var args = [fixed.methods].concat(methods);
-  mixInFunctions.apply(null, args);
+  mixer.mixInFunctions.apply(null, args);
   return fixed.methods;
 }
 function addState(fixed, states) {
   var args = [fixed.state].concat(states);
-  fixed.state = merge.apply(null, args);
+  fixed.state = mixer.merge.apply(null, args);
   return fixed.state;
 }
 function addEnclose(fixed, encloses) {
@@ -123,8 +115,8 @@ stampit = function stampit(methods, state, enclose) {
   addEnclose(fixed, enclose);
 
   var factory = function factory(properties, args) {
-    var state = properties ? merge({}, fixed.state, properties) : deepClone(fixed.state),
-      instance = mixIn(create(fixed.methods), state);
+    var state = properties ? mixer.merge({}, fixed.state, properties) : deepClone(fixed.state),
+      instance = mixer.mixIn(create(fixed.methods), state);
 
     if (fixed.enclose.length > 0) {
       args = args === undefined ? undefined : slice.call(arguments, 1);
@@ -138,7 +130,7 @@ stampit = function stampit(methods, state, enclose) {
     return instance;
   };
 
-  return mixIn(factory, {
+  return mixer.mixIn(factory, {
     create: factory,
     fixed: fixed,
     /**
@@ -204,19 +196,19 @@ function isStamp(obj) {
  */
 function convertConstructor(Constructor) {
   var stamp = stampit();
-  mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  mixIn(stamp.fixed.state, Constructor);
-  stamp.fixed.state = mergeChain(stamp.fixed.state, Constructor.prototype);
+  mixer.mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
+  mixer.mixIn(stamp.fixed.state, Constructor);
+  stamp.fixed.state = mixer.mergeChain(stamp.fixed.state, Constructor.prototype);
   addEnclose(stamp.fixed, Constructor);
   return stamp;
 }
 
-module.exports = mixIn(stampit, {
+module.exports = mixer.mixIn(stampit, {
   compose: compose,
   /**
    * Alias for mixIn
    */
-  extend: mixIn,
+  extend: mixer.mixIn,
   /**
    * Take a destination object followed by one or more source objects,
    * and copy the source object properties to the destination object,
@@ -225,7 +217,7 @@ module.exports = mixIn(stampit, {
    * @param {...Object} source An object to copy properties from.
    * @returns {Object}
    */
-  mixIn: mixIn,
+  mixIn: mixer.mixIn,
   /**
    * Check if an object is a stamp.
    * @param {Object} obj An object to check.
