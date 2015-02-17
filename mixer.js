@@ -54,10 +54,8 @@ var mixer = function (filter, chain, getTarget, getValue) {
 var merger = function (filter, chain) {
   var merge = mixer(
     filter, 
-    chain, 
-    function (target) {
-      return deepClone(target);
-    },
+    chain,
+    deepClone,
     function (srcVal, targetVal) {
       if (isObject(srcVal) && isObject(targetVal)) {
         // inception, deep merge objects

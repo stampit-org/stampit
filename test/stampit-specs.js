@@ -271,13 +271,13 @@ test('stampit.convertConstructor()', function () {
   equal(obj.staticProp, 'static',
     'Non prototype properties should be mixed in.');
 
-  equal(obj.foo(), 'foo',
+  equal(obj.foo && obj.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
   equal(obj.base, 'base',
     'Prototype property should be mixed in.');
 
-  equal(obj.baseFunc(), 'baseFunc',
+  equal(obj.baseFunc && obj.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 });
 
@@ -318,22 +318,22 @@ test('stampit.convertConstructor() composed', function () {
   equal(t.thing, 'initialized',
     'Constructor should execute.');
 
-  equal(t.foo(), 'foo',
+  equal(t.foo && t.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
   equal(t.base, 'base',
     'Prototype property should be mixed in.');
 
-  equal(t.baseFunc(), 'baseFunc',
+  equal(t.baseFunc && t.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 
   equal(t.baseOfBase, 'baseOfBase',
     'Prototype property chain should be mixed in.');
 
-  equal(t.baseOfBaseFunc(), 'baseOfBaseFunc',
+  equal(t.baseOfBaseFunc && t.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype function chain should be mixed in.');
 
-  equal(t.bar(), 'bar',
+  equal(t.bar && t.bar(), 'bar',
     'Should be able to add new methods with .compose()');
 
   equal(t.baz, 'baz',
@@ -342,28 +342,28 @@ test('stampit.convertConstructor() composed', function () {
   equal(u.thing, 'initialized',
     'Constructor should execute.');
 
-  equal(u.foo(), 'foo',
+  equal(u.foo && u.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
   equal(u.base, 'base',
     'Prototype property should be mixed in.');
 
-  equal(u.baseFunc(), 'baseFunc',
+  equal(u.baseFunc && u.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 
   equal(u.baseOfBase, 'baseOfBase',
     'Prototype property chain should be mixed in.');
 
-  equal(u.baseOfBaseFunc(), 'baseOfBaseFunc',
+  equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype function chain should be mixed in.');
 
-  equal(u.bar(), 'bar',
+  equal(u.bar && u.bar(), 'bar',
     'Should be able to add new methods with .compose()');
 
   equal(u.baz, 'baz',
     'Should be able to add new methods with .compose()');
 
-  equal(u.baseOfBaseFunc(), 'baseOfBaseFunc',
+  equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype chain function should be mixed in.');
 });
 
