@@ -66,6 +66,7 @@ function addEnclose(fixed, encloses) {
 }
 
 function cloneAndExtend(fixed, extensionFunction, args) {
+  args = arguments.length > 3 ? slice.call(arguments, 2, arguments.length) : args;
   var stamp = stampit(fixed.methods, fixed.state, fixed.enclose);
   extensionFunction(stamp.fixed, args);
   return stamp;
@@ -130,28 +131,26 @@ stampit = function stampit(methods, state, enclose) {
   return mixer.mixIn(factory, {
     create: factory,
     fixed: fixed,
+
     /**
      * Take n objects and add them to the methods prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    methods: function stampMethods() {
-      return cloneAndExtend(fixed, addMethods, slice.call(arguments));
-    },
+    methods: cloneAndExtend.bind(factory, fixed, addMethods),
+
     /**
      * Take n objects and add them to the state prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    state: function stampState() {
-      return cloneAndExtend(fixed, addState, slice.call(arguments));
-    },
+    state: cloneAndExtend.bind(factory, fixed, addState),
+
     /**
      * Take n functions, an array of functions, or n objects and add
      * the functions to the enclose prototype.
      * @return {Object} The factory in question (`this`).
      */
-    enclose: function stampEnclose() {
-      return cloneAndExtend(fixed, addEnclose, slice.call(arguments));
-    },
+    enclose: cloneAndExtend.bind(factory, fixed, addEnclose),
+
     /**
      * Take one or more factories produced from stampit() and
      * combine them with `this` to produce and return a new factory.
