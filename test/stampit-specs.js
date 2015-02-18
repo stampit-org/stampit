@@ -341,11 +341,11 @@ test('stampit.convertConstructor()', function () {
   equal(obj.thing, 'initialized',
     'Constructor should execute.');
 
-  ok(obj.staticFunc,
-    'Non prototype functions should be mixed in.');
+  equal(obj.staticFunc, undefined,
+    'Non prototype functions should not be mixed in.');
 
-  equal(obj.staticProp, 'static',
-    'Non prototype properties should be mixed in.');
+  equal(obj.staticProp, undefined,
+    'Non prototype properties should not be mixed in.');
 
   equal(obj.foo && obj.foo(), 'foo',
     'Constructor prototype should be mixed in.');

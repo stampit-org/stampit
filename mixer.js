@@ -93,7 +93,7 @@ module.exports.merge = merge;
 /**
  * merge objects including prototype chain properties.
  */
-module.exports.mergeChainObjects = mixer({
+module.exports.mergeChainNonFunctions = mixer({
   filter: function (val) { return !isFunction(val); },
   getTarget: deepClone,
   getValue: mergeSourceToTarget,

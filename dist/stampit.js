@@ -94,7 +94,7 @@ module.exports.merge = merge;
 /**
  * merge objects including prototype chain properties.
  */
-module.exports.mergeChainObjects = mixer({
+module.exports.mergeChainNonFunctions = mixer({
   filter: function (val) { return !isFunction(val); },
   getTarget: deepClone,
   getValue: mergeSourceToTarget,
@@ -766,8 +766,7 @@ function isStamp(obj) {
 function convertConstructor(Constructor) {
   var stamp = stampit();
   mixer.mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  mixer.mixIn(stamp.fixed.state, Constructor);
-  stamp.fixed.state = mixer.mergeChainObjects(stamp.fixed.state, Constructor.prototype);
+  stamp.fixed.state = mixer.mergeChainNonFunctions(stamp.fixed.state, Constructor.prototype);
   addEnclose(stamp.fixed, Constructor);
   return stamp;
 }
