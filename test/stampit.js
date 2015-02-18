@@ -584,6 +584,7 @@ var map = require('mout/array/map');
 var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
 var isFunction = require('mout/lang/isFunction');
+var isArray = Array.isArray || require('mout/lang/isArray');
 var slice = [].slice;
 
 var mixer = require('./mixer');
@@ -596,12 +597,6 @@ var create = Object.create || function (o) {
     F.prototype = o;
     return new F();
   };
-
-if (!Array.isArray) {
-  Array.isArray = function (vArg) {
-    return Object.prototype.toString.call(vArg) === "[object Array]";
-  };
-}
 
 function extractFunctions(arg) {
   if (isFunction(arg)) {
@@ -618,7 +613,7 @@ function extractFunctions(arg) {
       });
     });
     return arr;
-  } else if (Array.isArray(arg)) {
+  } else if (isArray(arg)) {
     return slice.call(arg);
   }
   return [];
@@ -635,7 +630,7 @@ function addState(fixed, states) {
   return fixed.state;
 }
 function addEnclose(fixed, encloses) {
-  encloses = Array.isArray(encloses) ? extractFunctions.apply(null, encloses) : extractFunctions(encloses);
+  encloses = isArray(encloses) ? extractFunctions.apply(null, encloses) : extractFunctions(encloses);
   fixed.enclose = fixed.enclose.concat(encloses);
   return fixed.enclose;
 }
@@ -654,7 +649,7 @@ function cloneAndExtend(fixed, extensionFunction, args) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 function compose(factories) {
-  factories = Array.isArray(factories) ? factories : slice.call(arguments);
+  factories = isArray(factories) ? factories : slice.call(arguments);
   var result = stampit();
   forEach(factories, function (source) {
     if (source && source.fixed) {
@@ -735,7 +730,7 @@ stampit = function stampit(methods, state, enclose) {
      * @return {Function} A new stampit factory composed from arguments.
      */
     compose: function (factories) {
-      var args = Array.isArray(factories) ? factories : slice.call(arguments);
+      var args = isArray(factories) ? factories : slice.call(arguments);
       args = [this].concat(args);
       return compose(args);
     }
@@ -800,7 +795,7 @@ module.exports = mixer.mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isFunction":9,"mout/object/forOwn":16}]},{},[19])
+},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isArray":8,"mout/lang/isFunction":9,"mout/object/forOwn":16}]},{},[19])
 (19)
 });
 ;
