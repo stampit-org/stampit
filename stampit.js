@@ -13,6 +13,7 @@ var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
 var isFunction = require('mout/lang/isFunction');
 var isArray = Array.isArray || require('mout/lang/isArray');
+var isObject = require('mout/lang/isObject');
 var slice = [].slice;
 
 var mixer = require('./mixer');
@@ -34,7 +35,7 @@ function extractFunctions(arg) {
         return fn;
       }
     });
-  } else if (typeof arg === 'object') {
+  } else if (isObject(arg)) {
     var arr = [];
     forEach(slice.call(arguments), function (obj) {
       forOwn(obj, function (fn) {
@@ -179,7 +180,7 @@ function isStamp(obj) {
   isFunction(obj.methods) &&
   isFunction(obj.state) &&
   isFunction(obj.enclose) &&
-  typeof obj.fixed === 'object'
+  isObject(obj.fixed)
   );
 }
 

@@ -585,6 +585,7 @@ var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
 var isFunction = require('mout/lang/isFunction');
 var isArray = Array.isArray || require('mout/lang/isArray');
+var isObject = require('mout/lang/isObject');
 var slice = [].slice;
 
 var mixer = require('./mixer');
@@ -592,6 +593,7 @@ var mixer = require('./mixer');
 // Avoiding JSHist W003 violations.
 var stampit;
 
+// We are not using 'mout/lang/createObject' shim because it does too much. We need simpler implementation.
 var create = Object.create || function (o) {
     function F() {}
     F.prototype = o;
@@ -605,7 +607,7 @@ function extractFunctions(arg) {
         return fn;
       }
     });
-  } else if (typeof arg === 'object') {
+  } else if (isObject(arg)) {
     var arr = [];
     forEach(slice.call(arguments), function (obj) {
       forOwn(obj, function (fn) {
@@ -750,7 +752,7 @@ function isStamp(obj) {
   isFunction(obj.methods) &&
   isFunction(obj.state) &&
   isFunction(obj.enclose) &&
-  typeof obj.fixed === 'object'
+  isObject(obj.fixed)
   );
 }
 
@@ -795,7 +797,7 @@ module.exports = mixer.mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isArray":8,"mout/lang/isFunction":9,"mout/object/forOwn":16}]},{},[19])
+},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isArray":8,"mout/lang/isFunction":9,"mout/lang/isObject":11,"mout/object/forOwn":16}]},{},[19])
 (19)
 });
 ;
