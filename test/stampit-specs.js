@@ -20,7 +20,7 @@ test('.create()', function () {
 test('.create(properties)', function () {
   var obj = stampit({}, { foo: 'bar' });
   obj = obj.create({ foo: 'foo' });
-  
+
   equal(obj.foo, 'foo',
     'should override defaults.');
 });
@@ -31,7 +31,7 @@ test('stampit(methods)', function () {
   var obj = stampit({
     foo: function () { return 'foo'; }
   }).create();
-  
+
   ok(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
 });
@@ -97,7 +97,7 @@ module('Basics State');
 
 test('stampit({}, state)', function () {
   var obj = stampit({}, { foo: { bar: 'bar' } }).create();
-  
+
   equal(obj.foo.bar, 'bar',
     'Should set default state.');
 });
@@ -166,7 +166,7 @@ test('stampit({}, {}, enclose)', function () {
     var secret = 'foo';
     this.getSecret = function () { return secret; };
   }).create();
-  
+
   equal(obj.getSecret(), 'foo',
     'Should set closure.');
 });
@@ -182,19 +182,37 @@ test('stampit().enclose()', function () {
   }, {
     baz: function baz() { this.c = 'c'; }
   }).create();
-  
+
   equal(obj.getSecret(), 'foo',
     'Should set closure.');
   ok(obj.a && obj.b && obj.c,
     'Should allow chaining and take object literals.');
 });
 
-test('stampit().enclose(args)', function () {
+test('stampit({}, {}, enclose).enclose()', function () {
+  var obj = stampit(null, null, function () {
+    var secret = 'foo';
+    this.getSecret = function () { return secret; };
+  }).enclose(function () {
+    this.a = 'a';
+  }).enclose({
+    bar: function bar() { this.b = 'b'; }
+  }, {
+    baz: function baz() { this.c = 'c'; }
+  }).create();
+
+  equal(obj.getSecret(), 'foo',
+    'Should set closure.');
+  ok(obj.a && obj.b && obj.c,
+    'Should allow chaining and take object literals.');
+});
+
+module('Closure arguments');
+
+test('stamp.create({}, args)', function () {
   var obj = stampit().enclose(function (a, b) {
-    var secretA = a;
-    var secretB = b;
-    this.getA = function () { return secretA; };
-    this.getB = function () { return secretB; };
+    this.getA = function () { return a; };
+    this.getB = function () { return b; };
   }).create(null, null, 0);
 
   equal(obj.getA(), null,
@@ -215,7 +233,7 @@ test('stamp.create({}, undefined, arg2)', function () {
     'Should pass variables to closures event after an undefined one.');
 });
 
-module('Basics isStamp');
+module('isStamp');
 
 test('stampit.isStamp() with stamps', function () {
   var emptyStamp = stampit();
