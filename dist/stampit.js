@@ -684,11 +684,11 @@ stampit = function stampit(methods, state, enclose) {
   addEnclose(fixed, enclose);
 
   var factory = function factory(properties, args) {
-    var state = properties ? mixer.merge({}, fixed.state, properties) : deepClone(fixed.state),
+    var state = properties ? mixer.merge(fixed.state, properties) : deepClone(fixed.state),
       instance = mixer.mixIn(create(fixed.methods), state);
 
     if (fixed.enclose.length > 0) {
-      args = args === undefined ? undefined : slice.call(arguments, 1);
+      args = slice.call(arguments, 1, arguments.length);
       forEach(fixed.enclose, function (fn) {
         if (isFunction(fn)) {
           instance = fn.apply(instance, args) || instance;

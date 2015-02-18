@@ -203,6 +203,18 @@ test('stampit().enclose(args)', function () {
     'Should pass variables to closures.');
 });
 
+test('stamp.create({}, undefined, arg2)', function () {
+  var obj = stampit().enclose(function (absent, present) {
+    this.getAbsent = function () { return absent; };
+    this.getPresent = function () { return present; };
+  }).create(null, undefined, 'I exist');
+
+  equal(obj.getAbsent(), undefined,
+    'Should pass undefined variables to closures.');
+  equal(obj.getPresent(), 'I exist',
+    'Should pass variables to closures event after an undefined one.');
+});
+
 module('Basics isStamp');
 
 test('stampit.isStamp() with stamps', function () {
