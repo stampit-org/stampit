@@ -9,6 +9,7 @@
 'use strict';
 var forEach = require('mout/array/forEach');
 var map = require('mout/array/map');
+var bind = require('mout/function/bind'); // IE8 shim
 var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
 var isFunction = require('mout/lang/isFunction');
@@ -136,20 +137,20 @@ stampit = function stampit(methods, state, enclose) {
      * Take n objects and add them to the methods prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    methods: cloneAndExtend.bind(factory, fixed, addMethods),
+    methods: bind(cloneAndExtend, factory, fixed, addMethods),
 
     /**
      * Take n objects and add them to the state prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    state: cloneAndExtend.bind(factory, fixed, addState),
+    state: bind(cloneAndExtend, factory, fixed, addState),
 
     /**
      * Take n functions, an array of functions, or n objects and add
      * the functions to the enclose prototype.
      * @return {Object} The factory in question (`this`).
      */
-    enclose: cloneAndExtend.bind(factory, fixed, addEnclose),
+    enclose: bind(cloneAndExtend, factory, fixed, addEnclose),
 
     /**
      * Take one or more factories produced from stampit() and

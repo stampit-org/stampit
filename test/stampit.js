@@ -101,7 +101,7 @@ module.exports.mergeChainNonFunctions = mixer({
   chain: true
 });
 
-},{"mout/lang/deepClone":7,"mout/lang/isFunction":9,"mout/lang/isObject":11,"mout/object/forIn":15,"mout/object/forOwn":16}],2:[function(require,module,exports){
+},{"mout/lang/deepClone":8,"mout/lang/isFunction":10,"mout/lang/isObject":12,"mout/object/forIn":16,"mout/object/forOwn":17}],2:[function(require,module,exports){
 
 
     /**
@@ -151,7 +151,32 @@ var makeIterator = require('../function/makeIterator_');
      module.exports = map;
 
 
-},{"../function/makeIterator_":4,"./forEach":2}],4:[function(require,module,exports){
+},{"../function/makeIterator_":5,"./forEach":2}],4:[function(require,module,exports){
+
+
+    function slice(arr, offset){
+        return Array.prototype.slice.call(arr, offset || 0);
+    }
+
+    /**
+     * Return a function that will execute in the given context, optionally adding any additional supplied parameters to the beginning of the arguments collection.
+     * @param {Function} fn  Function.
+     * @param {object} context   Execution context.
+     * @param {rest} args    Arguments (0...n arguments).
+     * @return {Function} Wrapped Function.
+     */
+    function bind(fn, context, args){
+        var argsArr = slice(arguments, 2); //curried args
+        return function(){
+            return fn.apply(context, argsArr.concat(slice(arguments)));
+        };
+    }
+
+    module.exports = bind;
+
+
+
+},{}],5:[function(require,module,exports){
 var prop = require('./prop');
 var deepMatches = require('../object/deepMatches');
 
@@ -187,7 +212,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{"../object/deepMatches":14,"./prop":5}],5:[function(require,module,exports){
+},{"../object/deepMatches":15,"./prop":6}],6:[function(require,module,exports){
 
 
     /**
@@ -203,7 +228,7 @@ var deepMatches = require('../object/deepMatches');
 
 
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var kindOf = require('./kindOf');
 var isPlainObject = require('./isPlainObject');
 var mixIn = require('../object/mixIn');
@@ -254,7 +279,7 @@ var mixIn = require('../object/mixIn');
 
 
 
-},{"../object/mixIn":18,"./isPlainObject":12,"./kindOf":13}],7:[function(require,module,exports){
+},{"../object/mixIn":19,"./isPlainObject":13,"./kindOf":14}],8:[function(require,module,exports){
 var clone = require('./clone');
 var forOwn = require('../object/forOwn');
 var kindOf = require('./kindOf');
@@ -304,7 +329,7 @@ var isPlainObject = require('./isPlainObject');
 
 
 
-},{"../object/forOwn":16,"./clone":6,"./isPlainObject":12,"./kindOf":13}],8:[function(require,module,exports){
+},{"../object/forOwn":17,"./clone":7,"./isPlainObject":13,"./kindOf":14}],9:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -314,7 +339,7 @@ var isKind = require('./isKind');
     module.exports = isArray;
 
 
-},{"./isKind":10}],9:[function(require,module,exports){
+},{"./isKind":11}],10:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -324,7 +349,7 @@ var isKind = require('./isKind');
     module.exports = isFunction;
 
 
-},{"./isKind":10}],10:[function(require,module,exports){
+},{"./isKind":11}],11:[function(require,module,exports){
 var kindOf = require('./kindOf');
     /**
      * Check if value is from a specific "kind".
@@ -335,7 +360,7 @@ var kindOf = require('./kindOf');
     module.exports = isKind;
 
 
-},{"./kindOf":13}],11:[function(require,module,exports){
+},{"./kindOf":14}],12:[function(require,module,exports){
 var isKind = require('./isKind');
     /**
      */
@@ -345,7 +370,7 @@ var isKind = require('./isKind');
     module.exports = isObject;
 
 
-},{"./isKind":10}],12:[function(require,module,exports){
+},{"./isKind":11}],13:[function(require,module,exports){
 
 
     /**
@@ -361,7 +386,7 @@ var isKind = require('./isKind');
 
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 
     var _rKind = /^\[object (.*)\]$/,
@@ -383,7 +408,7 @@ var isKind = require('./isKind');
     module.exports = kindOf;
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var forOwn = require('./forOwn');
 var isArray = require('../lang/isArray');
 
@@ -440,7 +465,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{"../lang/isArray":8,"./forOwn":16}],15:[function(require,module,exports){
+},{"../lang/isArray":9,"./forOwn":17}],16:[function(require,module,exports){
 
 
     var _hasDontEnumBug,
@@ -504,7 +529,7 @@ var isArray = require('../lang/isArray');
 
 
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var hasOwn = require('./hasOwn');
 var forIn = require('./forIn');
 
@@ -525,7 +550,7 @@ var forIn = require('./forIn');
 
 
 
-},{"./forIn":15,"./hasOwn":17}],17:[function(require,module,exports){
+},{"./forIn":16,"./hasOwn":18}],18:[function(require,module,exports){
 
 
     /**
@@ -539,7 +564,7 @@ var forIn = require('./forIn');
 
 
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var forOwn = require('./forOwn');
 
     /**
@@ -569,7 +594,7 @@ var forOwn = require('./forOwn');
     module.exports = mixIn;
 
 
-},{"./forOwn":16}],19:[function(require,module,exports){
+},{"./forOwn":17}],20:[function(require,module,exports){
 /**
  * Stampit
  **
@@ -581,6 +606,7 @@ var forOwn = require('./forOwn');
 'use strict';
 var forEach = require('mout/array/forEach');
 var map = require('mout/array/map');
+var bind = require('mout/function/bind'); // IE8 shim
 var forOwn = require('mout/object/forOwn');
 var deepClone = require('mout/lang/deepClone');
 var isFunction = require('mout/lang/isFunction');
@@ -708,20 +734,20 @@ stampit = function stampit(methods, state, enclose) {
      * Take n objects and add them to the methods prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    methods: cloneAndExtend.bind(factory, fixed, addMethods),
+    methods: bind(cloneAndExtend, factory, fixed, addMethods),
 
     /**
      * Take n objects and add them to the state prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    state: cloneAndExtend.bind(factory, fixed, addState),
+    state: bind(cloneAndExtend, factory, fixed, addState),
 
     /**
      * Take n functions, an array of functions, or n objects and add
      * the functions to the enclose prototype.
      * @return {Object} The factory in question (`this`).
      */
-    enclose: cloneAndExtend.bind(factory, fixed, addEnclose),
+    enclose: bind(cloneAndExtend, factory, fixed, addEnclose),
 
     /**
      * Take one or more factories produced from stampit() and
@@ -795,7 +821,7 @@ module.exports = mixer.mixIn(stampit, {
   convertConstructor: convertConstructor
 });
 
-},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/lang/deepClone":7,"mout/lang/isArray":8,"mout/lang/isFunction":9,"mout/lang/isObject":11,"mout/object/forOwn":16}]},{},[19])
-(19)
+},{"./mixer":1,"mout/array/forEach":2,"mout/array/map":3,"mout/function/bind":4,"mout/lang/deepClone":8,"mout/lang/isArray":9,"mout/lang/isFunction":10,"mout/lang/isObject":12,"mout/object/forOwn":17}]},{},[20])
+(20)
 });
 ;
