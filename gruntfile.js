@@ -83,6 +83,11 @@ module.exports = function(grunt) {
               browserName: 'safari',
               platform: 'Mac 10.6',
               version: 5
+            },
+            {
+              browserName: 'iphone',
+              platform: 'iphone 6.1',
+              version: 6
             }
           ]
         }
@@ -109,7 +114,7 @@ module.exports = function(grunt) {
         livereload: true
       },
       scripts: {
-        files: ['./stampit.js', './test/stampit-specs.js', './mixinchain.js'],
+        files: ['./stampit.js', './test/stampit-specs.js', './mixer.js'],
         tasks: ['default']
       }
     }
