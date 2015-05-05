@@ -7,11 +7,11 @@
  * http://opensource.org/licenses/MIT
  **/
 'use strict';
-var forEach = require('mout/array/forEach');
-var mixIn = require('mout/object/mixIn');
-var merge = require('mout/object/merge');
-var map = require('mout/array/map');
-var forOwn = require('mout/object/forOwn');
+var forEach = require('lodash/collection/forEach');
+var mixIn = require('lodash/object/assign');
+var merge = require('lodash/object/merge');
+var map = require('lodash/collection/map');
+var forOwn = require('lodash/object/forOwn');
 var mixInChain = require('./mixinchain.js');
 var slice = [].slice;
 

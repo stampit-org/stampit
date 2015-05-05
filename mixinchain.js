@@ -1,4 +1,4 @@
-var forIn = require('mout/object/forIn');
+var forIn = require('lodash/object/forIn');
 
 function copyProp(val, key){
     this[key] = val;
