@@ -710,10 +710,12 @@ test('stampit().fixed.state is same as refs', function () {
   equal(stamp.fixed.refs, stamp.fixed.state);
 });
 
-test('stampit().refs().fixed.state is same as refs', function () {
-  var stamp = stampit(null, { s: 1 }).refs({ s2: 2 });
+test('stampit().state().fixed.state is same as refs().fixed.refs', function () {
+  var stamp = stampit(null, { s: 1 }).state({ s2: 2 });
 
   equal(stamp.fixed.refs, stamp.fixed.state);
+  equal(stamp.fixed.refs.s, stamp.fixed.state.s);
+  equal(stamp.fixed.refs.s2, stamp.fixed.state.s2);
 });
 
 test('stampit.compose().fixed.state is same as refs', function () {
