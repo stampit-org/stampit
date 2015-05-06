@@ -443,12 +443,12 @@ test('stampit.convertConstructor() composed', function () {
     'Prototype chain function should be mixed in.');
 });
 
-module('State safety');
+module('Props safety');
 
-test('Stamp state deep cloned for object created', function () {
+test('Stamp props deep cloned for object created', function () {
   var deep = { foo: 'foo', bar: 'bar' };
-  var stamp1 = stampit().state({ deep: deep, foo: 'foo' });
-  var stamp2 = stampit(null, { deep: deep, foo: 'foo' });
+  var stamp1 = stampit().props({ deep: deep, foo: 'foo' });
+  var stamp2 = stampit(null, null, null, { deep: deep, foo: 'foo' });
 
   var o1 = stamp1();
   var o2 = stamp1();
@@ -465,10 +465,10 @@ test('Stamp state deep cloned for object created', function () {
   notEqual(o1.deep.foo, o2.deep.foo);
 });
 
-test('stamp(state) deep merge into object created', function () {
+test('stamp(props) deep merge into object created', function () {
   var deep = { foo: 'foo', bar: 'bar' };
-  var stamp1 = stampit().state({ deep: deep, foo: 'foo', bar: 'bar' });
-  var stamp2 = stampit(null, { deep: deep, foo: 'foo', bar: 'bar' });
+  var stamp1 = stampit().props({ deep: deep, foo: 'foo', bar: 'bar' });
+  var stamp2 = stampit(null, null, null, { deep: deep, foo: 'foo', bar: 'bar' });
 
   var deep2 = { foo: 'override', baz: 'baz' };
   var o1 = stamp1({ deep: deep2, foo: 'override', baz: 'baz' });
@@ -488,10 +488,10 @@ test('stamp(state) deep merge into object created', function () {
   equal(o2.deep.baz, 'baz');
 });
 
-test('stampit.state(state) deep merge into stamp', function () {
+test('stampit.props(props) deep merge into stamp', function () {
   var stamp = stampit()
-    .state({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
-    .state({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
+    .props({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
+    .props({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
   var o = stamp();
 
   equal(o.foo, 'override');
@@ -502,9 +502,9 @@ test('stampit.state(state) deep merge into stamp', function () {
   equal(o.deep.baz, 'baz');
 });
 
-test('stamp.compose() deep merge state', function () {
-  var stamp = stampit(null, { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
-    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
+test('stamp.compose() deep merge props', function () {
+  var stamp = stampit(null, null, null, { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
+    .compose(stampit(null, null, null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
   var o = stamp();
 
   equal(o.foo, 'override');
@@ -512,6 +512,48 @@ test('stamp.compose() deep merge state', function () {
   equal(o.baz, 'baz');
   equal(o.deep.foo, 'override');
   equal(o.deep.bar, 'bar');
+  equal(o.deep.baz, 'baz');
+});
+
+module('Refs shallow mixing');
+
+test('Stamp refs shallow copied for object created', function () {
+  var deep = { foo: 'foo', bar: 'bar' };
+  var stamp1 = stampit().refs({ deep: deep, foo: 'foo' });
+  var stamp2 = stampit(null, { deep: deep, foo: 'foo' });
+
+  var o1 = stamp1();
+  var o2 = stamp2();
+  o1.deep.foo = 'another value';
+  equal(o1.foo, o2.foo);
+  equal(o1.deep, o2.deep);
+  equal(o1.deep.foo, o2.deep.foo);
+});
+
+test('stampit.refs(refs) shallow copied into stamp', function () {
+  var stamp = stampit()
+    .refs({ deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' })
+    .refs({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
+  var o = stamp();
+
+  equal(o.foo, 'override');
+  equal(o.bar, '1');
+  equal(o.baz, 'baz');
+  equal(o.deep.foo, 'override');
+  equal(o.deep.bar, undefined);
+  equal(o.deep.baz, 'baz');
+});
+
+test('stamp.compose() shallow copy refs', function () {
+  var stamp = stampit(null, { deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' })
+    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
+  var o = stamp();
+
+  equal(o.foo, 'override');
+  equal(o.bar, '1');
+  equal(o.baz, 'baz');
+  equal(o.deep.foo, 'override');
+  equal(o.deep.bar, undefined);
   equal(o.deep.baz, 'baz');
 });
 
@@ -520,56 +562,70 @@ module('Immutability');
 test('Basic stamp immutability', function () {
   var methods = { f: function F1() {} };
   var state = { s: { deep: 1 } };
-  var stamp1 = stampit(methods, state);
+  var props = { p: { deep: 1 } };
+  var stamp1 = stampit(methods, state, null, props);
 
   methods.f = function F2() {};
-  state = { s: { deep: 2 } };
-  var stamp2 = stampit(methods, state);
+  state.s.deep = 2;
+  props.p.deep = 2;
+  var stamp2 = stampit(methods, state, null, props);
 
   notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
   notEqual(stamp1.fixed.methods.f, stamp2.fixed.methods.f);
   notEqual(stamp1.fixed.state, stamp2.fixed.state);
-  notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
-  notEqual(stamp1.fixed.state.s.deep, stamp2.fixed.state.s.deep);
+  equal(stamp1.fixed.state.s, stamp2.fixed.state.s);
+  equal(stamp1.fixed.state.s.deep, stamp2.fixed.state.s.deep);
+  notEqual(stamp1.fixed.props, stamp2.fixed.state);
+  notEqual(stamp1.fixed.props.p, stamp2.fixed.props.p);
+  notEqual(stamp1.fixed.props.p.deep, stamp2.fixed.props.p.deep);
   notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
 });
 
 test('Stamp immutability made of same source', function () {
   var methods = { f: function F1() {} };
   var state = { s: { deep: 1 } };
-  var stamp1 = stampit(methods, state);
-  var stamp2 = stampit(methods, state);
+  var props = { p: { deep: 1 } };
+  var stamp1 = stampit(methods, state, null, props);
+  var stamp2 = stampit(methods, state, null, props);
 
   notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
   notEqual(stamp1.fixed.state, stamp2.fixed.state);
-  notEqual(stamp1.fixed.state.s, stamp2.fixed.state.s);
+  equal(stamp1.fixed.state.s, stamp2.fixed.state.s);
+  notEqual(stamp1.fixed.props, stamp2.fixed.props);
+  notEqual(stamp1.fixed.props.p, stamp2.fixed.props.p);
   notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
 });
 
 test('Basic object immutability', function () {
   var methods = { f: function F1() {} };
   var state = { s: { deep: 1 } };
-  var o1 = stampit(methods, state)();
+  var props = { p: { deep: 1 } };
+  var o1 = stampit(methods, state, null, props)();
 
   methods.f = function F2() {};
-  state = { s: { deep: 2 } };
-  var o2 = stampit(methods, state)();
+  state.s.deep = 2;
+  props.p.deep = 2;
+  var o2 = stampit(methods, state, null, props)();
 
   notEqual(o1, o2);
   notEqual(o1.f, o2.f);
-  notEqual(o1.s, o2.s);
-  notEqual(o1.s.deep, o2.s.deep);
+  equal(o1.s, o2.s);
+  equal(o1.s.deep, o2.s.deep);
+  notEqual(o1.p, o2.p);
+  notEqual(o1.p.deep, o2.p.deep);
 });
 
 test('Stamp chaining functions immutability', function () {
   var stamp1 = stampit();
   var stamp2 = stamp1.methods({ f: function F1() {} });
   var stamp3 = stamp2.state( { s: { deep: 1 } });
-  var stamp4 = stamp3.state(function () { });
-  var stamp5 = stamp4.compose(stampit());
+  var stamp4 = stamp3.enclose(function () { });
+  var stamp5 = stamp2.props( { p: { deep: 1 } });
+  var stamp6 = stamp4.compose(stampit());
 
   notEqual(stamp1, stamp2);
   notEqual(stamp2, stamp3);
   notEqual(stamp3, stamp4);
   notEqual(stamp4, stamp5);
+  notEqual(stamp5, stamp6);
 });
