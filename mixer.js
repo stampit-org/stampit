@@ -1,9 +1,9 @@
 "use strict";
-var forOwn = require('mout/object/forOwn');
-var forIn = require('mout/object/forIn');
-var deepClone = require('mout/lang/deepClone');
-var isObject = require('mout/lang/isObject');
-var isFunction = require('mout/lang/isFunction');
+var forOwn = require('lodash/object/forOwn');
+var forIn = require('lodash/object/forIn');
+var deepClone = require('lodash/lang/cloneDeep');
+var isObject = require('lodash/lang/isObject');
+var isFunction = require('lodash/lang/isFunction');
 
 /**
  * Creates mixin functions of all kinds.

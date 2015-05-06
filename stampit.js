@@ -7,45 +7,39 @@
  * http://opensource.org/licenses/MIT
  **/
 'use strict';
-var forEach = require('mout/array/forEach');
-var map = require('mout/array/map');
-var bind = require('mout/function/bind'); // IE8 shim
-var forOwn = require('mout/object/forOwn');
-var deepClone = require('mout/lang/deepClone');
-var isFunction = require('mout/lang/isFunction');
-var isArray = Array.isArray || require('mout/lang/isArray');
-var isObject = require('mout/lang/isObject');
-var slice = [].slice;
+var forEach = require('lodash/collection/forEach');
+var map = require('lodash/collection/map');
+var bind = require('lodash/function/bind'); // IE8 shim
+var forOwn = require('lodash/object/forOwn');
+var deepClone = require('lodash/lang/cloneDeep');
+var isFunction = require('lodash/lang/isFunction');
+var isArray = require('lodash/lang/isArray');
+var isObject = require('lodash/lang/isObject');
+var create = require('lodash/object/create');
+var slice = require('lodash/array/slice');
 
 var mixer = require('./mixer');
 
 // Avoiding JSHist W003 violations.
 var stampit;
 
-// We are not using 'mout/lang/createObject' shim because it does too much. We need simpler implementation.
-var create = Object.create || function (o) {
-    function F() {}
-    F.prototype = o;
-    return new F();
-  };
-
 function extractFunctions(arg) {
   if (isFunction(arg)) {
-    return map(slice.call(arguments), function (fn) {
+    return map(slice(arguments), function (fn) {
       if (isFunction(fn)) {
         return fn;
       }
     });
   } else if (isObject(arg)) {
     var arr = [];
-    forEach(slice.call(arguments), function (obj) {
+    forEach(slice(arguments), function (obj) {
       forOwn(obj, function (fn) {
         arr.push(fn);
       });
     });
     return arr;
   } else if (isArray(arg)) {
-    return slice.call(arg);
+    return slice(arg);
   }
   return [];
 }
@@ -67,7 +61,7 @@ function addEnclose(fixed, encloses) {
 }
 
 function cloneAndExtend(fixed, extensionFunction, args) {
-  args = arguments.length > 3 ? slice.call(arguments, 2, arguments.length) : args;
+  args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
   var stamp = stampit(fixed.methods, fixed.state, fixed.enclose);
   extensionFunction(stamp.fixed, args);
   return stamp;
@@ -81,7 +75,7 @@ function cloneAndExtend(fixed, extensionFunction, args) {
  * @return {Function} A new stampit factory composed from arguments.
  */
 function compose(factories) {
-  factories = isArray(factories) ? factories : slice.call(arguments);
+  factories = isArray(factories) ? factories : slice(arguments);
   var result = stampit();
   forEach(factories, function (source) {
     if (source && source.fixed) {
@@ -108,7 +102,7 @@ function compose(factories) {
  * @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
  */
 stampit = function stampit(methods, state, enclose) {
-  var fixed = { methods: {}, state: {}, enclose: [] };
+  var fixed = {methods: {}, state: {}, enclose: []};
   addMethods(fixed, methods);
   addState(fixed, state);
   addEnclose(fixed, enclose);
@@ -118,7 +112,7 @@ stampit = function stampit(methods, state, enclose) {
       instance = mixer.mixIn(create(fixed.methods), state);
 
     if (fixed.enclose.length > 0) {
-      args = slice.call(arguments, 1, arguments.length);
+      args = slice(arguments, 1, arguments.length);
       forEach(fixed.enclose, function (fn) {
         if (isFunction(fn)) {
           instance = fn.apply(instance, args) || instance;
@@ -160,7 +154,7 @@ stampit = function stampit(methods, state, enclose) {
      * @return {Function} A new stampit factory composed from arguments.
      */
     compose: function (factories) {
-      var args = isArray(factories) ? factories : slice.call(arguments);
+      var args = isArray(factories) ? factories : slice(arguments);
       args = [this].concat(args);
       return compose(args);
     }
