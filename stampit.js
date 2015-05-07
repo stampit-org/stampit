@@ -50,7 +50,7 @@ function addMethods(fixed, methods) {
   return fixed.methods;
 }
 function addRefs(fixed, states) {
-  var args = [fixed.refs].concat(states);
+  var args = [fixed.refs || fixed.state].concat(states);
   fixed.refs = fixed.state = mixer.mixIn.apply(null, args);
   return fixed.refs;
 }
@@ -67,7 +67,7 @@ function addProps(fixed, propses) {
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
-  var stamp = stampit(fixed.methods, fixed.refs, fixed.enclose, fixed.props);
+  var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.enclose, fixed.props);
   extensionFunction(stamp.fixed, args);
   return stamp;
 }
@@ -85,7 +85,7 @@ function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       addMethods(result.fixed, source.fixed.methods);
-      addRefs(result.fixed, source.fixed.refs);
+      addRefs(result.fixed, source.fixed.refs || source.fixed.state);
       addEnclose(result.fixed, source.fixed.enclose);
       addProps(result.fixed, source.fixed.props);
     }

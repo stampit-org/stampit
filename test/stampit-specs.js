@@ -730,3 +730,27 @@ test('stampit.convertConstructor().fixed.state is same as refs', function () {
 
   equal(stamp.fixed.refs, stamp.fixed.state);
 });
+
+module('Stampit v1 compatibility');
+
+var stamp = {
+  fixed: {
+    methods: {},
+    state: { s: 1 },
+    enclose: []
+  }
+};
+
+test('stampit.compose(stamp1, stamp2) is v1 compatible', function () {
+  var composed1 = stampit.compose(stampit(), stamp);
+  var composed2 = stampit.compose(stamp, stampit());
+
+  equal(composed1.fixed.state.s, 1);
+  equal(composed2.fixed.state.s, 1);
+});
+
+test('stampit().compose(stamp) is v1 compatible', function () {
+  var composed = stampit().compose(stamp);
+
+  equal(composed.fixed.state.s, 1);
+});
