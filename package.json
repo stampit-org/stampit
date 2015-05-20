@@ -21,7 +21,7 @@
     "url": "git@github.com:ericelliott/stampit.git"
   },
   "dependencies": {
-    "mout": "~0.5.0"
+    "lodash": "^3.9.1"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -30,10 +30,13 @@
     "grunt-contrib-jshint": "~0.6.2",
     "grunt-contrib-uglify": "~0.2.5",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-saucelabs": "~8.4.1"
+    "grunt-saucelabs": "~8.4.1",
+    "tape": "^4.0.0",
+    "tape-run": "^1.0.0"
   },
   "scripts": {
-    "test": "scripts/test.sh"
+    "test": "scripts/test.sh",
+    "tape": "browserify test/stampit-specs.js | tape-run"
   },
   "license": "MIT"
 }
