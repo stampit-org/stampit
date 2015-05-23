@@ -69,11 +69,12 @@ extractFunctions = function extractFunctions(arg) {
  * @return {Function} factory.state Add properties to the state prototype. Chainable.
  * @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
  */
-stampit = function stampit(methods, state, enclose) {
+stampit = function stampit(methods, state, enclose, statics) {
   var fixed = {
       methods: methods || {},
       state: state,
-      enclose: extractFunctions(enclose)
+      enclose: extractFunctions(enclose),
+      statics: statics || {}
     },
 
     factory = function factory(properties) {
@@ -126,6 +127,17 @@ stampit = function stampit(methods, state, enclose) {
       return this;
     },
     /**
+     * Take n objects and add all props to the factory object.
+     * @return {Object} stamp The factory in question (`this`).
+     */
+    statics: function stampStatics() {
+      var obj = fixed.statics || {},
+        args = [obj].concat(slice.call(arguments));
+      fixed.statics = mixInChain.apply(this, args);
+
+      return mixIn(this, fixed.statics);
+     },
+    /**
      * Take one or more factories produced from stampit() and
      * combine them with `this` to produce and return a new factory.
      * Combining overrides properties with last-in priority.
@@ -137,7 +149,7 @@ stampit = function stampit(methods, state, enclose) {
       args = [this].concat(args);
       return compose(args);
     }
-  });
+  }, fixed.statics);
 };
 
 /**
@@ -164,9 +176,13 @@ compose = function compose(factories) {
       if (source.fixed.enclose) {
         f.enclose = f.enclose.concat(source.fixed.enclose);
       }
+
+      if (source.fixed.statics) {
+        f.statics = mixInChain(f.statics, source.fixed.statics);
+      }
     }
   });
-  return result;
+  return mixIn(result, f.statics);
 };
 
 /**
@@ -180,7 +196,8 @@ isStamp = function isStamp(obj) {
     typeof obj.fixed === 'object' &&
     typeof obj.methods === 'function' &&
     typeof obj.state === 'function' &&
-    typeof obj.enclose === 'function'
+    typeof obj.enclose === 'function' &&
+    typeof obj.statics === 'function'
     );
 };
 

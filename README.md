@@ -281,6 +281,7 @@ prototypes that are passed in or composed.
 * `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
 * `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
 * `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
+* `@return {Function} stamp.statics` Add properties to the factory object. Chainable.
 
 
 ## The stamp object ##
@@ -329,6 +330,12 @@ functions that take arguments should not be considered safe to
 compose with other `.enclose()` functions that also take
 arguments. Taking arguments with an `.enclose()` function is an
 anti-pattern that should be avoided, when possible.
+
+
+### stamp.statics() ###
+
+Take n objects and add all props to the factory object.
+* @return {Object} stamp The factory in question (`this`).
 
 
 ## Utility methods ##
@@ -380,7 +387,7 @@ the resulting stamp with other stamps willy-nilly, because if two
 different stamps depend on the argument passing feature, the arguments
 will probably clash with each other, producing very unexpected results.
 
- * @param  {Function} Constructor 
+ * @param  {Function} Constructor
  * @return {Function} A composable stampit factory (aka stamp).
 
 ```js
