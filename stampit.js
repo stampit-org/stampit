@@ -196,7 +196,7 @@ function isStamp(obj) {
   return (
   isFunction(obj) &&
   isFunction(obj.methods) &&
-  isFunction(obj.refs) &&
+  (isFunction(obj.refs) || isFunction(obj.state)) &&
   isFunction(obj.enclose) &&
   isFunction(obj.props) &&
   isObject(obj.fixed)

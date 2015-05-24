@@ -95,8 +95,8 @@ test('stampit().methods(a, b)', function () {
 
 module('Basics Props');
 
-test('stampit({}, props)', function () {
-  var obj = stampit({}, { foo: { bar: 'bar' } }).create();
+test('stampit({}, {}, {}, props)', function () {
+  var obj = stampit({}, {}, {}, { foo: { bar: 'bar' } }).create();
 
   equal(obj.foo.bar, 'bar',
     'Should set default props.');
@@ -125,8 +125,8 @@ test('stampit().props()', function () {
     'Should mix functions.');
 });
 
-test('stampit({}, props).props()', function () {
-  var obj = stampit(null, {
+test('stampit({}, {}, {}, props).props()', function () {
+  var obj = stampit(null, null, null, {
     foo: { bar: 'bar' },
     propsOverride: false,
     func1: function(){}
@@ -161,8 +161,8 @@ test('stampit().props(a, b)', function () {
 
 module('Basics refs');
 
-test('stampit({}, null, null, refs)', function () {
-  var obj = stampit({}, null, null, { foo: { bar: 'bar' } }).create();
+test('stampit({}, refs)', function () {
+  var obj = stampit({}, { foo: { bar: 'bar' } }).create();
 
   equal(obj.foo.bar, 'bar',
     'Should set default refs.');
@@ -191,7 +191,7 @@ test('stampit().refs()', function () {
     'Should mix functions.');
 });
 
-test('stampit({}, null, null, refs).refs()', function () {
+test('stampit({}, refs).refs()', function () {
   var obj = stampit(null, {
     foo: { bar: 'bar' },
     refsOverride: false,
@@ -313,6 +313,24 @@ test('stampit.isStamp() with stamps', function () {
   ok(stampit.isStamp(refsOnlyStamp), 'Refs only stamp should be seen as stamp.');
   ok(stampit.isStamp(methodsOnlyStamp), 'Methods only stamp should be seen as stamp.');
   ok(stampit.isStamp(closureOnlyStamp), 'Closure only stamp should be seen as stamp.');
+});
+
+test('stampit.isStamp() with legacy stamps', function () {
+  var emptyStamp = stampit();
+  delete emptyStamp.fixed.refs;
+  var refsOnlyStamp = stampit().refs({ a: 'b' });
+  delete refsOnlyStamp.fixed.refs;
+  var methodsOnlyStamp = stampit({
+    method: function () {}
+  });
+  delete methodsOnlyStamp.fixed.refs;
+  var closureOnlyStamp = stampit().enclose(function () {});
+  delete closureOnlyStamp.fixed.refs;
+
+  ok(stampit.isStamp(emptyStamp), 'Empty legacy stamp should be seen as stamp.');
+  ok(stampit.isStamp(refsOnlyStamp), 'Refs only legacy stamp should be seen as stamp.');
+  ok(stampit.isStamp(methodsOnlyStamp), 'Methods only legacy stamp should be seen as stamp.');
+  ok(stampit.isStamp(closureOnlyStamp), 'Closure only legacy stamp should be seen as stamp.');
 });
 
 test('stampit.isStamp() with non stamps', function () {
