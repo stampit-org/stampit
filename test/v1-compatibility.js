@@ -7,7 +7,7 @@ var stampit = require('../stampit'),
 var stamp = {
   fixed: {
     methods: {},
-    state: { s: 1 },
+    state: {s: 1},
     enclose: []
   }
 };
@@ -33,13 +33,15 @@ test('stampit().compose(stamp) is v1 compatible', function (t) {
 test('stampit.isStamp() with legacy stamps', function (t) {
   var emptyStamp = stampit();
   delete emptyStamp.fixed.refs;
-  var refsOnlyStamp = stampit().refs({ a: 'b' });
+  var refsOnlyStamp = stampit().refs({a: 'b'});
   delete refsOnlyStamp.fixed.refs;
   var methodsOnlyStamp = stampit({
-    method: function () {}
+    method: function () {
+    }
   });
   delete methodsOnlyStamp.fixed.refs;
-  var closureOnlyStamp = stampit().enclose(function () {});
+  var closureOnlyStamp = stampit().enclose(function () {
+  });
   delete closureOnlyStamp.fixed.refs;
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty legacy stamp should be seen as stamp.');
@@ -47,5 +49,24 @@ test('stampit.isStamp() with legacy stamps', function (t) {
   t.ok(stampit.isStamp(methodsOnlyStamp), 'Methods only legacy stamp should be seen as stamp.');
   t.ok(stampit.isStamp(closureOnlyStamp), 'Closure only legacy stamp should be seen as stamp.');
 
+  t.end();
+});
+
+test('stamp.init() with legacy stamps', function (t) {
+  try {
+    var stamp = stampit().enclose(function () {
+      this.called = true;
+    });
+    delete stamp.fixed.init;
+
+    var instance1 = stampit().compose(stamp).create();
+    var instance2 = stamp.compose(stampit()).create();
+
+    t.ok(instance1.called, 'New stamp should compose enclosures with legacy.');
+    t.ok(instance1.called, 'Legacy stamp should compose enclosures with new.');
+  }
+  catch (e) {
+    console.error(e.stack);
+  }
   t.end();
 });

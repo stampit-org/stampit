@@ -54,10 +54,10 @@ function addRefs(fixed, states) {
   fixed.refs = fixed.state = mixer.mixIn.apply(null, args);
   return fixed.refs;
 }
-function addEnclose(fixed, encloses) {
-  encloses = isArray(encloses) ? extractFunctions.apply(null, encloses) : extractFunctions(encloses);
-  fixed.enclose = fixed.enclose.concat(encloses);
-  return fixed.enclose;
+function addInit(fixed, inits) {
+  inits = isArray(inits) ? extractFunctions.apply(null, inits) : extractFunctions(inits);
+  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(inits);
+  return fixed.init;
 }
 function addProps(fixed, propses) {
   var args = [fixed.props].concat(propses);
@@ -67,7 +67,7 @@ function addProps(fixed, propses) {
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
-  var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.enclose, fixed.props);
+  var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.init || fixed.enclose, fixed.props);
   extensionFunction(stamp.fixed, args);
   return stamp;
 }
@@ -86,7 +86,7 @@ function compose(factories) {
     if (source && source.fixed) {
       addMethods(result.fixed, source.fixed.methods);
       addRefs(result.fixed, source.fixed.refs || source.fixed.state);
-      addEnclose(result.fixed, source.fixed.enclose);
+      addInit(result.fixed, source.fixed.init || source.fixed.enclose);
       addProps(result.fixed, source.fixed.props);
     }
   });
@@ -99,7 +99,7 @@ function compose(factories) {
  *
  * @param  {Object} [methods] A map of method names and bodies for delegation.
  * @param  {Object} [refs]   A map of property names and values to be mixed into each new object.
- * @param  {Function} [enclose] A closure (function) used to create private data and privileged methods.
+ * @param  {Function} [init] A closure (function) used to create private data and privileged methods.
  * @param  {Object} [props]   An object to be deeply cloned into each newly stamped object.
  * @return {Function} factory A factory to produce objects using the given prototypes.
  * @return {Function} factory.create Just like calling the factory function.
@@ -107,26 +107,28 @@ function compose(factories) {
  * @return {Function} factory.methods Add methods to the prototype. Chainable.
  * @return {Function} factory.refs Add references to the prototype. Chainable.
  * @return {Function} factory.state Alias to refs().
- * @return {Function} factory.enclose Add a closure which called on object instantiation. Chainable.
+ * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
+ * @return {Function} factory.enclose Alias to init()t.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
  */
-stampit = function stampit(methods, refs, enclose, props) {
-  var fixed = {methods: {}, refs: {}, enclose: [], props: {}};
+stampit = function stampit(methods, refs, init, props) {
+  var fixed = {methods: {}, refs: {}, init: [], props: {}};
   fixed.state = fixed.refs; // Backward compatibility.
+  fixed.enclose = fixed.init; // Backward compatibility.
   addMethods(fixed, methods);
   addRefs(fixed, refs);
-  addEnclose(fixed, enclose);
+  addInit(fixed, init);
   addProps(fixed, props);
 
-  var factory = function factory(properties, args) {
+  var factory = function Factory(properties, args) {
     properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
     var instance = mixer.mixIn(create(fixed.methods), fixed.refs, properties); // props are taking over refs
 
-    if (fixed.enclose.length > 0) {
+    if (fixed.init.length > 0) {
       args = slice(arguments, 1, arguments.length);
-      forEach(fixed.enclose, function (fn) {
+      forEach(fixed.init, function (fn) {
         if (isFunction(fn)) {
-          instance = fn.apply(instance, args) || instance;
+          instance = fn.call(instance, { args: args, instance: instance, stamp: factory }) || instance;
         }
       });
     }
@@ -135,6 +137,7 @@ stampit = function stampit(methods, refs, enclose, props) {
   };
 
   var refsMethod = bind(cloneAndExtend, factory, fixed, addRefs);
+  var initMethod = bind(cloneAndExtend, factory, fixed, addInit);
   return mixer.mixIn(factory, {
     create: factory,
     fixed: fixed,
@@ -162,7 +165,13 @@ stampit = function stampit(methods, refs, enclose, props) {
      * the functions to the enclose prototype.
      * @return {Object} The factory in question (`this`).
      */
-    enclose: bind(cloneAndExtend, factory, fixed, addEnclose),
+    init: initMethod,
+
+    /**
+     * Alias to init().
+     * @return {Object} The factory in question (`this`).
+     */
+    enclose: initMethod,
 
     /**
      * Take n objects and add deep clone them to the instantiated object.
@@ -197,7 +206,7 @@ function isStamp(obj) {
   isFunction(obj) &&
   isFunction(obj.methods) &&
   (isFunction(obj.refs) || isFunction(obj.state)) &&
-  isFunction(obj.enclose) &&
+  (isFunction(obj.init) || isFunction(obj.enclose)) &&
   isFunction(obj.props) &&
   isObject(obj.fixed)
   );
@@ -214,7 +223,9 @@ function convertConstructor(Constructor) {
   var stamp = stampit();
   mixer.mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
   stamp.fixed.refs = stamp.fixed.state = mixer.mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
-  addEnclose(stamp.fixed, Constructor);
+  addInit(stamp.fixed, function (opts) {
+    return Constructor.apply(opts.instance, opts.args);
+  });
   return stamp;
 }
 

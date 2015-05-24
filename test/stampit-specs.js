@@ -1,7 +1,7 @@
 require('./basics');
 require('./compose');
 require('./convert-constructor');
-require('./enclose');
+require('./init');
 require('./immutability');
 require('./is-stamp');
 require('./props-safety');
