@@ -174,20 +174,20 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 ## More chaining
 
-You can create new stamps using chaining methods.
+Chaining stamps *always* creates new stamps.
 
 Chain `.methods()` ...
 
 ```js
 var myStamp = stampit().methods({
-  foo: function () {
+  fooMethod: function () {
     return 'foo';
   },
   methodOverride: function () {
     return false;
   }
 }).methods({
-  bar: function () {
+  barMethod: function () {
     return 'bar'
   },
   methodOverride: function () {
@@ -202,9 +202,19 @@ And `.refs()` ...
 myStamp = myStamp.refs({
   foo: {bar: 'bar'},
   stateOverride: false
-}).state({
+}).refs({
   bar: 'bar',
   stateOverride: true
+});
+```
+
+And `.props()` ...
+
+```js
+myStamp = myStamp.props({
+  name: { first: 'John' }
+}).props({
+  name: { last: 'Doe' }
 });
 ```
 
@@ -220,16 +230,19 @@ myStamp = myStamp.init(function () {
 }).init(function () {
   this.a = true;
 }).init({
-  bar: function bar() {
+  foo: function bar() {
     this.b = true;
   }
 }, {
-  baz: function baz() {
+  bar: function baz() {
     this.c = true;
   }
 });
 
 var obj = myStamp.create();
+obj.fooMethod && obj.barMethod && obj.methodOverride; // true
+obj.foo && obj.bar && obj.stateOverride; // true
+obj.name.first && obj.name.last; // true
 obj.getSecret && obj.a && obj.b && obj.c; // true
 ```
 
@@ -239,7 +252,7 @@ And `.compose()`.
 var newStamp = baseStamp.compose(myStamp);
 ```
 
-## Pass multiple objects into .methods(), .state(), .init(), or .compose().
+## Pass multiple objects into .methods(), .state(), .init(), props(), or .compose().
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. 
@@ -320,7 +333,7 @@ Has alias `stamp.state`. Deprecated.
 ### stamp.init([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
-the functions to the enclose prototype. Creates new stamp.
+the functions to the initializers list. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 Has alias `stamp.enclose`. Deprecated.
@@ -329,7 +342,7 @@ Functions passed into `.init()` are called any time an
 object is instantiated. That happens when the stamp function
 is invoked, or when the `.create()` method is called.
 
-Each function receives following object as first argument:
+Each function receives the following object as the first argument:
 ```
 {
   instance,
@@ -337,14 +350,27 @@ Each function receives following object as first argument:
   args
 }
 ```
-Example (ES6):
+
+Examples (ES6).
+
+Make any stamp cloneable.
 ```js
-let cloneable = stampit().init(({instance, stamp, args}) =>
+let Cloneable = stampit().init(({instance, stamp, args}) =>
   instance.clone = () => stamp(instance);
 });
 
-let MyStamp = stampit().state({x: 42}).compose(cloneable);
-MyStamp().clone().clone().clone().x === 42; // true
+let MyStamp = stampit().state({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
+MyStamp.create().clone().clone().clone().x === 42; // true
+```
+
+Teach any object to return original stamp:
+```js
+let SelfKnowlegeable = stampit().init(({instance, stamp, args}) =>
+  this.originalStamp = stamp;
+});
+
+let MyStamp = stampit().state({x: 42}).compose(SelfKnowlegeable); // composing with the "SelfKnowlegeable" behavior
+MyStamp.create().originalStamp === MyStamp; // true
 ```
 
 ### stamp.compose([arg1] [,arg2] [,arg3...]) ###
