@@ -31,8 +31,8 @@
     "uglifyjs": "^2.4.10"
   },
   "scripts": {
-    "start": "npm run hint && npm run build && npm run uglify",
-    "test": "browserify test/stampit-specs.js | node",
+    "prepublish": "npm test && npm run hint && npm run build && npm run uglify",
+    "test": "node test/stampit-specs.js",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
     "hint": "jshint stampit.js && jshint test/*",
     "build": "browserify stampit.js -s stampit -o dist/stampit.js"
