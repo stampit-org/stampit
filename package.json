@@ -26,16 +26,17 @@
   "devDependencies": {
     "browserify": "^10.2.1",
     "jshint": "^2.7.0",
+    "rimraf": "^2.3.4",
     "tape": "^4.0.0",
-    "tape-run": "^1.0.0",
     "uglifyjs": "^2.4.10"
   },
   "scripts": {
-    "prepublish": "npm test && npm run hint && npm run build && npm run uglify",
-    "test": "node test/stampit-specs.js",
+    "prepublish": "npm test && npm run build && npm run uglify",
+    "test": "npm run hint && node test/index.js",
+    "clean": "rimraf dist/*",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
     "hint": "jshint stampit.js && jshint test/*",
-    "build": "browserify stampit.js -s stampit -o dist/stampit.js"
+    "build": "npm run clean && browserify stampit.js -s stampit -o dist/stampit.js"
   },
   "license": "MIT"
 }
