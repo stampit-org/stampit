@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -21,18 +21,21 @@
     "url": "git@github.com:ericelliott/stampit.git"
   },
   "dependencies": {
-    "mout": "~0.5.0"
+    "lodash": "^3.9.1"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-saucelabs": "~8.4.1",
-    "grunt-browserify": "~1.2.1",
-    "grunt-contrib-jshint": "~0.6.2",
-    "grunt-contrib-connect": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.5"
+    "browserify": "^10.2.1",
+    "jshint": "^2.7.0",
+    "tape": "^4.0.0",
+    "tape-run": "^1.0.0",
+    "uglifyjs": "^2.4.10"
   },
   "scripts": {
-    "test": "scripts/test.sh"
+    "start": "npm run hint && npm run build && npm run uglify",
+    "test": "browserify test/stampit-specs.js | tape-run",
+    "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
+    "hint": "jshint stampit.js && jshint test/stampit-specs.js",
+    "build": "browserify stampit.js -s stampit -o dist/stampit.js"
   },
   "license": "MIT"
 }
