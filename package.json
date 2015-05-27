@@ -32,9 +32,9 @@
   },
   "scripts": {
     "start": "npm run hint && npm run build && npm run uglify",
-    "test": "browserify test/stampit-specs.js | tape-run",
+    "test": "browserify test/stampit-specs.js | node",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
-    "hint": "jshint stampit.js && jshint test/stampit-specs.js",
+    "hint": "jshint stampit.js && jshint test/*",
     "build": "browserify stampit.js -s stampit -o dist/stampit.js"
   },
   "license": "MIT"

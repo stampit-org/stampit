@@ -63,7 +63,7 @@ test('stamp.init() with legacy stamps', function (t) {
     var instance2 = stamp.compose(stampit()).create();
 
     t.ok(instance1.called, 'New stamp should compose enclosures with legacy.');
-    t.ok(instance1.called, 'Legacy stamp should compose enclosures with new.');
+    t.ok(instance2.called, 'Legacy stamp should compose enclosures with new.');
   }
   catch (e) {
     console.error(e.stack);
