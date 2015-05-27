@@ -1,5 +1,6 @@
 # Stampit
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ericelliott/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Travis-CI](https://travis-ci.org/ericelliott/stampit.svg?branch=v2_0)](https://travis-ci.org/ericelliott/stampit)
 
 Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
@@ -52,7 +53,11 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
  * Supports composable private state and privileged methods.
 
- * State is cloned for each instance, so it won't be accidentally shared.
+ * References are copied across for each instance.
+ 
+ * Properties are deeply merged and cloned for each instance, so it won't be accidentally shared.
+ 
+ * Initializers are called for each new instance. Provide wide extesibility to stamp behavior.
 
  * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
    1. differential inheritance, aka delegation (for methods),
@@ -68,10 +73,10 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```js
-var a = stampit().enclose(function () {
-  var a = 'a';
+var a = stampit().init(function () {
+  var priv = 'a';
   this.getA = function () {
-    return a;
+    return priv;
   };
 });
 ```
@@ -90,15 +95,15 @@ Yes. Got it. In both of these instances, we actually created a brand new object,
 Here's another:
 
 ```js
-var b = stampit().enclose(function () {
-  var a = 'b';
+var b = stampit().init(function () {
+  var priv = 'b';
   this.getB = function () {
     return a;
   };
 });
 ```
 
-Those `a`'s are not a typo. The point is to demonstrate that `a` and `b`'s private variables won't clash.
+Those `priv`'s are not a typo. The point is to demonstrate that `a` and `b`'s private variables won't clash.
 
 But here's the real treat:
 
@@ -118,7 +123,7 @@ But that's boring. Let's see what else is on tap:
 ```js
 // Some more privileged methods, with some private data.
 // Use stampit.mixIn() to make this feel declarative:
-var availability = stampit().enclose(function () {
+var availability = stampit().init(function () {
   var isOpen = false; // private
 
   return stampit.mixIn(this, {
@@ -151,7 +156,7 @@ var membership = stampit({
   });
 
 // Let's set some defaults:
-var defaults = stampit().state({
+var defaults = stampit().refs({
       name: 'The Saloon',
       specials: 'Whisky, Gin, Tequila'
     });
@@ -169,7 +174,7 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 ## More chaining
 
-You can change the stamp in question (`this`) using chaining methods.
+You can create new stamps using chaining methods.
 
 Chain `.methods()` ...
 
@@ -191,10 +196,10 @@ var myStamp = stampit().methods({
 });
 ```
 
-And `.state()` ...
+And `.refs()` ...
 
 ```js
-myStamp.state({
+myStamp = myStamp.refs({
   foo: {bar: 'bar'},
   stateOverride: false
 }).state({
@@ -203,18 +208,18 @@ myStamp.state({
 });
 ```
 
-And `.enclose()` ...
+And `.init()` ...
 
 ```js
-myStamp.enclose(function () {
+myStamp = myStamp.init(function () {
   var secret = 'foo';
 
   this.getSecret = function () {
     return secret;
   };
-}).enclose(function () {
+}).init(function () {
   this.a = true;
-}).enclose({
+}).init({
   bar: function bar() {
     this.b = true;
   }
@@ -228,15 +233,17 @@ var obj = myStamp.create();
 obj.getSecret && obj.a && obj.b && obj.c; // true
 ```
 
-And `.compose()`. But unlike the other chaining methods this one creates a new stamp object.
+And `.compose()`.
 
 ```js
 var newStamp = baseStamp.compose(myStamp);
 ```
 
-## Pass multiple objects into .methods(), .state(), .enclose(), or .compose().
+## Pass multiple objects into .methods(), .state(), .init(), or .compose().
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. The properties from later arguments in the list will override the same named properties of previously passed in objects.
+Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. 
+In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. 
+The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
 ```js
   var obj = stampit().methods({
@@ -246,13 +253,24 @@ Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple
   }).create();
 ```
 
-Or `.state()` ...
+Or `.refs()` ...
 
 ```js
-  var obj = stampit().state({
+  var obj = stampit().refs({
     a: 'a'
   }, {
     b: 'b'
+  }).create();
+```
+
+
+Or `.init()` ...
+
+```js
+  var obj = stampit().init(function () {
+    console.log(this);
+  }, function () {
+    console.log(this); // same as above
   }).create();
 ```
 
@@ -272,14 +290,14 @@ Return a factory function (called a stamp) that will produce new objects using t
 prototypes that are passed in or composed.
 
 * `@param {Object} [methods]` A map of method names and bodies for delegation.
-* `@param {Object} [state]` A map of property names and values to clone for each new object.
+* `@param {Object} [refs]` A map of property names and values to copy for each new object.
 * `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
 * `@return {Function} stamp` A factory to produce objects using the given prototypes.
 * `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
 * `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
 * `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
-* `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
-* `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
+* `@return {Function} stamp.refs` Add properties to the properties. Chainable.
+* `@return {Function} stamp.init` Add the closure prototype. Chainable.
 * `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
 
 
@@ -287,26 +305,47 @@ prototypes that are passed in or composed.
 
 ### stamp.methods() ###
 
-Take n objects and add them to the methods prototype. Changes `this` object.
-* @return {Object} stamp  The stamp in question (`this`).
+Take n objects and add them to the methods prototype. Creates new stamp.
+* @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
-### stamp.state() ###
+### stamp.refs() ###
 
-Take n objects and add them to the state prototype. Changes `this` object.
-* @return {Object} stamp  The stamp in question (`this`).
+Take n objects and add them to the references. Creates new stamp.
+* @return {Object} stamp  The new stamp based on the original `this` stamp.
+
+Has alias `stamp.state`. Deprecated.
 
 
-### stamp.enclose([arg1] [,arg2] [,arg3...]) ###
+### stamp.init([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
-the functions to the enclose prototype. Changes `this` object.
-* @return {Object} stamp  The stamp in question (`this`).
+the functions to the enclose prototype. Creates new stamp.
+* @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-Functions passed into `.enclose()` are called any time an
+Has alias `stamp.enclose`. Deprecated.
+
+Functions passed into `.init()` are called any time an
 object is instantiated. That happens when the stamp function
 is invoked, or when the `.create()` method is called.
 
+Each function receives following object as first argument:
+```
+{
+  instance,
+  stamp,
+  args
+}
+```
+Example (ES6):
+```js
+let cloneable = stampit().init(({instance, stamp, args}) =>
+  instance.clone = () => stamp(instance);
+});
+
+let MyStamp = stampit().state({x: 42}).compose(cloneable);
+MyStamp().clone().clone().clone().x === 42; // true
+```
 
 ### stamp.compose([arg1] [,arg2] [,arg3...]) ###
 
@@ -319,15 +358,15 @@ Combining overrides properties with last-in priority.
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
-and returns a new instance. The first argument is an object
+and returns a new object instance. The first argument is an object
 containing properties you wish to set on the new objects.
 
-The remaining arguments are passed to all `.enclose()`
-functions. **WARNING** Avoid using two different `.enclose()`
-functions that expect different arguments. `.enclose()`
+The remaining arguments are passed to all `.init()`
+functions. **WARNING** Avoid using two different `.init()`
+functions that expect different arguments. `.init()`
 functions that take arguments should not be considered safe to
-compose with other `.enclose()` functions that also take
-arguments. Taking arguments with an `.enclose()` function is an
+compose with other `.init()` functions that also take
+arguments. Taking arguments with an `.init()` function is an
 anti-pattern that should be avoided, when possible.
 
 
@@ -339,7 +378,7 @@ Take two or more stamps produced from stampit() and
 combine them to produce a new stamp. Combining overrides
 properties with last-in priority.
 
-* `@param {...Function} stamp` any number of stamps.
+* `@param {...Function|Function[]} stamp` any number of stamps.
 * `@return {Function}` A new stamp composed from arguments.
 
 
