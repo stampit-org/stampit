@@ -77,7 +77,7 @@ A stamp is a composable factory function created by calling `stampit()`. When in
  var myStamp = stampit();
  myStamp.props({foo: {bar: 'bam'}}); // properties to be cloned and assigned to object instances
  myStamp.refs({myObj: myObjByRef}); // properties to be set by reference to object instances
- myStamp.init(function(instance, settings){ }); // add an init function to be called when an object instance is created
+ myStamp.init(function(instance){ }); // add an init function to be called when an object instance is created
  ```
 
 All of these stampit methods may be called multiple times to add more elements to the factory.
