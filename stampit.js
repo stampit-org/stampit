@@ -67,7 +67,7 @@ function addProps(fixed, propses) {
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
-  // We might end up having two stampit loaded and used in conjunction.
+  // We might end up having two different stampit modules loaded and used in conjunction.
   // These || operators ensure that old stamps could be combined with the current version stamps.
   var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.init || fixed.enclose, fixed.props);
   extensionFunction(stamp.fixed, args);
