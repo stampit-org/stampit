@@ -74,13 +74,6 @@ function cloneAndExtend(fixed, extensionFunction, args) {
   return stamp;
 }
 
-/**
- * Take two or more factories produced from stampit() and
- * combine them to produce a new factory.
- * Combining overrides properties with last-in priority.
- * @param {[Function]|...Function} factories A factory produced by stampit().
- * @return {Function} A new stampit factory composed from arguments.
- */
 function compose(factories) {
   factories = isArray(factories) ? factories : slice(arguments);
   var result = stampit();
@@ -198,11 +191,6 @@ stampit = function stampit(methods, refs, init, props) {
 
 // Static methods
 
-/**
- * Check if an object is a stamp.
- * @param {Object} obj An object to check.
- * @returns {Boolean}
- */
 function isStamp(obj) {
   return (
   isFunction(obj) &&
@@ -215,13 +203,6 @@ function isStamp(obj) {
   );
 }
 
-/**
- * Take an old-fashioned JS constructor and return a stampit stamp
- * that you can freely compose with other stamps.
- * @param  {Function} Constructor
- * @return {Function}             A composable stampit factory
- *                                (aka stamp).
- */
 function convertConstructor(Constructor) {
   var stamp = stampit();
   mixer.mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
@@ -233,7 +214,15 @@ function convertConstructor(Constructor) {
 }
 
 module.exports = mixer.mixin(stampit, {
+  /**
+   * Take two or more factories produced from stampit() and
+   * combine them to produce a new factory.
+   * Combining overrides properties with last-in priority.
+   * @param {[Function]|...Function} factories Stamps produced by stampit().
+   * @return {Function} A new stampit factory composed from arguments.
+   */
   compose: compose,
+
   /**
    * Alias for mixin
    */
@@ -251,6 +240,7 @@ module.exports = mixer.mixin(stampit, {
    * @returns {Object}
    */
   mixin: mixer.mixin,
+
   /**
    * Check if an object is a stamp.
    * @param {Object} obj An object to check.
@@ -258,5 +248,12 @@ module.exports = mixer.mixin(stampit, {
    */
   isStamp: isStamp,
 
+  /**
+   * Take an old-fashioned JS constructor and return a stampit stamp
+   * that you can freely compose with other stamps.
+   * @param  {Function} Constructor
+   * @return {Function}             A composable stampit factory
+   *                                (aka stamp).
+   */
   convertConstructor: convertConstructor
 });
