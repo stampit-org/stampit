@@ -101,9 +101,9 @@ function compose(factories) {
  * @return {Object} factory.fixed An object map containing the fixed prototypes.
  * @return {Function} factory.methods Add methods to the prototype. Chainable.
  * @return {Function} factory.refs Add references to the prototype. Chainable.
- * @return {Function} factory.state Alias to refs().
+ * @return {Function} factory.state Alias to refs(). Deprecated.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
- * @return {Function} factory.enclose Alias to init()t.
+ * @return {Function} factory.enclose Alias to init(). Deprecated.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
  */
 stampit = function stampit(methods, refs, init, props) {

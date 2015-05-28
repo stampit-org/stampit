@@ -60,7 +60,7 @@ test('stampit.convertConstructor() composed', function (t) {
   var newskool = stampit().methods({
     bar: function bar() { return 'bar'; }
     // your methods here...
-  }).enclose(function () {
+  }).init(function () {
     this.baz = 'baz';
   });
 

@@ -258,7 +258,7 @@ test('stampit().refs(a, b)', function (t) {
 
 // Basics Enclose
 
-test('stampit({}, {}, enclose)', function (t) {
+test('stampit({}, {}, init)', function (t) {
   var obj = stampit({}, {}, function () {
     var secret = 'foo';
     this.getSecret = function () { return secret; };
@@ -270,13 +270,13 @@ test('stampit({}, {}, enclose)', function (t) {
   t.end();
 });
 
-test('stampit().enclose()', function (t) {
-  var obj = stampit().enclose(function () {
+test('stampit().init()', function (t) {
+  var obj = stampit().init(function () {
     var secret = 'foo';
     this.getSecret = function () { return secret; };
-  }).enclose(function () {
+  }).init(function () {
     this.a = 'a';
-  }).enclose({
+  }).init({
     bar: function bar() { this.b = 'b'; }
   }, {
     baz: function baz() { this.c = 'c'; }
@@ -290,13 +290,13 @@ test('stampit().enclose()', function (t) {
   t.end();
 });
 
-test('stampit({}, {}, enclose).enclose()', function (t) {
+test('stampit({}, {}, init).init()', function (t) {
   var obj = stampit(null, null, function () {
     var secret = 'foo';
     this.getSecret = function () { return secret; };
-  }).enclose(function () {
+  }).init(function () {
     this.a = 'a';
-  }).enclose({
+  }).init({
     bar: function bar() { this.b = 'b'; }
   }, {
     baz: function baz() { this.c = 'c'; }

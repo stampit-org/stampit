@@ -23,7 +23,7 @@ test('Basic stamp immutability', function (t) {
   t.notEqual(stamp1.fixed.props, stamp2.fixed.refs);
   t.notEqual(stamp1.fixed.props.p, stamp2.fixed.props.p);
   t.notEqual(stamp1.fixed.props.p.deep, stamp2.fixed.props.p.deep);
-  t.notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
+  t.notEqual(stamp1.fixed.init, stamp2.fixed.init);
 
   t.end();
 });
@@ -40,7 +40,7 @@ test('Stamp immutability made of same source', function (t) {
   t.equal(stamp1.fixed.refs.s, stamp2.fixed.refs.s);
   t.notEqual(stamp1.fixed.props, stamp2.fixed.props);
   t.notEqual(stamp1.fixed.props.p, stamp2.fixed.props.p);
-  t.notEqual(stamp1.fixed.enclose, stamp2.fixed.enclose);
+  t.notEqual(stamp1.fixed.init, stamp2.fixed.init);
 
   t.end();
 });
@@ -70,7 +70,7 @@ test('Stamp chaining functions immutability', function (t) {
   var stamp1 = stampit();
   var stamp2 = stamp1.methods({ f: function F1() {} });
   var stamp3 = stamp2.refs( { s: { deep: 1 } });
-  var stamp4 = stamp3.enclose(function () { });
+  var stamp4 = stamp3.init(function () { });
   var stamp5 = stamp2.props( { p: { deep: 1 } });
   var stamp6 = stamp4.compose(stampit());
 

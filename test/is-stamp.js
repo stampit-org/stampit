@@ -10,7 +10,7 @@ test('stampit.isStamp() with stamps', function (t) {
   var methodsOnlyStamp = stampit({
     method: function () {}
   });
-  var closureOnlyStamp = stampit().enclose(function () {});
+  var closureOnlyStamp = stampit().init(function () {});
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
   t.ok(stampit.isStamp(refsOnlyStamp), 'Refs only stamp should be seen as stamp.');
@@ -22,9 +22,9 @@ test('stampit.isStamp() with stamps', function (t) {
 
 test('stampit.isStamp() with non stamps', function (t) {
   var obj1;
-  var obj2 = { refs: {}, methods: {}, enclose: {}, fixed: {}, props: {} };
+  var obj2 = { refs: {}, methods: {}, init: {}, fixed: {}, props: {} };
   var obj3 = function () {
-    this.enclose = this;
+    this.init = this;
   };
   var obj4 = function () {
     this.fixed = function () { };
