@@ -249,10 +249,10 @@ And `.compose()`.
 var newStamp = baseStamp.compose(myStamp);
 ```
 
-## Pass multiple objects into .methods(), .state(), .init(), props(), or .compose().
+## Pass multiple objects into .methods(), .refs(), .init(), props(), or .compose().
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. 
-In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. 
+In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, or `.init` prototype for the stamp. 
 The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
 ```js
@@ -301,7 +301,7 @@ prototypes that are passed in or composed.
 
 * `@param {Object} [methods]` A map of method names and bodies for delegation.
 * `@param {Object} [refs]` A map of property names and values to copy for each new object.
-* `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
+* `@param {Function} [init]` A function (closure) used to extend stamps with advanced capabilities.
 * `@return {Function} stamp` A factory to produce objects using the given prototypes.
 * `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
 * `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
@@ -356,7 +356,7 @@ let Cloneable = stampit().init(({instance, stamp, args}) =>
   instance.clone = () => stamp(instance);
 });
 
-let MyStamp = stampit().state({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
+let MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
 MyStamp.create().clone().clone().clone().x === 42; // true
 ```
 
@@ -366,7 +366,7 @@ let SelfKnowlegeable = stampit().init(({instance, stamp, args}) =>
   this.originalStamp = stamp;
 });
 
-let MyStamp = stampit().state({x: 42}).compose(SelfKnowlegeable); // composing with the "SelfKnowlegeable" behavior
+let MyStamp = stampit().refs({x: 42}).compose(SelfKnowlegeable); // composing with the "SelfKnowlegeable" behavior
 MyStamp.create().originalStamp === MyStamp; // true
 ```
 
@@ -459,7 +459,7 @@ will probably clash with each other, producing very unexpected results.
   var newskool = stampit().methods({
       bar: function bar() { return 'bar'; }
      // your methods here...
-    }).enclose(function () {
+    }).init(function () {
       this.baz = 'baz';
     });
 
