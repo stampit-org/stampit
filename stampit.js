@@ -46,12 +46,12 @@ function extractFunctions(arg) {
 
 function addMethods(fixed, methods) {
   var args = [fixed.methods].concat(methods);
-  mixer.mixInFunctions.apply(null, args);
+  mixer.mixinFunctions.apply(null, args);
   return fixed.methods;
 }
 function addRefs(fixed, states) {
   var args = [fixed.refs || fixed.state].concat(states);
-  fixed.refs = fixed.state = mixer.mixIn.apply(null, args);
+  fixed.refs = fixed.state = mixer.mixin.apply(null, args);
   return fixed.refs;
 }
 function addInit(fixed, inits) {
@@ -67,6 +67,8 @@ function addProps(fixed, propses) {
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
+  // We might end up having two stampit loaded and used in conjunction.
+  // These || operators ensure that old stamps could be combined with the current version stamps.
   var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.init || fixed.enclose, fixed.props);
   extensionFunction(stamp.fixed, args);
   return stamp;
@@ -85,8 +87,8 @@ function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       addMethods(result.fixed, source.fixed.methods);
-      addRefs(result.fixed, source.fixed.refs || source.fixed.state);
-      addInit(result.fixed, source.fixed.init || source.fixed.enclose);
+      addRefs(result.fixed, source.fixed.refs || source.fixed.state); // 'state' is the old name for 'refs'
+      addInit(result.fixed, source.fixed.init || source.fixed.enclose); // 'enclose' is the old name for 'init'
       addProps(result.fixed, source.fixed.props);
     }
   });
@@ -113,8 +115,8 @@ function compose(factories) {
  */
 stampit = function stampit(methods, refs, init, props) {
   var fixed = {methods: {}, refs: {}, init: [], props: {}};
-  fixed.state = fixed.refs; // Backward compatibility.
-  fixed.enclose = fixed.init; // Backward compatibility.
+  fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
+  fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
   addMethods(fixed, methods);
   addRefs(fixed, refs);
   addInit(fixed, init);
@@ -122,7 +124,7 @@ stampit = function stampit(methods, refs, init, props) {
 
   var factory = function Factory(properties, args) {
     properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
-    var instance = mixer.mixIn(create(fixed.methods), fixed.refs, properties); // props are taking over refs
+    var instance = mixer.mixin(create(fixed.methods), fixed.refs, properties); // props are taking over refs
 
     if (fixed.init.length > 0) {
       args = slice(arguments, 1, arguments.length);
@@ -138,7 +140,7 @@ stampit = function stampit(methods, refs, init, props) {
 
   var refsMethod = bind(cloneAndExtend, factory, fixed, addRefs);
   var initMethod = bind(cloneAndExtend, factory, fixed, addInit);
-  return mixer.mixIn(factory, {
+  return mixer.mixin(factory, {
     create: factory,
     fixed: fixed,
 
@@ -155,7 +157,7 @@ stampit = function stampit(methods, refs, init, props) {
     refs: refsMethod,
 
     /**
-     * Alias to refs().
+     * Alias to refs(). Deprecated.
      * @return {Object} stamp  The factory in question (`this`).
      */
     state: refsMethod,
@@ -168,7 +170,7 @@ stampit = function stampit(methods, refs, init, props) {
     init: initMethod,
 
     /**
-     * Alias to init().
+     * Alias to init(). Deprecated.
      * @return {Object} The factory in question (`this`).
      */
     enclose: initMethod,
@@ -205,6 +207,7 @@ function isStamp(obj) {
   return (
   isFunction(obj) &&
   isFunction(obj.methods) &&
+  // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
   (isFunction(obj.refs) || isFunction(obj.state)) &&
   (isFunction(obj.init) || isFunction(obj.enclose)) &&
   isFunction(obj.props) &&
@@ -221,7 +224,7 @@ function isStamp(obj) {
  */
 function convertConstructor(Constructor) {
   var stamp = stampit();
-  mixer.mixInChainFunctions(stamp.fixed.methods, Constructor.prototype);
+  mixer.mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
   stamp.fixed.refs = stamp.fixed.state = mixer.mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
   addInit(stamp.fixed, function (opts) {
     return Constructor.apply(opts.instance, opts.args);
@@ -229,12 +232,16 @@ function convertConstructor(Constructor) {
   return stamp;
 }
 
-module.exports = mixer.mixIn(stampit, {
+module.exports = mixer.mixin(stampit, {
   compose: compose,
   /**
-   * Alias for mixIn
+   * Alias for mixin
    */
-  extend: mixer.mixIn,
+  extend: mixer.mixin,
+  /**
+   * Alias for mixin
+   */
+  mixIn: mixer.mixin,
   /**
    * Take a destination object followed by one or more source objects,
    * and copy the source object properties to the destination object,
@@ -243,7 +250,7 @@ module.exports = mixer.mixIn(stampit, {
    * @param {...Object} source An object to copy properties from.
    * @returns {Object}
    */
-  mixIn: mixer.mixIn,
+  mixin: mixer.mixin,
   /**
    * Check if an object is a stamp.
    * @param {Object} obj An object to check.

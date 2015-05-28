@@ -72,19 +72,19 @@ module.exports = mixer;
 /**
  * Regular mixin function.
  */
-module.exports.mixIn = mixer();
+module.exports.mixin = mixer();
 
 /**
  * mixin for functions only.
  */
-module.exports.mixInFunctions = mixer({
+module.exports.mixinFunctions = mixer({
   filter: isFunction
 });
 
 /**
  * mixin for functions including prototype chain.
  */
-module.exports.mixInChainFunctions = mixer({
+module.exports.mixinChainFunctions = mixer({
   filter: isFunction,
   chain: true
 });
