@@ -1,6 +1,6 @@
 # Stampit
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ericelliott/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis-CI](https://travis-ci.org/ericelliott/stampit.svg?branch=v2_0)](https://travis-ci.org/ericelliott/stampit)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ericelliott/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
@@ -12,13 +12,10 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 
 Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com).
 
-[Known Issues](https://github.com/dilvie/stampit/issues?state=open)
-
 
 ## Contribute
 
 Press the hack button to open this project in the Nitrous.IO online IDE.
-
 [![Hack ericelliott/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=ericelliott%2Fstampit&file_to_open=README.md)
 
 ## Install
