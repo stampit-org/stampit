@@ -4,19 +4,28 @@
 
 Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
+Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com).
+
 Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
 ## Status
 
-**Stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
+**v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
 
-Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com).
+**v2, current stable**. Breaking changes:
+* All chaining methods return new stamps instead of self-mutating `this` stamp.
+* `state()` always shallow merge properties. It was not doing so in a single rare case.
+* Instead of factory arguments the `enclose()` functions now recieve the following object `{ instance, stamp, args }`.
+
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 becuase it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/EXAMPLES.md).
 
 
 ## Contribute
 
 Press the hack button to open this project in the Nitrous.IO online IDE.
 [![Hack ericelliott/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=ericelliott%2Fstampit&file_to_open=README.md)
+
+Pull requests are welcome anytime. 
 
 ## Install
 
