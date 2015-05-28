@@ -167,6 +167,22 @@ var myBar = bar({name: 'Moe\'s'});
 myBar.add({name: 'Homer' }).open().getMember('Homer');
 ```
 
+## Statics
+
+Stamps have a `static` method. This method applies passed object properties to the calling stamp's object. `static` is a convenience method. The old school way to apply statics to a stamp is by using stampit's `mixIn/extend` method.
+
+```js
+stampit.extend(stamp, {
+  foo: 'foo'
+});
+
+This can now be written as:
+
+stamp.static({
+  foo: 'foo'
+});
+```
+
 ## More chaining
 
 You can change the stamp in question (`this`) using chaining methods.
@@ -203,6 +219,18 @@ myStamp.state({
 });
 ```
 
+And `.static()` ...
+
+```js
+myStamp.static({
+  foo: {bar: 'bar'},
+  staticOverride: false
+}).static({
+  bar: 'bar',
+  staticOverride: true
+});
+```
+
 And `.enclose()` ...
 
 ```js
@@ -234,7 +262,7 @@ And `.compose()`. But unlike the other chaining methods this one creates a new s
 var newStamp = baseStamp.compose(myStamp);
 ```
 
-## Pass multiple objects into .methods(), .state(), .enclose(), or .compose().
+## Pass multiple objects into .methods(), .state(), .enclose(), .static(), or .compose().
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. In other words, it will copy all of the properties from those objects to the `.methods`, `.state`, or `.enclose` prototype for the stamp. The properties from later arguments in the list will override the same named properties of previously passed in objects.
 
@@ -281,6 +309,7 @@ prototypes that are passed in or composed.
 * `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
 * `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
 * `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
+* `@return {Function} stamp.static` Add properties to the factory object. Chainable.
 
 
 ## The stamp object ##
@@ -329,6 +358,12 @@ functions that take arguments should not be considered safe to
 compose with other `.enclose()` functions that also take
 arguments. Taking arguments with an `.enclose()` function is an
 anti-pattern that should be avoided, when possible.
+
+
+### stamp.static() ###
+
+Take n objects and add all props to the factory object.
+* @return {Object} stamp The factory in question (`this`).
 
 
 ## Utility methods ##
@@ -380,7 +415,7 @@ the resulting stamp with other stamps willy-nilly, because if two
 different stamps depend on the argument passing feature, the arguments
 will probably clash with each other, producing very unexpected results.
 
- * @param  {Function} Constructor 
+ * @param  {Function} Constructor
  * @return {Function} A composable stampit factory (aka stamp).
 
 ```js

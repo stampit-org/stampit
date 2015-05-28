@@ -15,6 +15,8 @@ var forOwn = require('mout/object/forOwn');
 var mixInChain = require('./mixinchain.js');
 var slice = [].slice;
 
+/*jshint -W024 */
+
 // Avoiding JSHist W003 violations.
 var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
 
@@ -73,7 +75,8 @@ stampit = function stampit(methods, state, enclose) {
   var fixed = {
       methods: methods || {},
       state: state,
-      enclose: extractFunctions(enclose)
+      enclose: extractFunctions(enclose),
+      static: {}
     },
 
     factory = function factory(properties) {
@@ -126,6 +129,17 @@ stampit = function stampit(methods, state, enclose) {
       return this;
     },
     /**
+     * Take n objects and add all props to the factory object.
+     * @return {Object} stamp The factory in question (`this`).
+     */
+    static: function stampStatic() {
+      var obj = fixed.static || {},
+        args = [obj].concat(slice.call(arguments));
+      fixed.static = mixInChain.apply(this, args);
+
+      return mixIn(this, fixed.static);
+     },
+    /**
      * Take one or more factories produced from stampit() and
      * combine them with `this` to produce and return a new factory.
      * Combining overrides properties with last-in priority.
@@ -137,7 +151,7 @@ stampit = function stampit(methods, state, enclose) {
       args = [this].concat(args);
       return compose(args);
     }
-  });
+  }, fixed.static);
 };
 
 /**
@@ -164,9 +178,13 @@ compose = function compose(factories) {
       if (source.fixed.enclose) {
         f.enclose = f.enclose.concat(source.fixed.enclose);
       }
+
+      if (source.fixed.static) {
+        f.static = mixIn(f.static, source.fixed.static);
+      }
     }
   });
-  return result;
+  return mixIn(result, f.static);
 };
 
 /**
@@ -180,7 +198,8 @@ isStamp = function isStamp(obj) {
     typeof obj.fixed === 'object' &&
     typeof obj.methods === 'function' &&
     typeof obj.state === 'function' &&
-    typeof obj.enclose === 'function'
+    typeof obj.enclose === 'function' &&
+    typeof obj.static === 'function'
     );
 };
 
