@@ -54,7 +54,7 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
  
  * Properties are deeply merged and cloned for each instance, so it won't be accidentally shared.
  
- * Initializers are called for each new instance. Provide wide extesibility to stamp behavior.
+ * Initializers are called for each new instance. Provides wide extensibility to stamp behavior.
 
  * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
    1. differential inheritance, aka delegation (for methods),
