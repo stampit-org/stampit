@@ -116,7 +116,7 @@ Here's another:
 var b = stampit().init(function () {
   var priv = 'b';
   this.getB = function () {
-    return a;
+    return priv;
   };
 });
 ```
