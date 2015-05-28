@@ -70,6 +70,18 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
    2. cloning, aka concatenation/exemplar prototypes (for state),
    3. functional / closure inheritance (for privacy / encapsulation)
 
+## What is a Stamp?
+
+A stamp is a composable factory function created by calling `stampit()`. When invoked the factory function creates and returns object instances assigning:
+ ```js
+ var myStamp = stampit();
+ myStamp.props({foo: {bar: 'bam'}}); // properties to be cloned and assigned to object instances
+ myStamp.refs({myObj: myObjByRef}); // properties to be set by reference to object instances
+ myStamp.init(function(instance, settings){ }); // add an init function to be called when an object instance is created
+ ```
+
+All of these stampit methods may be called multiple times to add more elements to the factory.
+
 ## What's the Point?
 
 Prototypal OO is great, and JavaScript's capabilities give us some really powerful tools to explore it, but it could be easier to use.
