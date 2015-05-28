@@ -224,7 +224,7 @@ test('stampit.compose()', function () {
           return secret;
         };
       }), d;
-  
+
   d = stampit.compose(a, b, c).create();
 
   ok(d.methodA && d.stateA && d.getA &&
@@ -350,4 +350,26 @@ test('Deep state instance safety', function () {
   // Change one of the deep properties
   o1.deep.foo = 'instance safety';
   notEqual(o1.deep.foo, o2.deep.foo);
+});
+
+test('stampit().static()', function () {
+  var stamp1 = stampit()
+    .static({
+      foo: function () {}
+    })
+    .static({
+      foo: function () {
+        return 'override';
+      }
+    });
+
+  var stamp2 = stampit()
+    .static({ bar: 'bar' }, {
+      foo: function () {}
+    }).compose(stamp1);
+
+  ok(stamp1.foo, 'Should add static props to factory.');
+  equal(stamp1.foo(), 'override', 'Should override props when chaining.');
+  equal(stamp2.bar, 'bar', 'Should accept multiple objects');
+  equal(stamp2.foo(), 'override', 'Should override props during composition.');
 });

@@ -16,6 +16,7 @@ prototypes that are passed in or composed.
 * @return {Function} factory.methods Add methods to the methods prototype. Chainable.
 * @return {Function} factory.state Add properties to the state prototype. Chainable.
 * @return {Function} factory.enclose Add or replace the closure prototype. Not chainable.
+* @return {Function} factory.static Add properties to the factory object. Chainable.
 
 ### compose ###
 
