@@ -19,38 +19,42 @@ var mixer = function (opts) {
    * Combine properties from all the objects into first one.
    * - This method affects target object in place, if you want to create a new Object pass an empty object as first param.
    * @param {object} target    Target Object
-   * @param {object[]} objects    Objects to be combined (0...n objects).
+   * @param {...object} objects    Objects to be combined (0...n objects).
    * @return {object} Target Object.
    */
-  return function mixIn(target, objects) {
+  return function mixIn(target) {
     var loop = opts.chain ? forIn : forOwn;
     var i = 0,
       n = arguments.length,
       obj;
     target = opts.getTarget ? opts.getTarget(target) : target;
 
+    var mergeValue = function mergeValue(val, key) {
+      if (opts.filter && !opts.filter(val, key)) {
+        return;
+      }
+
+      this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
+    };
+
     while (++i < n) {
       obj = arguments[i];
       if (obj) {
         loop(
           obj,
-          function (val, key) {
-            if (opts.filter && !opts.filter(val, key)) {
-              return;
-            }
-
-            this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
-          },
+          mergeValue,
           target);
       }
     }
     return target;
-  }
+  };
 };
 
 var merge = mixer({
   getTarget: deepClone,
+/* jshint ignore:start */
   getValue: mergeSourceToTarget
+/* jshint ignore:end */
 });
 
 function mergeSourceToTarget(srcVal, targetVal) {

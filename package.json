@@ -35,7 +35,7 @@
     "test": "npm run hint && node test/index.js",
     "clean": "rimraf dist/*",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
-    "hint": "jshint stampit.js && jshint test/*",
+    "hint": "jshint stampit.js mixer.js test/ && echo JSHint: linting successful",
     "build": "npm run clean && browserify stampit.js -s stampit -o dist/stampit.js"
   },
   "license": "MIT"
