@@ -232,6 +232,10 @@ module.exports = mixer.mixin(stampit, {
    */
   mixIn: mixer.mixin,
   /**
+   * Alias for mixin
+   */
+  assign: mixer.mixin,
+  /**
    * Take a destination object followed by one or more source objects,
    * and copy the source object properties to the destination object,
    * with last in priority overrides.
