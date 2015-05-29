@@ -6,5 +6,6 @@ require('./immutability');
 require('./is-stamp');
 require('./props-safety');
 require('./refs');
+require('./stampit-aliases');
 require('./state');
 require('./v1-compatibility');
