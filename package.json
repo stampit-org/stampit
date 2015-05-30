@@ -34,7 +34,7 @@
   "scripts": {
     "prepublish": "npm test && npm run build",
     "test": "npm run hint && node test/index.js",
-    "clean": "rimraf dist/*",
+    "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
     "hint": "jshint stampit.js mixer.js test/ && echo JSHint: linting successful",
     "build": "npm run clean && browserify stampit.js -s stampit -o dist/stampit.js && npm run uglify"
