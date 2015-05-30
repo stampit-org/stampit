@@ -12,9 +12,9 @@ var map = require('lodash/collection/map');
 var forOwn = require('lodash/object/forOwn');
 var deepClone = require('lodash/lang/cloneDeep');
 var isFunction = require('lodash/lang/isFunction');
-var isArray = require('lodash/lang/isArray');
+var isArray = Array.isArray;
 var isObject = require('lodash/lang/isObject');
-var create = require('lodash/object/create');
+var create = Object.create;
 var slice = require('lodash/array/slice');
 
 var mixer = require('./mixer');
