@@ -9,7 +9,6 @@
 'use strict';
 var forEach = require('lodash/collection/forEach');
 var map = require('lodash/collection/map');
-var bind = require('lodash/function/bind'); // IE8 shim
 var forOwn = require('lodash/object/forOwn');
 var deepClone = require('lodash/lang/cloneDeep');
 var isFunction = require('lodash/lang/isFunction');
@@ -69,7 +68,7 @@ function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
   // We might end up having two different stampit modules loaded and used in conjunction.
   // These || operators ensure that old stamps could be combined with the current version stamps.
-  var stamp = stampit(fixed.methods, fixed.refs || fixed.state, fixed.init || fixed.enclose, fixed.props);
+  var stamp = stampit(fixed);
   extensionFunction(stamp.fixed, args);
   return stamp;
 }
@@ -92,10 +91,7 @@ function compose(factories) {
  * Return a factory function that will produce new objects using the
  * prototypes that are passed in or composed.
  *
- * @param  {Object} [methods] A map of method names and bodies for delegation.
- * @param  {Object} [refs]   A map of property names and values to be mixed into each new object.
- * @param  {Function} [init] A closure (function) used to create private data and privileged methods.
- * @param  {Object} [props]   An object to be deeply cloned into each newly stamped object.
+ * @param  {Object} [options] Options to build stamp from: `{ methods, refs, init, props }`
  * @return {Function} factory A factory to produce objects using the given prototypes.
  * @return {Function} factory.create Just like calling the factory function.
  * @return {Object} factory.fixed An object map containing the fixed prototypes.
@@ -106,14 +102,16 @@ function compose(factories) {
  * @return {Function} factory.enclose Alias to init(). Deprecated.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
  */
-stampit = function stampit(methods, refs, init, props) {
+stampit = function stampit(options) {
   var fixed = {methods: {}, refs: {}, init: [], props: {}};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
   fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
-  addMethods(fixed, methods);
-  addRefs(fixed, refs);
-  addInit(fixed, init);
-  addProps(fixed, props);
+  if (options) {
+    addMethods(fixed, options.methods);
+    addRefs(fixed, options.refs);
+    addInit(fixed, options.init);
+    addProps(fixed, options.props);
+  }
 
   var factory = function Factory(properties, args) {
     properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
@@ -131,8 +129,8 @@ stampit = function stampit(methods, refs, init, props) {
     return instance;
   };
 
-  var refsMethod = bind(cloneAndExtend, factory, fixed, addRefs);
-  var initMethod = bind(cloneAndExtend, factory, fixed, addInit);
+  var refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
+  var initMethod = cloneAndExtend.bind(null, fixed, addInit);
   return mixer.mixin(factory, {
     create: factory,
     fixed: fixed,
@@ -141,7 +139,7 @@ stampit = function stampit(methods, refs, init, props) {
      * Take n objects and add them to the methods prototype.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    methods: bind(cloneAndExtend, factory, fixed, addMethods),
+    methods: cloneAndExtend.bind(null, fixed, addMethods),
 
     /**
      * Take n objects and add them to the newly stamped objects.
@@ -172,7 +170,7 @@ stampit = function stampit(methods, refs, init, props) {
      * Take n objects and add deep clone them to the instantiated object.
      * @return {Object} stamp  The factory in question (`this`).
      */
-    props: bind(cloneAndExtend, factory, fixed, addProps),
+    props: cloneAndExtend.bind(null, fixed, addProps),
 
     /**
      * Take one or more factories produced from stampit() and
@@ -213,7 +211,22 @@ function convertConstructor(Constructor) {
   return stamp;
 }
 
+function shortcutMethod(extensionFunction) {
+  var stamp = stampit();
+  extensionFunction(stamp.fixed, slice(arguments, 1));
+  return stamp;
+}
+
 module.exports = mixer.mixin(stampit, {
+
+  methods: shortcutMethod.bind(null, addMethods),
+
+  refs: shortcutMethod.bind(null, addRefs),
+
+  init: shortcutMethod.bind(null, addInit),
+
+  props: shortcutMethod.bind(null, addProps),
+
   /**
    * Take two or more factories produced from stampit() and
    * combine them to produce a new factory.

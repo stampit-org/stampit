@@ -7,7 +7,7 @@ var stampit = require('../stampit'),
 test('Stamp refs shallow copied for object created', function (t) {
   var deep = { foo: 'foo', bar: 'bar' };
   var stamp1 = stampit().refs({ deep: deep, foo: 'foo' });
-  var stamp2 = stampit(null, { deep: deep, foo: 'foo' });
+  var stamp2 = stampit({ refs: { deep: deep, foo: 'foo' } });
 
   var o1 = stamp1();
   var o2 = stamp2();
@@ -36,8 +36,8 @@ test('stampit.refs(refs) shallow copied into stamp', function (t) {
 });
 
 test('stamp.compose() shallow copy refs', function (t) {
-  var stamp = stampit(null, { deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' })
-    .compose(stampit(null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
+  var stamp = stampit({ refs: { deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' } })
+    .compose(stampit({ refs: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
   var o = stamp();
 
   t.equal(o.foo, 'override');

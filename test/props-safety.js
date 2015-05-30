@@ -7,7 +7,7 @@ var stampit = require('../stampit'),
 test('Stamp props deep cloned for object created', function (t) {
   var deep = { foo: 'foo', bar: 'bar' };
   var stamp1 = stampit().props({ deep: deep, foo: 'foo' });
-  var stamp2 = stampit(null, null, null, { deep: deep, foo: 'foo' });
+  var stamp2 = stampit({ props: { deep: deep, foo: 'foo' } });
 
   var o1 = stamp1();
   var o2 = stamp1();
@@ -29,7 +29,7 @@ test('Stamp props deep cloned for object created', function (t) {
 test('stamp(props) deep merge into object created', function (t) {
   var deep = { foo: 'foo', bar: 'bar' };
   var stamp1 = stampit().props({ deep: deep, foo: 'foo', bar: 'bar' });
-  var stamp2 = stampit(null, null, null, { deep: deep, foo: 'foo', bar: 'bar' });
+  var stamp2 = stampit({ props: { deep: deep, foo: 'foo', bar: 'bar' } });
 
   var deep2 = { foo: 'override', baz: 'baz' };
   var o1 = stamp1({ deep: deep2, foo: 'override', baz: 'baz' });
@@ -68,8 +68,8 @@ test('stampit.props(props) deep merge into stamp', function (t) {
 });
 
 test('stamp.compose() deep merge props', function (t) {
-  var stamp = stampit(null, null, null, { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
-    .compose(stampit(null, null, null, { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' }));
+  var stamp = stampit({ props: { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' } })
+    .compose(stampit({ props: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
   var o = stamp();
 
   t.equal(o.foo, 'override');

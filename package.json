@@ -26,6 +26,7 @@
   "devDependencies": {
     "browserify": "^10.2.1",
     "jshint": "^2.7.0",
+    "require-all": "^1.1.0",
     "rimraf": "^2.3.4",
     "tape": "^4.0.0",
     "uglifyjs": "^2.4.10"

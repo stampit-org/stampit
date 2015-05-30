@@ -7,9 +7,9 @@ var stampit = require('../stampit'),
 test('stampit.isStamp() with stamps', function (t) {
   var emptyStamp = stampit();
   var refsOnlyStamp = stampit().refs({ a: 'b' });
-  var methodsOnlyStamp = stampit({
+  var methodsOnlyStamp = stampit({ methods: {
     method: function () {}
-  });
+  }});
   var closureOnlyStamp = stampit().init(function () {});
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
