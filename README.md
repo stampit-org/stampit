@@ -73,7 +73,7 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
 ## What is a Stamp?
 
-A stamp is a composable factory function created by calling `stampit()`. When invoked the factory function creates and returns object instances assigning:
+A stamp is a composable factory function created by calling `stampit()`. When invoked the factory function creates and returns an object instance assigning:
  ```js
  var myStamp = stampit().
    methods({ doSomething: function(){} }). // methods each new object instance will have
