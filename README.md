@@ -17,7 +17,7 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now recieve the following object `{ instance, stamp, args }`.
 
-There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 becuase it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/EXAMPLES.md).
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 becuase it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
 
 
 ## Contribute
@@ -275,7 +275,7 @@ var newStamp = baseStamp.compose(myStamp);
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` prototype for the stamp. 
-The properties from later arguments in the list will override the same named properties of previously passed in objects.
+The properties from later arguments in the list will override the same named properties of previously passed in objects. `refs` will be copied by reference. `props` will be deeply merged.
 
 ```js
   var obj = stampit().methods({
@@ -446,6 +446,7 @@ properties with last-in priority.
 
 ### stampit.mixin(destObj, source1 [, sourc2] [, source3]...) ###
 
+Same as `Object.assign()`.
 Take a destination object followed by one or more source objects,
 and copy the source object properties to the destination object,
 with last in priority overrides.
