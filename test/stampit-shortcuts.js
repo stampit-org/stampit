@@ -43,3 +43,22 @@ test('stampit.props shortcut', function (t) {
 
   t.end();
 });
+
+test('stampit.static shortcut', function (t) {
+  var statics = { method1: function(){} };
+  var stamp1 = stampit({ static: statics });
+  var stamp2 = stampit.static(statics);
+
+  t.deepEqual(stamp1.fixed, stamp2.fixed);
+
+  t.end();
+});
+
+test('stampit.static(arg1, arg2) shortcut', function (t) {
+  var stamp1 = stampit.static({ foo: 1 }, { bar: "2" });
+
+  t.ok(stamp1.foo);
+  t.ok(stamp1.bar);
+
+  t.end();
+});

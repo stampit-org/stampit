@@ -63,6 +63,11 @@ function addProps(fixed, propses) {
   fixed.props = mixer.merge.apply(null, args);
   return fixed.props;
 }
+function addStatic(fixed, statics) {
+  var args = [fixed.static].concat(statics);
+  fixed.static = mixer.mixin.apply(null, args);
+  return fixed.static;
+}
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
@@ -82,30 +87,32 @@ function compose(factories) {
       addRefs(result.fixed, source.fixed.refs || source.fixed.state); // 'state' is the old name for 'refs'
       addInit(result.fixed, source.fixed.init || source.fixed.enclose); // 'enclose' is the old name for 'init'
       addProps(result.fixed, source.fixed.props);
+      addStatic(result.fixed, source.fixed.static);
     }
   });
-  return result;
+  return mixer.mixin(result, result.fixed.static);
 }
 
 /**
  * Return a factory function that will produce new objects using the
- * prototypes that are passed in or composed.
+ * components that are passed in or composed.
  *
  * @param  {Object} [options] Options to build stamp from: `{ methods, refs, init, props }`
  * @param  {Object} [options.methods] A map of method names and bodies for delegation.
  * @param  {Object} [options.refs] A map of property names and values to be mixed into each new object.
  * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
  * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
- * @return {Function} factory A factory to produce objects using the given prototypes.
+ * @return {Function} factory A factory to produce objectss.
  * @return {Function} factory.create Just like calling the factory function.
- * @return {Object} factory.fixed An object map containing the fixed prototypes.
- * @return {Function} factory.methods Add methods to the prototype. Chainable.
- * @return {Function} factory.refs Add references to the prototype. Chainable.
+ * @return {Object} factory.fixed An object map containing the stamp components.
+ * @return {Function} factory.methods Add methods to the stamp. Chainable.
+ * @return {Function} factory.refs Add references to the stamp. Chainable.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
+ * @return {Function} factory.compose Combine several stamps into single. Chainable.
  */
 stampit = function stampit(options) {
-  var fixed = {methods: {}, refs: {}, init: [], props: {}};
+  var fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
   fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
   if (options) {
@@ -113,6 +120,7 @@ stampit = function stampit(options) {
     addRefs(fixed, options.refs);
     addInit(fixed, options.init);
     addProps(fixed, options.props);
+    addStatic(fixed, options.static);
   }
 
   var factory = function Factory(properties, args) {
@@ -134,45 +142,61 @@ stampit = function stampit(options) {
   var refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
   var initMethod = cloneAndExtend.bind(null, fixed, addInit);
   return mixer.mixin(factory, {
+    /**
+     * Creates a new object instance form the stamp.
+     */
     create: factory,
+
+    /**
+     * The stamp components.
+     */
     fixed: fixed,
 
     /**
-     * Take n objects and add them to the methods prototype.
-     * @return {Object} stamp  The factory in question (`this`).
+     * Take n objects and add them to the methods list of a new stamp. Creates new stamp.
+     * @return {Function} A new stamp (factory object).
      */
     methods: cloneAndExtend.bind(null, fixed, addMethods),
 
     /**
-     * Take n objects and add them to the newly stamped objects.
-     * @return {Object} stamp  The factory in question (`this`).
+     * Take n objects and add them to the references list of a new stamp. Creates new stamp.
+     * @return {Function} A new stamp (factory object).
      */
     refs: refsMethod,
 
     /**
      * Alias to refs(). Deprecated.
-     * @return {Object} stamp  The factory in question (`this`).
+     * @return {Function} A new stamp (factory object).
      */
     state: refsMethod,
 
     /**
      * Take n functions, an array of functions, or n objects and add
-     * the functions to the enclose prototype.
-     * @return {Object} The factory in question (`this`).
+     * the functions to the initializers list of a new stamp. Creates new stamp.
+     * @return {Function} A new stamp (factory object).
      */
     init: initMethod,
 
     /**
      * Alias to init(). Deprecated.
-     * @return {Object} The factory in question (`this`).
+     * @return {Function} A new stamp (factory object).
      */
     enclose: initMethod,
 
     /**
-     * Take n objects and add deep clone them to the instantiated object.
-     * @return {Object} stamp  The factory in question (`this`).
+     * Take n objects and deep merge them to the properties. Creates new stamp.
+     * @return {Function} A new stamp (factory object).
      */
     props: cloneAndExtend.bind(null, fixed, addProps),
+
+    /**
+     * Take n objects and add all props to the factory object. Creates new stamp.
+     * @return {Function} A new stamp (factory object).
+     */
+    static: function () {
+      var newStamp = cloneAndExtend(this.fixed, addStatic, slice(arguments));
+      return mixer.mixin(newStamp, newStamp.fixed.static);
+    },
 
     /**
      * Take one or more factories produced from stampit() and
@@ -186,7 +210,7 @@ stampit = function stampit(options) {
       args = [this].concat(args);
       return compose(args);
     }
-  });
+  }, fixed.static);
 };
 
 // Static methods
@@ -199,6 +223,7 @@ function isStamp(obj) {
   (isFunction(obj.refs) || isFunction(obj.state)) &&
   (isFunction(obj.init) || isFunction(obj.enclose)) &&
   isFunction(obj.props) &&
+  isFunction(obj.static) &&
   isObject(obj.fixed)
   );
 }
@@ -213,21 +238,48 @@ function convertConstructor(Constructor) {
   return stamp;
 }
 
-function shortcutMethod(extensionFunction) {
+function shortcutMethod(extensionFunction, args) {
+  args = arguments.length > 2 ? slice(arguments, 1, arguments.length) : args;
   var stamp = stampit();
-  extensionFunction(stamp.fixed, slice(arguments, 1));
+  extensionFunction(stamp.fixed, args);
   return stamp;
 }
 
 module.exports = mixer.mixin(stampit, {
 
+  /**
+   * Take n objects and add them to the methods list of a new stamp. Creates new stamp.
+   * @return {Function} A new stamp (factory object).
+   */
   methods: shortcutMethod.bind(null, addMethods),
 
+  /**
+   * Take n objects and add them to the references list of a new stamp. Creates new stamp.
+   * @return {Function} A new stamp (factory object).
+   */
   refs: shortcutMethod.bind(null, addRefs),
 
+  /**
+   * Take n functions, an array of functions, or n objects and add
+   * the functions to the initializers list of a new stamp. Creates new stamp.
+   * @return {Function} A new stamp (factory object).
+   */
   init: shortcutMethod.bind(null, addInit),
 
+  /**
+   * Take n objects and deep merge them to the properties. Creates new stamp.
+   * @return {Function} A new stamp (factory object).
+   */
   props: shortcutMethod.bind(null, addProps),
+
+  /**
+   * Take n objects and add all props to the factory object. Creates new stamp.
+   * @return {Function} A new stamp (factory object).
+   */
+  static: function () {
+    var newStamp = shortcutMethod(addStatic, slice(arguments));
+    return mixer.mixin(newStamp, newStamp.fixed.static);
+  },
 
   /**
    * Take two or more factories produced from stampit() and
@@ -271,8 +323,7 @@ module.exports = mixer.mixin(stampit, {
    * Take an old-fashioned JS constructor and return a stampit stamp
    * that you can freely compose with other stamps.
    * @param  {Function} Constructor
-   * @return {Function}             A composable stampit factory
-   *                                (aka stamp).
+   * @return {Function} A composable stampit factory (aka stamp).
    */
   convertConstructor: convertConstructor
 });
