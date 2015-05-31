@@ -1,5 +1,5 @@
 # Stampit
-[![Travis-CI](https://travis-ci.org/ericelliott/stampit.svg?branch=v2_0)](https://travis-ci.org/ericelliott/stampit)
+[![Travis-CI](https://travis-ci.org/ericelliott/stampit.svg)](https://travis-ci.org/ericelliott/stampit)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ericelliott/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
@@ -13,6 +13,7 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 **v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
 
 **v2, current stable**. Breaking changes:
+* `stampit()` now receives options object (`{methods,refs,init,props}`) instead of multiple arguments.
 * All chaining methods return new stamps instead of self-mutating `this` stamp.
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now recieve the following object `{ instance, stamp, args }`.
@@ -74,11 +75,11 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
 A stamp is a composable factory function created by calling `stampit()`. When invoked the factory function creates and returns object instances assigning:
  ```js
- var myStamp = stampit();
- myStamp.methods({ doSomething: function(){} }); // methods each new object instance will have
- myStamp.props({ foo: {bar: 'bam'} }); // properties to be cloned and assigned to object instances
- myStamp.refs({ myObj: myObjByRef }); // properties to be set by reference to object instances
- myStamp.init(function(context){ }); // add an init function to be called when an object instance is created
+ var myStamp = stampit().
+   methods({ doSomething: function(){} }). // methods each new object instance will have
+   refs({ myObj: myObjByRef }). // properties to be set by reference to object instances
+   init(function(context){ }). // add an init function to be called when an object instance is created
+   props({ foo: {bar: 'bam'} }); // properties to be cloned and assigned to object instances
  ```
 
 All of these stampit methods may be called multiple times to add more elements to the factory.
@@ -162,6 +163,7 @@ var availability = stampit().init(function () {
 
 // Here's a mixin with public methods, and some state:
 var membership = stampit({
+  methods: {
     add: function (member) {
       this.members[member.name] = member;
       return this;
@@ -170,9 +172,10 @@ var membership = stampit({
       return this.members[name];
     }
   },
-  {
+  refs: {
     members: {}
-  });
+  }
+});
 
 // Let's set some defaults:
 var defaults = stampit().refs({
@@ -184,7 +187,7 @@ var defaults = stampit().refs({
 // Just good, clean code reusability.
 var bar = stampit.compose(defaults, availability, membership);
 
-// Note that you can override state on instantiation:
+// Note that you can override references on instantiation:
 var myBar = bar({name: 'Moe\'s'});
 
 // Silly, but proves that everything is as it should be.
@@ -273,8 +276,8 @@ var newStamp = baseStamp.compose(myStamp);
 
 ## Pass multiple objects into .methods(), .refs(), .init(), props(), or .compose().
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the prototype methods. 
-In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` prototype for the stamp. 
+Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the stamp methods. 
+In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` of the stamp. 
 The properties from later arguments in the list will override the same named properties of previously passed in objects. `refs` will be copied by reference. `props` will be deeply merged.
 
 ```js
@@ -333,40 +336,43 @@ Or even `.compose()` ...
 Return a factory function (called a stamp) that will produce new objects using the
 components that are passed in or composed.
 
-* `@param {Object} [options]` Options to build stamp from: `{ methods, refs, init, props }`
-* `@return {Function} stamp` A factory to produce objects.
-* `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
-* `@return {Object} stamp.fixed` An object map containing the stamp component.
-* `@return {Function} stamp.methods` Add methods to the stamp. Chainable.
-* `@return {Function} stamp.refs` Add object references to stamp. Chainable.
-* `@return {Function} stamp.init` Add the initializer function(s). Chainable.
-* `@return {Function} stamp.props` Add deep merged state to stamp. Chainable.
-* `@return {Function} stamp.compose` Add stamp to stamp (combine). Chainable.
+ * @param  {Object} [options] Options to build stamp from: `{ methods, refs, init, props }`
+ * @param  {Object} [options.methods] A map of method names and bodies for delegation.
+ * @param  {Object} [options.refs] A map of property names and values to be mixed into each new object.
+ * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
+ * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
+ * @return {Function} factory A factory to produce objects.
+ * @return {Function} factory.create Just like calling the factory function.
+ * @return {Object} factory.fixed An object map containing the stamp metadata.
+ * @return {Function} factory.methods Add methods to the stamp. Chainable.
+ * @return {Function} factory.refs Add references to the stamp. Chainable.
+ * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
+ * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
 
 
 ## The stamp object ##
 
 ### stamp.methods() ###
 
-Take n objects and add them to the methods prototype. Creates new stamp.
+Take n objects and add them to the methods list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
 ### stamp.refs() ###
 
-Take n objects and add them to the references. Creates new stamp.
+Take n objects and add them to the references list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-Has alias `stamp.state`. Deprecated.
+It has alias - `stamp.state()`. Deprecated.
 
 
 ### stamp.init([arg1] [,arg2] [,arg3...]) ###
 
 Take n functions, an array of functions, or n objects and add
-the functions to the initializers list. Creates new stamp.
+the functions to the initializers list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-Has alias `stamp.enclose`. Deprecated.
+It has alias - `stamp.enclose()`. Deprecated.
 
 Functions passed into `.init()` are called any time an
 object is instantiated. That happens when the stamp function
@@ -434,6 +440,22 @@ anti-pattern that should be avoided, when possible.
 
 ## Utility methods ##
 
+### stampit.methods() ###
+
+Shortcut for `stampit().methods()`
+
+### stampit.refs() ###
+
+Shortcut for `stampit().refs()` 
+
+### stampit.init() ###
+
+Shortcut for `stampit().init()`
+
+### stampit.props() ###
+
+Shortcut for `stampit().props()`
+
 ### stampit.compose() ###
 
 Take two or more stamps produced from stampit() and
@@ -458,7 +480,7 @@ with last in priority overrides.
 
 ### stampit.extend(), .mixIn(), .assign() ###
 
-Aliases for `mixin`.
+Aliases for `stampit.mixin()`.
 
 
 ### stampit.isStamp(obj) ###
@@ -493,12 +515,15 @@ will probably clash with each other, producing very unexpected results.
   var oldskool = stampit.convertConstructor(Constructor);
 
   // A new stamp to compose with...
-  var newskool = stampit().methods({
+  var newskool = stampit({
+    methods: {
       bar: function bar() { return 'bar'; }
      // your methods here...
-    }).init(function () {
+    },
+    init: function () {
       this.baz = 'baz';
-    });
+    }
+  });
 
   // Now you can compose those old constructors just like you could
   // with any other stamp...
