@@ -363,7 +363,7 @@ Take n objects and add them to the methods list of a new stamp. Creates new stam
 Take n objects and add them to the references list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-It has alias - `stamp.state()`. Deprecated.
+It has an alias - `stamp.state()`. Deprecated.
 
 
 ### stamp.init([arg1] [,arg2] [,arg3...]) ###
@@ -372,7 +372,7 @@ Take n functions, an array of functions, or n objects and add
 the functions to the initializers list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-It has alias - `stamp.enclose()`. Deprecated.
+It has an alias - `stamp.enclose()`. Deprecated.
 
 Functions passed into `.init()` are called any time an
 object is instantiated. That happens when the stamp function
