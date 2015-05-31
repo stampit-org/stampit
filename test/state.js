@@ -5,7 +5,7 @@ var stampit = require('../stampit'),
 // .state alias
 
 test('stampit().fixed.state is same as refs', function (t) {
-  var stamp = stampit(null, { s: 1 });
+  var stamp = stampit({ refs: { s: 1 } });
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
 
@@ -13,7 +13,7 @@ test('stampit().fixed.state is same as refs', function (t) {
 });
 
 test('stampit().state().fixed.state is same as refs().fixed.refs', function (t) {
-  var stamp = stampit(null, { s: 1 }).state({ s2: 2 });
+  var stamp = stampit({ refs: { s: 1 } }).state({ refs: { s2: 2 } });
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
   t.equal(stamp.fixed.refs.s, stamp.fixed.state.s);
@@ -23,7 +23,7 @@ test('stampit().state().fixed.state is same as refs().fixed.refs', function (t) 
 });
 
 test('stampit.compose().fixed.state is same as refs', function (t) {
-  var stamp = stampit(null, { s: 1 }).compose(stampit(null, { s2: 2 }));
+  var stamp = stampit({ refs: { s: 1 } }).compose(stampit({ refs: { s2: 2 } }));
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
 

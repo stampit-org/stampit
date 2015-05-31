@@ -1,0 +1,7 @@
+.editorconfig
+.idea/
+/*.tgz
+/.travis.yml
+/.jshintrc
+/buildconfig.env.example
+/test/

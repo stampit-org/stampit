@@ -1,11 +1,1 @@
-require('./basics');
-require('./compose');
-require('./convert-constructor');
-require('./init');
-require('./immutability');
-require('./is-stamp');
-require('./props-safety');
-require('./refs');
-require('./stampit-aliases');
-require('./state');
-require('./v1-compatibility');
+require('require-all')(__dirname);

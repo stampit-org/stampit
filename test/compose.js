@@ -7,22 +7,25 @@ var stampit = require('../stampit'),
 test('stampit().compose()', function (t) {
   var closuresCalled = 0,
     a = stampit({
+      methods: {
         method: function () { return false; }
       },
-      { ref: false },
-      function () {
+      refs: { ref: false },
+      init: function () {
         closuresCalled++;
       },
-      { prop: false }
-    ),
+      props: { prop: false }
+    }),
     b = stampit({
+      methods: {
         method: function () { return true; }
       },
-      { ref: true },
-      function () {
+      refs: { ref: true },
+      init: function () {
         closuresCalled++;
       },
-      { prop: true }),
+      props: { prop: true }
+    }),
     d;
 
   d = a.compose(b).create();
@@ -35,32 +38,40 @@ test('stampit().compose()', function (t) {
 
 test('stampit.compose()', function (t) {
   var a = stampit({
-        methodA: function () { return true; }
+      methods: {
+        methodA: function () {
+          return true;
+        }
       },
-      { refA: true },
-      function () {
+      refs: {refA: true},
+      init: function () {
         var secret = 'a';
-        this.getA = function () { return secret; };
+        this.getA = function () {
+          return secret;
+        };
       },
-      { propA: "1" }),
-    b = stampit({
+      props: {propA: "1"}
+    }),
+    b = stampit({ methods: {
         methodB: function () { return true; }
       },
-      { refB: true },
-      function () {
+      refs: { refB: true },
+      init: function () {
         var secret = true;
         this.getB = function () { return secret; };
       },
-      { propB: "1" }),
-    c = stampit({
+      props: { propB: "1" }
+    }),
+    c = stampit({ methods: {
         methodC: function () { return true; }
       },
-      { refC: true },
-      function () {
+      refs: { refC: true },
+      init: function () {
         var secret = true;
         this.getC = function () { return secret; };
       },
-      { propC: "1" }), d;
+      props: { propC: "1" }
+    }), d;
 
   d = stampit.compose(a, b, c).create();
 

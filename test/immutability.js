@@ -8,12 +8,12 @@ test('Basic stamp immutability', function (t) {
   var methods = { f: function F1() {} };
   var refs = { s: { deep: 1 } };
   var props = { p: { deep: 1 } };
-  var stamp1 = stampit(methods, refs, null, props);
+  var stamp1 = stampit({ methods: methods, refs: refs, props: props });
 
   methods.f = function F2() {};
   refs.s.deep = 2;
   props.p.deep = 2;
-  var stamp2 = stampit(methods, refs, null, props);
+  var stamp2 = stampit({ methods: methods, refs: refs, props: props });
 
   t.notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
   t.notEqual(stamp1.fixed.methods.f, stamp2.fixed.methods.f);
@@ -32,8 +32,8 @@ test('Stamp immutability made of same source', function (t) {
   var methods = { f: function F1() {} };
   var refs = { s: { deep: 1 } };
   var props = { p: { deep: 1 } };
-  var stamp1 = stampit(methods, refs, null, props);
-  var stamp2 = stampit(methods, refs, null, props);
+  var stamp1 = stampit({ methods: methods, refs: refs, props: props });
+  var stamp2 = stampit({ methods: methods, refs: refs, props: props });
 
   t.notEqual(stamp1.fixed.methods, stamp2.fixed.methods);
   t.notEqual(stamp1.fixed.refs, stamp2.fixed.refs);
@@ -49,12 +49,12 @@ test('Basic object immutability', function (t) {
   var methods = { f: function F1() {} };
   var refs = { s: { deep: 1 } };
   var props = { p: { deep: 1 } };
-  var o1 = stampit(methods, refs, null, props)();
+  var o1 = stampit({ methods: methods, refs: refs, props: props })();
 
   methods.f = function F2() {};
   refs.s.deep = 2;
   props.p.deep = 2;
-  var o2 = stampit(methods, refs, null, props)();
+  var o2 = stampit({ methods: methods, refs: refs, props: props })();
 
   t.notEqual(o1, o2);
   t.notEqual(o1.f, o2.f);
