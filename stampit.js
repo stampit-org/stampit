@@ -48,8 +48,8 @@ function addMethods(fixed, methods) {
   mixer.mixinFunctions.apply(null, args);
   return fixed.methods;
 }
-function addRefs(fixed, states) {
-  var args = [fixed.refs || fixed.state].concat(states);
+function addRefs(fixed, refs) {
+  var args = [fixed.refs || fixed.state].concat(refs);
   fixed.refs = fixed.state = mixer.mixin.apply(null, args);
   return fixed.refs;
 }

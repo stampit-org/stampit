@@ -17,41 +17,39 @@ test('stampit({})', function (t) {
 });
 
 test('incorrect stampit({ methods }) args', function (t) {
-  t.ok(stampit.isStamp(stampit({ methods: 42 })));
-  t.ok(stampit.isStamp(stampit({ methods: null })));
-  t.ok(stampit.isStamp(stampit({ methods: new RegExp() })));
-  t.ok(stampit.isStamp(stampit({ methods: [42] })));
-  t.ok(stampit.isStamp(stampit({ methods: "a string" })));
+  t.same(stampit({ methods: 42 }).fixed.methods, {});
+  t.same(stampit({ methods: null }).fixed.methods, {});
+  t.same(stampit({ methods: new RegExp() }).fixed.methods, {});
+  t.same(stampit({ methods: [42] }).fixed.methods, {});
+  t.same(stampit({ methods: "a string" }).fixed.methods, {});
 
   t.end();
 });
 
 test('incorrect stampit({ refs }) args', function (t) {
-  t.ok(stampit.isStamp(stampit({ refs: 42 })));
-  t.ok(stampit.isStamp(stampit({ refs: null })));
-  t.ok(stampit.isStamp(stampit({ refs: new RegExp() })));
-  t.ok(stampit.isStamp(stampit({ refs: [42] })));
-  t.ok(stampit.isStamp(stampit({ refs: "a string" })));
+  t.same(stampit({ refs: 42 }).fixed.refs, {});
+  t.same(stampit({ refs: null }).fixed.refs, {});
+  t.same(stampit({ refs: new RegExp() }).fixed.refs, {});
+  t.same(stampit({ refs: [42] }).fixed.refs, {});
 
   t.end();
 });
 
 test('incorrect stampit({ init }) args', function (t) {
-  t.ok(stampit.isStamp(stampit({ init: 42 })));
-  t.ok(stampit.isStamp(stampit({ init: null })));
-  t.ok(stampit.isStamp(stampit({ init: new RegExp() })));
-  t.ok(stampit.isStamp(stampit({ init: [42] })));
-  t.ok(stampit.isStamp(stampit({ init: "a string" })));
+  t.same(stampit({ init: 42 }).fixed.init, []);
+  t.same(stampit({ init: null }).fixed.init, []);
+  t.same(stampit({ init: new RegExp() }).fixed.init, []);
+  t.same(stampit({ init: [42] }).fixed.init, []);
+  t.same(stampit({ init: "a string" }).fixed.init, []);
 
   t.end();
 });
 
 test('incorrect stampit({ props }) args', function (t) {
-  t.ok(stampit.isStamp(stampit({ props: 42 })));
-  t.ok(stampit.isStamp(stampit({ props: null })));
-  t.ok(stampit.isStamp(stampit({ props: new RegExp() })));
-  t.ok(stampit.isStamp(stampit({ props: [42] })));
-  t.ok(stampit.isStamp(stampit({ props: "a string" })));
+  t.same(stampit({ props: 42 }).fixed.props, {});
+  t.same(stampit({ props: null }).fixed.props, {});
+  t.same(stampit({ props: new RegExp() }).fixed.props, {});
+  t.same(stampit({ props: [42] }).fixed.props, {});
 
   t.end();
 });
