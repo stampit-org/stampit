@@ -194,6 +194,22 @@ var myBar = bar({name: 'Moe\'s'});
 myBar.add({name: 'Homer' }).open().getMember('Homer');
 ```
 
+## Statics
+
+Stamps have a `static` method. This method applies passed object properties to the calling stamp's object. `static` is a convenience method. The old school way to apply statics to a stamp is by using stampit's `mixIn/extend` method.
+
+```js
+stampit.extend(stamp, {
+  foo: 'foo'
+});
+
+This can now be written as:
+
+stamp.static({
+  foo: 'foo'
+});
+```
+
 ## More chaining
 
 Chaining stamps *always* creates new stamps.
@@ -230,6 +246,7 @@ myStamp = myStamp.refs({
 });
 ```
 
+<<<<<<< HEAD
 And `.props()` ...
 
 ```js
@@ -241,6 +258,21 @@ myStamp = myStamp.props({
 ```
 
 And `.init()` ...
+=======
+And `.static()` ...
+
+```js
+myStamp.static({
+  foo: {bar: 'bar'},
+  staticOverride: false
+}).static({
+  bar: 'bar',
+  staticOverride: true
+});
+```
+
+And `.enclose()` ...
+>>>>>>> master
 
 ```js
 myStamp = myStamp.init(function () {
@@ -274,7 +306,11 @@ And `.compose()`.
 var newStamp = baseStamp.compose(myStamp);
 ```
 
+<<<<<<< HEAD
 ## Pass multiple objects into .methods(), .refs(), .init(), props(), or .compose().
+=======
+## Pass multiple objects into .methods(), .state(), .enclose(), .static(), or .compose().
+>>>>>>> master
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the stamp methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` of the stamp. 
@@ -334,6 +370,7 @@ Or even `.compose()` ...
 ### stampit() ###
 
 Return a factory function (called a stamp) that will produce new objects using the
+<<<<<<< HEAD
 components that are passed in or composed.
 
  * @param  {Object} [options] Options to build stamp from: `{ methods, refs, init, props }`
@@ -348,6 +385,21 @@ components that are passed in or composed.
  * @return {Function} factory.refs Add references to the stamp. Chainable.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
+=======
+prototypes that are passed in or composed.
+
+* `@param {Object} [methods]` A map of method names and bodies for delegation.
+* `@param {Object} [state]` A map of property names and values to clone for each new object.
+* `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
+* `@return {Function} stamp` A factory to produce objects using the given prototypes.
+* `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
+* `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
+* `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
+* `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
+* `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
+* `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
+* `@return {Function} stamp.static` Add properties to the factory object. Chainable.
+>>>>>>> master
 
 
 ## The stamp object ##
@@ -438,6 +490,12 @@ arguments. Taking arguments with an `.init()` function is an
 anti-pattern that should be avoided, when possible.
 
 
+### stamp.static() ###
+
+Take n objects and add all props to the factory object.
+* @return {Object} stamp The factory in question (`this`).
+
+
 ## Utility methods ##
 
 ### stampit.methods() ###
@@ -501,7 +559,7 @@ the resulting stamp with other stamps willy-nilly, because if two
 different stamps depend on the argument passing feature, the arguments
 will probably clash with each other, producing very unexpected results.
 
- * @param  {Function} Constructor 
+ * @param  {Function} Constructor
  * @return {Function} A composable stampit factory (aka stamp).
 
 ```js

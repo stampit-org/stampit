@@ -17,7 +17,20 @@ var isObject = require('lodash/lang/isObject');
 var create = Object.create;
 var slice = require('lodash/array/slice');
 
+<<<<<<< HEAD
 var mixer = require('./mixer');
+=======
+/*jshint -W024 */
+
+// Avoiding JSHist W003 violations.
+var create, extractFunctions, stampit, compose, isStamp, convertConstructor;
+
+create = function (o) {
+  if (arguments.length > 1) {
+    throw new Error('Object.create implementation only accepts the first parameter.');
+  }
+  function F() {}
+>>>>>>> master
 
 // Avoiding JSHist W003 violations.
 var stampit;
@@ -111,6 +124,7 @@ function compose(factories) {
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
  * @return {Function} factory.compose Combine several stamps into single. Chainable.
  */
+<<<<<<< HEAD
 stampit = function stampit(options) {
   var fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
@@ -122,6 +136,15 @@ stampit = function stampit(options) {
     addProps(fixed, options.props);
     addStatic(fixed, options.static);
   }
+=======
+stampit = function stampit(methods, state, enclose) {
+  var fixed = {
+      methods: methods || {},
+      state: state,
+      enclose: extractFunctions(enclose),
+      static: {}
+    },
+>>>>>>> master
 
   var factory = function Factory(properties, args) {
     properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
@@ -199,6 +222,17 @@ stampit = function stampit(options) {
     },
 
     /**
+     * Take n objects and add all props to the factory object.
+     * @return {Object} stamp The factory in question (`this`).
+     */
+    static: function stampStatic() {
+      var obj = fixed.static || {},
+        args = [obj].concat(slice.call(arguments));
+      fixed.static = mixInChain.apply(this, args);
+
+      return mixIn(this, fixed.static);
+     },
+    /**
      * Take one or more factories produced from stampit() and
      * combine them with `this` to produce and return a new factory.
      * Combining overrides properties with last-in priority.
@@ -228,6 +262,7 @@ function isStamp(obj) {
   );
 }
 
+<<<<<<< HEAD
 function convertConstructor(Constructor) {
   var stamp = stampit();
   mixer.mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
@@ -244,6 +279,35 @@ function shortcutMethod(extensionFunction, args) {
   extensionFunction(stamp.fixed, args);
   return stamp;
 }
+=======
+      if (source.fixed.enclose) {
+        f.enclose = f.enclose.concat(source.fixed.enclose);
+      }
+
+      if (source.fixed.static) {
+        f.static = mixIn(f.static, source.fixed.static);
+      }
+    }
+  });
+  return mixIn(result, f.static);
+};
+
+/**
+ * Check if an object is a stamp.
+ * @param {Object} obj An object to check.
+ * @returns {Boolean}
+ */
+isStamp = function isStamp(obj) {
+  return (
+    typeof obj === 'function' &&
+    typeof obj.fixed === 'object' &&
+    typeof obj.methods === 'function' &&
+    typeof obj.state === 'function' &&
+    typeof obj.enclose === 'function' &&
+    typeof obj.static === 'function'
+    );
+};
+>>>>>>> master
 
 module.exports = mixer.mixin(stampit, {
 
