@@ -21,7 +21,7 @@
     "url": "git@github.com:ericelliott/stampit.git"
   },
   "dependencies": {
-    "lodash": "^3.9.1"
+    "lodash": "^3.0.0"
   },
   "devDependencies": {
     "browserify": "^10.2.1",
