@@ -246,7 +246,6 @@ myStamp = myStamp.refs({
 });
 ```
 
-<<<<<<< HEAD
 And `.props()` ...
 
 ```js
@@ -257,8 +256,6 @@ myStamp = myStamp.props({
 });
 ```
 
-And `.init()` ...
-=======
 And `.static()` ...
 
 ```js
@@ -271,8 +268,7 @@ myStamp.static({
 });
 ```
 
-And `.enclose()` ...
->>>>>>> master
+And `.init()` ...
 
 ```js
 myStamp = myStamp.init(function () {
@@ -306,11 +302,7 @@ And `.compose()`.
 var newStamp = baseStamp.compose(myStamp);
 ```
 
-<<<<<<< HEAD
-## Pass multiple objects into .methods(), .refs(), .init(), props(), or .compose().
-=======
-## Pass multiple objects into .methods(), .state(), .enclose(), .static(), or .compose().
->>>>>>> master
+## Pass multiple objects into .methods(), .refs(), .init(), props(), .static(), or .compose().
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the stamp methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` of the stamp. 
@@ -349,13 +341,22 @@ Or `.init()` ...
 Or `.props()` ...
 
 ```js
-  var obj = stampit().refs({
+  var obj = stampit().props({
     name: { first: 'John' }
   }, {
     name: { last: 'Doe' }
   }).create();
 ```
 
+Or `.static()` ...
+
+```js
+  var obj = stampit().static({
+    foo: 'foo'
+  }, {
+    bar: 'bar'
+  }).create();
+```
 
 Or even `.compose()` ...
 
@@ -370,7 +371,6 @@ Or even `.compose()` ...
 ### stampit() ###
 
 Return a factory function (called a stamp) that will produce new objects using the
-<<<<<<< HEAD
 components that are passed in or composed.
 
  * @param  {Object} [options] Options to build stamp from: `{ methods, refs, init, props }`
@@ -385,21 +385,8 @@ components that are passed in or composed.
  * @return {Function} factory.refs Add references to the stamp. Chainable.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
-=======
-prototypes that are passed in or composed.
-
-* `@param {Object} [methods]` A map of method names and bodies for delegation.
-* `@param {Object} [state]` A map of property names and values to clone for each new object.
-* `@param {Function} [enclose]` A closure (function) used to create private data and privileged methods.
-* `@return {Function} stamp` A factory to produce objects using the given prototypes.
-* `@return {Function} stamp.create` Chaining sugar that invokes the stamp.
-* `@return {Object} stamp.fixed` An object map containing the fixed prototypes.
-* `@return {Function} stamp.methods` Add methods to the methods prototype. Chainable.
-* `@return {Function} stamp.state` Add properties to the state prototype. Chainable.
-* `@return {Function} stamp.enclose` Add or replace the closure prototype. Chainable.
-* `@return {Function} stamp.compose` Add stamp to stamp. Chainable.
-* `@return {Function} stamp.static` Add properties to the factory object. Chainable.
->>>>>>> master
+ * @return {Function} factory.compose Add stamp to stamp. Chainable.
+ * @return {Function} factory.static Add properties to the factory object. Chainable.
 
 
 ## The stamp object ##
