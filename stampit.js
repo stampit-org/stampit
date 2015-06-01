@@ -72,8 +72,6 @@ function addStatic(fixed, statics) {
 
 function cloneAndExtend(fixed, extensionFunction, args) {
   args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
-  // We might end up having two different stampit modules loaded and used in conjunction.
-  // These || operators ensure that old stamps could be combined with the current version stamps.
   var stamp = stampit(fixed);
   extensionFunction(stamp.fixed, args);
   return stamp;
@@ -85,6 +83,8 @@ function compose(factories) {
   forEach(factories, function (source) {
     if (source && source.fixed) {
       addMethods(result.fixed, source.fixed.methods);
+      // We might end up having two different stampit modules loaded and used in conjunction.
+      // These || operators ensure that old stamps could be combined with the current version stamps.
       addRefs(result.fixed, source.fixed.refs || source.fixed.state); // 'state' is the old name for 'refs'
       addInit(result.fixed, source.fixed.init || source.fixed.enclose); // 'enclose' is the old name for 'init'
       addProps(result.fixed, source.fixed.props);
@@ -111,8 +111,8 @@ function compose(factories) {
  * @return {Function} factory.refs Add references to the stamp. Chainable.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
  * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
- * @return {Function} factory.static Add properties to the stamp (not objects!). Chainable.
  * @return {Function} factory.compose Combine several stamps into single. Chainable.
+ * @return {Function} factory.static Add properties to the stamp (not objects!). Chainable.
  */
 stampit = function stampit(options) {
   var fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
