@@ -73,14 +73,28 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
 ## What is a Stamp?
 
-A stamp is a composable factory function created by calling `stampit()`. When invoked the factory function creates and returns object instances assigning:
+A stamp is a composable factory function. Stamps allow you to inherit easily from multiple ancestors by composing multiple source stamps. You can combine properties, methods, and initializers (with closures) from any number of stamps to produce a new stamp. Stamps are more flexible than traditional factory functions or classical multiple inheritance. Traditional factory functions can't be composed together to produce new factory functions. Class inheritance does not provide a standardized mechanism for class composition.
+
+Stamp composition takes advantage of three different kinds of prototypal inheritance:
+
+* Differential inheritance, aka delegation (e.g., JavaScript's [[Prototype]]),
+* Mixins/cloning with optional deep merge, aka concatenative inheritance (e.g., JavaScript's `Object.assign()`),
+* Functional / closure inheritance (for initialization or privacy/encapsulation)
+
+When invoked the stamp factory function creates and returns object instances assigning:
  ```js
  var myStamp = stampit().
    methods({ doSomething: function(){} }). // methods each new object instance will have
    refs({ myObj: myObjByRef }). // properties to be set by reference to object instances
-   init(function(context){ }). // add an init function to be called when an object instance is created
-   props({ foo: {bar: 'bam'} }); // properties to be cloned and assigned to object instances
+   init(function(context){ }). // init function(s) to be called when an object instance is created
+   props({ foo: {bar: 'bam'} }); // properties to be deeply merged to object instances
  ```
+
+### How are Stamps Different from Classes?
+
+* It's easy to combine multiple stamps to create a new stamp with all of the source stamp capabilities
+* Stamps are factory functions, so they don't need to be invoked with `new` (which couples callers to the implementation of object instantiation)
+* Stamps don't create parent-child class hierarchies. Class hierarchies create "is-a" relationships between classes. Stamp composition creates "has-a" or "uses-a" relationships, instead. For that reason, stamp inheritance is less brittle than class inheritance.
 
 All of these stampit methods may be called multiple times to add more elements to the factory.
 
