@@ -3,12 +3,13 @@ var forOwn = require('lodash/object/forOwn');
 var forIn = require('lodash/object/forIn');
 var deepClone = require('lodash/lang/cloneDeep');
 var isObject = require('lodash/lang/isObject');
+var isUndefined = require('lodash/lang/isUndefined');
 var isFunction = require('lodash/lang/isFunction');
 
 /**
  * Creates mixin functions of all kinds.
  * @param {object} opts    Options.
- * @param {function(object, string)} opts.filter    Function which filters value and key.
+ * @param {function(object, object)} opts.filter    Function which filters value and key.
  * @param {boolean} opts.chain    Loop through prototype properties too.
  * @param {function(object)} opts.getTarget    Converts an object object to a target.
  * @param {function(object, object)} opts.getValue    Converts src and dst values to a new value.
@@ -30,11 +31,14 @@ var mixer = function (opts) {
     target = opts.getTarget ? opts.getTarget(target) : target;
 
     var mergeValue = function mergeValue(val, key) {
-      if (opts.filter && !opts.filter(val, key)) {
+      if (opts.filter && !opts.filter(val, this[key])) {
         return;
       }
 
       this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
+      if (this[key] === 'should not be merged') {
+        console.log('got ya');
+      }
     };
 
     while (++i < n) {
@@ -51,7 +55,6 @@ var mixer = function (opts) {
 };
 
 var merge = mixer({
-  getTarget: deepClone,
 /* jshint ignore:start */
   getValue: mergeSourceToTarget
 /* jshint ignore:end */
@@ -94,6 +97,32 @@ module.exports.mixinChainFunctions = mixer({
  */
 module.exports.merge = merge;
 
+
+var mergeUnique = mixer({
+  filter: function (srcVal, targetVal) {
+    return isUndefined(targetVal) || (isObject(srcVal) && isObject(targetVal));
+  },
+/* jshint ignore:start */
+  getValue: mergeUniqueSourceToTarget
+/* jshint ignore:end */
+});
+
+function mergeUniqueSourceToTarget(srcVal, targetVal) {
+  if ((isObject(srcVal) && isObject(targetVal))) {
+    // inception, deep merge objects
+    return mergeUnique(targetVal, srcVal);
+  } else {
+    // make sure arrays, regexp, date, objects are cloned
+    return deepClone(srcVal);
+  }
+}
+
+/**
+ * Just like regular object merge, but do not override destination object data.
+ */
+module.exports.mergeUnique = mergeUnique;
+
+
 /**
  * merge objects including prototype chain properties.
  */
@@ -101,5 +130,15 @@ module.exports.mergeChainNonFunctions = mixer({
   filter: function (val) { return !isFunction(val); },
   getTarget: deepClone,
   getValue: mergeSourceToTarget,
+  chain: true
+});
+
+/**
+ * merge unique properties of objects including prototype chain properties.
+ */
+module.exports.mergeChainNonFunctions = mixer({
+  filter: function (val) { return !isFunction(val); },
+  getTarget: deepClone,
+  getValue: mergeUniqueSourceToTarget,
   chain: true
 });

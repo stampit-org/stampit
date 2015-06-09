@@ -26,27 +26,22 @@ test('Stamp props deep cloned for object created', function (t) {
   t.end();
 });
 
-test('stamp(props) deep merge into object created', function (t) {
-  var deep = { foo: 'foo', bar: 'bar' };
-  var stamp1 = stampit().props({ deep: deep, foo: 'foo', bar: 'bar' });
-  var stamp2 = stampit({ props: { deep: deep, foo: 'foo', bar: 'bar' } });
+test('stamp(refs) deep merges props into refs', function (t) {
+  var deepInProps = { deepProp1: 'should not be merged', deepProp2: 'merge me!' };
+  var stamp1 = stampit().props({ deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' });
+  var stamp2 = stampit({ props: { deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' } });
 
-  var deep2 = { foo: 'override', baz: 'baz' };
-  var o1 = stamp1({ deep: deep2, foo: 'override', baz: 'baz' });
-  var o2 = stamp2({ deep: deep2, foo: 'override', baz: 'baz' });
+  var o1 = stamp1({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
+  var o2 = stamp2({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
 
-  t.equal(o1.foo, 'override');
-  t.equal(o1.bar, 'bar');
-  t.equal(o1.baz, 'baz');
-  t.equal(o2.foo, 'override');
-  t.equal(o2.bar, 'bar');
-  t.equal(o2.baz, 'baz');
-  t.equal(o1.deep.foo, 'override');
-  t.equal(o1.deep.bar, 'bar');
-  t.equal(o1.deep.baz, 'baz');
-  t.equal(o2.deep.foo, 'override');
-  t.equal(o2.deep.bar, 'bar');
-  t.equal(o2.deep.baz, 'baz');
+  t.equal(o1.shallow1, 'leave me as is');
+  t.equal(o1.shallow2, 'merge me!');
+  t.equal(o2.shallow1, 'leave me as is');
+  t.equal(o2.shallow2, 'merge me!');
+  t.equal(o1.deep.deepProp1, 'leave me as is', 'Deep property in refs should not be touched by props');
+  t.equal(o1.deep.deepProp2, 'merge me!');
+  t.equal(o2.deep.deepProp1, 'leave me as is', 'Deep property in refs should not be touched by props');
+  t.equal(o2.deep.deepProp2, 'merge me!');
 
   t.end();
 });

@@ -10,7 +10,6 @@
 var forEach = require('lodash/collection/forEach');
 var map = require('lodash/collection/map');
 var forOwn = require('lodash/object/forOwn');
-var deepClone = require('lodash/lang/cloneDeep');
 var isFunction = require('lodash/lang/isFunction');
 var isArray = Array.isArray;
 var isObject = require('lodash/lang/isObject');
@@ -126,9 +125,12 @@ stampit = function stampit(options) {
     addStatic(fixed, options.static);
   }
 
-  var factory = function Factory(properties, args) {
-    properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
-    var instance = mixer.mixin(create(fixed.methods), fixed.refs, properties); // props are taking over refs
+  var factory = function Factory(refs, args) {
+    //refs = refs ? mixer.merge({}, fixed.props, refs) : deepClone(fixed.props);
+    //var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs);
+
+    var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs); // props are merged into refs
+    mixer.mergeUnique(instance, fixed.props);
 
     if (fixed.init.length > 0) {
       args = slice(arguments, 1, arguments.length);
