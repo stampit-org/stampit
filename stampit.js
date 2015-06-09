@@ -126,8 +126,8 @@ stampit = function stampit(options) {
   }
 
   var factory = function Factory(refs, args) {
-    var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs); // props are merged into refs
-    mixer.mergeUnique(instance, fixed.props);
+    var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs);
+    mixer.mergeUnique(instance, fixed.props); // props are safely merged into refs
 
     if (fixed.init.length > 0) {
       args = slice(arguments, 1, arguments.length);
