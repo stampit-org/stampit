@@ -107,9 +107,11 @@ function mergeUniqueSourceToTarget(srcVal, targetVal) {
   if (isObject(srcVal) && isObject(targetVal)) {
     // inception, deep merge objects
     return mergeUnique(targetVal, srcVal);
-  } else {
+  } else if (isUndefined(targetVal)) {
     // make sure arrays, regexp, date, objects are cloned
     return deepClone(srcVal);
+  } else {
+    return targetVal;
   }
 }
 
