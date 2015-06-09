@@ -126,9 +126,6 @@ stampit = function stampit(options) {
   }
 
   var factory = function Factory(refs, args) {
-    //refs = refs ? mixer.merge({}, fixed.props, refs) : deepClone(fixed.props);
-    //var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs);
-
     var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs); // props are merged into refs
     mixer.mergeUnique(instance, fixed.props);
 
