@@ -54,6 +54,8 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
  * Create factory functions (called stamps) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
 
+ * Assign properties by passing references object to the stamp (factory function).
+
  * Compose stamps together to create new stamps.
 
  * Inherit methods and default state.
@@ -61,9 +63,9 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
  * Supports composable private state and privileged methods.
 
  * References are copied across for each instance.
- 
+
  * Properties are deeply merged and cloned for each instance, so it won't be accidentally shared.
- 
+
  * Initializers are called for each new instance. Provides wide extensibility to stamp behavior.
 
  * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
@@ -83,11 +85,13 @@ Stamp composition takes advantage of three different kinds of prototypal inherit
 
 When invoked the stamp factory function creates and returns object instances assigning:
  ```js
- var myStamp = stampit().
-   methods({ doSomething: function(){} }). // methods each new object instance will have
-   refs({ myObj: myObjByRef }). // properties to be set by reference to object instances
+ var DbAuthStamp = stampit().
+   methods({ authorize: function(){} }). // methods each new object instance will have
+   refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
    init(function(context){ }). // init function(s) to be called when an object instance is created
-   props({ foo: {bar: 'bam'} }); // properties to be deeply merged to object instances
+   props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
+
+ var dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
  ```
 
 ### How are Stamps Different from Classes?
@@ -224,7 +228,7 @@ stamp.static({
 });
 ```
 
-## More chaining
+## Chaining methods
 
 Chaining stamps *always* creates new stamps.
 
@@ -392,15 +396,15 @@ components that are passed in or composed.
  * @param  {Object} [options.refs] A map of property names and values to be mixed into each new object.
  * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
  * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
- * @return {Function} factory A factory to produce objects.
- * @return {Function} factory.create Just like calling the factory function.
+ * @return {Function(refs)} factory A factory to produce objects.
+ * @return {Function(refs)} factory.create Just like calling the factory function.
  * @return {Object} factory.fixed An object map containing the stamp metadata.
- * @return {Function} factory.methods Add methods to the stamp. Chainable.
- * @return {Function} factory.refs Add references to the stamp. Chainable.
- * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
- * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
- * @return {Function} factory.compose Add stamp to stamp. Chainable.
- * @return {Function} factory.static Add properties to the factory object. Chainable.
+ * @return {Function(methods)} factory.methods Add methods to the stamp. Chainable.
+ * @return {Function(refs)} factory.refs Add references to the stamp. Chainable.
+ * @return {Function(Function(context))} factory.init Add a closure which called on object instantiation. Chainable.
+ * @return {Function(props)} factory.props Add deeply cloned properties to the produced objects. Chainable.
+ * @return {Function(stamps} factory.compose Add stamp to stamp. Chainable.
+ * @return {Function(statics)} factory.static Add properties to the factory object. Chainable.
 
 
 ## The stamp object ##
@@ -464,7 +468,8 @@ MyStamp.create().originalStamp === MyStamp; // true
 
 ### stamp.props() ###
 
-Take n objects and deep merge them to the properties. Creates new stamp.
+Take n objects and deep merge them safely to the properties. Creates new stamp.
+Note: the merge algorythm will not change any existing `refs` data of a resulting object instance.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
@@ -478,9 +483,12 @@ Combining overrides properties with last-in priority.
 
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
+Alias to `stamp([properties] [,arg2] [,arg3...])`.
+
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. The first argument is an object
 containing properties you wish to set on the new objects.
+The properties are copied by reference using standard mixin/extend/assign algorythm.
 
 The remaining arguments are passed to all `.init()`
 functions. **WARNING** Avoid using two different `.init()`
