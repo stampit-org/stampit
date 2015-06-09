@@ -54,7 +54,7 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
  * Create factory functions (called stamps) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
 
- * Assign properties by passing references object to the stamp (factory function).
+ * Assign properties by passing a references object to the stamp (factory function).
 
  * Compose stamps together to create new stamps.
 
@@ -396,15 +396,15 @@ components that are passed in or composed.
  * @param  {Object} [options.refs] A map of property names and values to be mixed into each new object.
  * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
  * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
- * @return {Function(refs)} factory A factory to produce objects.
- * @return {Function(refs)} factory.create Just like calling the factory function.
+ * @return {Function} factory A factory to produce objects.
+ * @return {Function} factory.create Just like calling the factory function.
  * @return {Object} factory.fixed An object map containing the stamp metadata.
- * @return {Function(methods)} factory.methods Add methods to the stamp. Chainable.
- * @return {Function(refs)} factory.refs Add references to the stamp. Chainable.
- * @return {Function(Function(context))} factory.init Add a closure which called on object instantiation. Chainable.
- * @return {Function(props)} factory.props Add deeply cloned properties to the produced objects. Chainable.
- * @return {Function(stamps} factory.compose Add stamp to stamp. Chainable.
- * @return {Function(statics)} factory.static Add properties to the factory object. Chainable.
+ * @return {Function} factory.methods Add methods to the stamp. Chainable.
+ * @return {Function} factory.refs Add references to the stamp. Chainable.
+ * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
+ * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
+ * @return {Function} factory.compose Add stamp to stamp. Chainable.
+ * @return {Function} factory.static Add properties to the factory object. Chainable.
 
 
 ## The stamp object ##
@@ -469,7 +469,7 @@ MyStamp.create().originalStamp === MyStamp; // true
 ### stamp.props() ###
 
 Take n objects and deep merge them safely to the properties. Creates new stamp.
-Note: the merge algorythm will not change any existing `refs` data of a resulting object instance.
+Note: the merge algorithm will not change any existing `refs` data of a resulting object instance.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
@@ -488,7 +488,7 @@ Alias to `stamp([properties] [,arg2] [,arg3...])`.
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. The first argument is an object
 containing properties you wish to set on the new objects.
-The properties are copied by reference using standard mixin/extend/assign algorythm.
+The properties are copied by reference using standard mixin/extend/assign algorithm.
 
 The remaining arguments are passed to all `.init()`
 functions. **WARNING** Avoid using two different `.init()`

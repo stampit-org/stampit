@@ -27,27 +27,23 @@ var mixer = function (opts) {
     var loop = opts.chain ? forIn : forOwn;
     var i = 0,
       n = arguments.length,
-      obj;
+      obj,
+      filter = opts.filter,
+      getValue = opts.getValue,
+      mergeValue = function mergeValue(val, key) {
+        if (filter && !filter(val, target[key])) {
+          return;
+        }
+
+        target[key] = getValue ? getValue(val, target[key]) : val;
+      };
+
     target = opts.getTarget ? opts.getTarget(target) : target;
-
-    var mergeValue = function mergeValue(val, key) {
-      if (opts.filter && !opts.filter(val, this[key])) {
-        return;
-      }
-
-      this[key] = opts.getValue ? opts.getValue(val, this[key]) : val;
-      if (this[key] === 'should not be merged') {
-        console.log('got ya');
-      }
-    };
 
     while (++i < n) {
       obj = arguments[i];
       if (obj) {
-        loop(
-          obj,
-          mergeValue,
-          target);
+        loop(obj, mergeValue);
       }
     }
     return target;
@@ -108,7 +104,7 @@ var mergeUnique = mixer({
 });
 
 function mergeUniqueSourceToTarget(srcVal, targetVal) {
-  if ((isObject(srcVal) && isObject(targetVal))) {
+  if (isObject(srcVal) && isObject(targetVal)) {
     // inception, deep merge objects
     return mergeUnique(targetVal, srcVal);
   } else {
@@ -136,7 +132,7 @@ module.exports.mergeChainNonFunctions = mixer({
 /**
  * merge unique properties of objects including prototype chain properties.
  */
-module.exports.mergeChainNonFunctions = mixer({
+module.exports.mergeUniqueChainNonFunctions = mixer({
   filter: function (val) { return !isFunction(val); },
   getTarget: deepClone,
   getValue: mergeUniqueSourceToTarget,
