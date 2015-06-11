@@ -10,7 +10,6 @@
 var forEach = require('lodash/collection/forEach');
 var map = require('lodash/collection/map');
 var forOwn = require('lodash/object/forOwn');
-var deepClone = require('lodash/lang/cloneDeep');
 var isFunction = require('lodash/lang/isFunction');
 var isArray = Array.isArray;
 var isObject = require('lodash/lang/isObject');
@@ -104,15 +103,15 @@ function compose(factories) {
  * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
  * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
  * @param  {Object} [options.static] An object to be mixed into each `this` and derived stamps (not objects!).
- * @return {Function} factory A factory to produce objectss.
- * @return {Function} factory.create Just like calling the factory function.
+ * @return {Function(refs)} factory A factory to produce objects.
+ * @return {Function(refs)} factory.create Just like calling the factory function.
  * @return {Object} factory.fixed An object map containing the stamp components.
- * @return {Function} factory.methods Add methods to the stamp. Chainable.
- * @return {Function} factory.refs Add references to the stamp. Chainable.
- * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
- * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
- * @return {Function} factory.compose Combine several stamps into single. Chainable.
- * @return {Function} factory.static Add properties to the stamp (not objects!). Chainable.
+ * @return {Function(methods)} factory.methods Add methods to the stamp. Chainable.
+ * @return {Function(refs)} factory.refs Add references to the stamp. Chainable.
+ * @return {Function(Function(context))} factory.init Add a closure which called on object instantiation. Chainable.
+ * @return {Function(props)} factory.props Add deeply cloned properties to the produced objects. Chainable.
+ * @return {Function(stamps)} factory.compose Combine several stamps into single. Chainable.
+ * @return {Function(statics)} factory.static Add properties to the stamp (not objects!). Chainable.
  */
 stampit = function stampit(options) {
   var fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
@@ -126,9 +125,9 @@ stampit = function stampit(options) {
     addStatic(fixed, options.static);
   }
 
-  var factory = function Factory(properties, args) {
-    properties = properties ? mixer.merge({}, fixed.props, properties) : deepClone(fixed.props);
-    var instance = mixer.mixin(create(fixed.methods), fixed.refs, properties); // props are taking over refs
+  var factory = function Factory(refs, args) {
+    var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs);
+    mixer.mergeUnique(instance, fixed.props); // props are safely merged into refs
 
     if (fixed.init.length > 0) {
       args = slice(arguments, 1, arguments.length);

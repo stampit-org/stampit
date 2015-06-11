@@ -13,12 +13,12 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 **v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
 
 **v2, current stable**. Breaking changes:
-* `stampit()` now receives options object (`{methods,refs,init,props}`) instead of multiple arguments.
+* `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * All chaining methods return new stamps instead of self-mutating `this` stamp.
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
-* Instead of factory arguments the `enclose()` functions now recieve the following object `{ instance, stamp, args }`.
+* Instead of factory arguments the `enclose()` functions now receives the following object `{ instance, stamp, args }`.
 
-There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 becuase it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
 
 
 ## Contribute
@@ -54,6 +54,8 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
 
  * Create factory functions (called stamps) which stamp out new objects. All of the new objects inherit all of the prescribed behavior.
 
+ * Assign properties by passing a references object to the stamp (factory function).
+
  * Compose stamps together to create new stamps.
 
  * Inherit methods and default state.
@@ -61,9 +63,9 @@ or by [downloading the latest release](https://github.com/ericelliott/stampit/re
  * Supports composable private state and privileged methods.
 
  * References are copied across for each instance.
- 
+
  * Properties are deeply merged and cloned for each instance, so it won't be accidentally shared.
- 
+
  * Initializers are called for each new instance. Provides wide extensibility to stamp behavior.
 
  * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
@@ -83,11 +85,13 @@ Stamp composition takes advantage of three different kinds of prototypal inherit
 
 When invoked the stamp factory function creates and returns object instances assigning:
  ```js
- var myStamp = stampit().
-   methods({ doSomething: function(){} }). // methods each new object instance will have
-   refs({ myObj: myObjByRef }). // properties to be set by reference to object instances
+ var DbAuthStamp = stampit().
+   methods({ authorize: function(){} }). // methods each new object instance will have
+   refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
    init(function(context){ }). // init function(s) to be called when an object instance is created
-   props({ foo: {bar: 'bam'} }); // properties to be deeply merged to object instances
+   props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
+
+ var dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
  ```
 
 ### How are Stamps Different from Classes?
@@ -224,7 +228,7 @@ stamp.static({
 });
 ```
 
-## More chaining
+## Chaining methods
 
 Chaining stamps *always* creates new stamps.
 
@@ -464,7 +468,8 @@ MyStamp.create().originalStamp === MyStamp; // true
 
 ### stamp.props() ###
 
-Take n objects and deep merge them to the properties. Creates new stamp.
+Take n objects and deep merge them safely to the properties. Creates new stamp.
+Note: the merge algorithm will not change any existing `refs` data of a resulting object instance.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
@@ -478,9 +483,12 @@ Combining overrides properties with last-in priority.
 
 ### stamp.create([properties] [,arg2] [,arg3...]) ###
 
+Alias to `stamp([properties] [,arg2] [,arg3...])`.
+
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. The first argument is an object
 containing properties you wish to set on the new objects.
+The properties are copied by reference using standard mixin/extend/assign algorithm.
 
 The remaining arguments are passed to all `.init()`
 functions. **WARNING** Avoid using two different `.init()`
