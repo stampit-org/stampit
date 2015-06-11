@@ -35,13 +35,13 @@ test('stamp(refs) deep merges props into refs', function (t) {
   var o2 = stamp2({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
 
   t.equal(o1.shallow1, 'leave me as is', 'A conflicting shallow reference must not be touched by props');
-  t.equal(o1.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged form props');
+  t.equal(o1.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged from props');
   t.equal(o2.shallow1, 'leave me as is', 'A conflicting shallow reference must not be touched by props');
-  t.equal(o2.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged form props');
+  t.equal(o2.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged from props');
   t.equal(o1.deep.deepProp1, 'leave me as is', 'A conflicting deep property in refs must not be touched by props');
-  t.equal(o1.deep.deepProp2, 'merge me!', 'A non conflicting deep property must be merged form props');
+  t.equal(o1.deep.deepProp2, 'merge me!', 'A non conflicting deep property must be merged from props');
   t.equal(o2.deep.deepProp1, 'leave me as is', 'A conflicting deep property in refs must not be touched by props');
-  t.equal(o2.deep.deepProp2, 'merge me!', 'A non conflicting deep property must be merged form props');
+  t.equal(o2.deep.deepProp2, 'merge me!', 'A non conflicting deep property must be merged from props');
 
   t.end();
 });
