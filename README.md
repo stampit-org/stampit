@@ -13,12 +13,12 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 **v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
 
 **v2, current stable**. Breaking changes:
-* `stampit()` now receives options object (`{methods,refs,init,props}`) instead of multiple arguments.
+* `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * All chaining methods return new stamps instead of self-mutating `this` stamp.
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
-* Instead of factory arguments the `enclose()` functions now recieve the following object `{ instance, stamp, args }`.
+* Instead of factory arguments the `enclose()` functions now receives the following object `{ instance, stamp, args }`.
 
-There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 becuase it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
 
 
 ## Contribute
