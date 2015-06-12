@@ -32,7 +32,7 @@
     "uglifyjs": "^2.4.10"
   },
   "scripts": {
-    "prepublish": "npm test && npm run build",
+    "prepublish": "npm run build && npm test",
     "test": "npm run hint && node test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
