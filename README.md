@@ -1,5 +1,5 @@
 # Stampit
-[![Travis-CI](https://travis-ci.org/stampit-org/stampit.svg)](https://travis-ci.org/ericelliott/stampit)
+[![Travis-CI](https://travis-ci.org/stampit-org/stampit.svg)](https://travis-ci.org/stampit-org/stampit)
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
@@ -18,13 +18,13 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now receives the following object `{ instance, stamp, args }`.
 
-There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful. See [advances examples](https://github.com/ericelliott/stampit/blob/master/ADVANCED_EXAMPLES.md).
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful. See [advances examples](https://github.com/stampit-org/stampit/blob/master/ADVANCED_EXAMPLES.md).
 
 
 ## Contribute
 
 Press the hack button to open this project in the Nitrous.IO online IDE.
-[![Hack ericelliott/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=ericelliott%2Fstampit&file_to_open=README.md)
+[![Hack stampit-org/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=stampit-org%2Fstampit&file_to_open=README.md)
 
 Pull requests are welcome anytime. 
 
@@ -43,7 +43,7 @@ or the *unofficial* [gem](https://github.com/brettimus/stampitjs-rails)
 gem install stampitjs-rails
 ```
 
-or by [downloading the latest release](https://github.com/ericelliott/stampit/releases).
+or by [downloading the latest release](https://github.com/stampit-org/stampit/releases).
 
 
 ## Features
