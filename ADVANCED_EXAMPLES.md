@@ -228,3 +228,49 @@ Will print all the properties passed to it by the dependency manager module:
   config: ...
   pi: ... }
 ```
+
+------------------------------
+
+## Validate before a function call
+
+> Run the examples below for yourself:
+```sh
+$ git clone https://github.com/stampit-org/stampit.git
+$ node stampit/test/advanced-examples/self-aware.js
+```
+
+For example you can prevalidate the object instance before a function call.
+
+This stamp separates the function definition and the prevalidation logic:
+```js
+var UserWithValidation = stampit.methods({
+  authorise: function () {
+    return true || false; // dummy implementation
+  }
+}).init(function () {
+  var authorise = this.authorise; // Replacing function.
+  this.authorise = function () {
+    // Do our validation logic. It can be anything really.
+    if (this.user &&
+      !_.isEmpty(this.user.name) && !_.isEmpty(this.user.password) &&
+      _.isString(this.user.name) && _.isString(this.user.password)) {
+      return authorise.apply(this, arguments); // call the original function if all went fine.
+    }
+
+    // Validation failed. Do something like throwing error.
+    throw new Error('user data is missing')
+  }.bind(this);
+});
+```
+Let's try it:
+```js
+var user = UserWithValidation({user: {name: 'john', password: ''}}); // password is missing
+user.authorise(); // throws "Error: user data is missing"
+```
+The code will throw error because password is missing.
+
+You can replace silly `if`-validation logic with
+[joi](https://www.npmjs.com/package/joi) or [strummer](https://www.npmjs.com/package/strummer) or 
+[is-my-json-valid](https://www.npmjs.com/package/is-my-json-valid) module usage.
+
+The point here is that validation of data and data usage can be split apart and combined back when needed.
