@@ -1,3 +1,4 @@
+/* jshint newcap: false */
 'use strict';
 var stampit = require('../../stampit');
 
