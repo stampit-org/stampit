@@ -196,7 +196,7 @@ stampit = function stampit(options) {
      * @return {Function} A new stamp (factory object).
      */
     static: function () {
-      var newStamp = cloneAndExtend(this.fixed, addStatic, slice(arguments));
+      var newStamp = cloneAndExtend(factory.fixed, addStatic, slice(arguments));
       return mixer.mixin(newStamp, newStamp.fixed.static);
     },
 
@@ -209,7 +209,7 @@ stampit = function stampit(options) {
      */
     compose: function (factories) {
       var args = isArray(factories) ? factories : slice(arguments);
-      args = [this].concat(args);
+      args = [factory].concat(args);
       return compose(args);
     }
   }, fixed.static);
