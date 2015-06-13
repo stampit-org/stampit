@@ -15,17 +15,17 @@ var User = stampit();
 ```
 
 ### First way
-Just compose the following stamp to any other stamps.
+Just compose the following stamp to any other stamp.
 ```js
 var SelfAware1 = stampit.init(function (ctx) {
   this.getStamp = function () { return ctx.stamp; }
 });
 ```
-Composing with the `User` stamp from above:
+Let's compose it with the `User` stamp from above:
 ```js
 var SelfAwareUser1 = User.compose(SelfAware1);
 ```
-Let's create a user and see:
+Now, let's create a user and call the `.getStamp()`:
 ```js
 var user1 = SelfAwareUser1();
 assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
@@ -38,14 +38,14 @@ It attaches the function to the `.prototype` of the objects, but not to each one
 ```js
 var SelfAware2 = stampit.init(function (ctx) {
   if (!ctx.stamp.fixed.methods.getStamp) { // Let's add the method only once.
-    var stamp = ctx.stamp; // We should reference only one object, otherwise is memory leak risky
+    var stamp = ctx.stamp; // We should reference only one object, otherwise it is memory leak risky
     ctx.stamp.fixed.methods.getStamp = function () { return stamp; }
   }
 });
 ```
 The `ctx.stamp.fixed` property contains stamp's internal data.
 The `fixed.methods` object is used as all object instances' `.prototype`.
-Compose it with our `User` from above:
+Compose this new stamp with our `User` from above:
 ```js
 var SelfAwareUser2 = User.compose(SelfAware2);
 ```
@@ -151,7 +151,7 @@ var Cloneable = stampit.init(function (ctx) {
 ```
 The `ctx.stamp.fixed` property contains stamp's internal data.
 The `fixed.methods` object is used as all object instances' `.prototype`.
-Compose it with our `PrependLogger` from above:
+Compose this new stamp with our `PrependLogger` from above:
 ```js
 var CloneablePrependLogger = PrependLogger.compose(Cloneable);
 ```
