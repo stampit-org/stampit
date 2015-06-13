@@ -15,7 +15,7 @@ var isArray = Array.isArray;
 var isObject = require('lodash/lang/isObject');
 var create = Object.create;
 var slice = require('lodash/array/slice');
-var mixer = require('./mixer');
+var mixer = require('supermixer');
 
 /* jshint -W024 */
 
