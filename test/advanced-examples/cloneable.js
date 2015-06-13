@@ -1,3 +1,4 @@
+'use strict';
 var stampit = require('../../stampit');
 
 var PrependLogger = stampit.methods({
@@ -22,13 +23,23 @@ loggerClone1.log('hello'); // OUT: hello
 
 
 var Cloneable2 = stampit.init(function (ctx) {
+  this.clone = ctx.stamp.bind(null, this);
+});
+var PrependLogger2 = PrependLogger.compose(Cloneable2);
+var logger2 = PrependLogger2({ prefix: 'OUT: ' }); // creating first object
+var loggerClone2 = logger2.clone(); // cloning the object.
+logger2.log('hello'); // OUT: hello
+loggerClone2.log('hello'); // OUT: hello
+
+
+var Cloneable3 = stampit.init(function (ctx) {
   if (!ctx.stamp.fixed.methods.clone) { // check if prototype is already has the clone() method
     var stamp = ctx.stamp;
     ctx.stamp.fixed.methods.clone = function () { return stamp(this); };
   }
 });
-var PrependLogger2 = PrependLogger.compose(Cloneable2);
-var logger2 = PrependLogger2({ prefix: 'OUT: ' });  // creating first object
-var loggerClone2 = logger2.clone(); // cloning the object.
-logger2.log('hello'); // OUT: hello
-loggerClone2.log('hello'); // OUT: hello
+var PrependLogger3 = PrependLogger.compose(Cloneable3);
+var logger3 = PrependLogger3({ prefix: 'OUT: ' });  // creating first object
+var loggerClone3 = logger3.clone(); // cloning the object.
+logger3.log('hello'); // OUT: hello
+loggerClone3.log('hello'); // OUT: hello

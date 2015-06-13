@@ -51,6 +51,32 @@ OUT: hello
 ```
 The `logger` and `loggerClone` work exactly the same! Woah! 
 
+### Another way of self cloning
+
+This is how you can implement self cloning different: 
+```js
+var Cloneable = stampit.init(function (ctx) {
+  this.clone = ctx.stamp.bind(null, this);
+});
+```
+Compose it with our `PrependLogger` from above:
+```js
+var CloneablePrependLogger = PrependLogger.compose(Cloneable);
+```
+Create an instance, then clone it, and see the result:
+```js
+var logger = CloneablePrependLogger({ prefix: 'OUT: ' }); // creating first object
+var loggerClone = logger.clone(); // cloning the object.
+logger.log('hello'); // OUT: hello
+loggerClone.log('hello'); // OUT: hello
+```
+Prints
+```
+OUT: hello
+OUT: hello
+```
+Objects have the same state again. Awesome!
+
 ### Memory efficient cloning
 
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
