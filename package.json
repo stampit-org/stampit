@@ -21,7 +21,8 @@
     "url": "git@github.com:stampit-org/stampit.git"
   },
   "dependencies": {
-    "lodash": "^3.9.1"
+    "lodash": "^3.9.1",
+    "supermixer": "^1.0.2"
   },
   "devDependencies": {
     "browserify": "^10.2.1",
