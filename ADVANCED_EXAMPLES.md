@@ -25,11 +25,11 @@ logger.log('hello');
 ```
 Prints `STDOUT: hello`
 
-### Add cloning ability to the `PrependLogger`
+### A composable stamp which adds `.clone()` to objects
 
-Let's implement a stamp with allows **any** object to be safely cloned: 
+Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
-var Cloneable = stampit.init(function (ctx) {
+var Cloneable = stampit.init(function (ctx) { // ctx has { instance, stamp, args }
   this.clone = function () { return ctx.stamp(ctx.instance); };
 });
 ```
@@ -59,7 +59,9 @@ var Cloneable = stampit.init(function (ctx) {
   this.clone = ctx.stamp.bind(null, this);
 });
 ```
-Compose it with our `PrependLogger` from above:
+Stamp is a regular function, so we simply bound its first argument.
+
+Composing it with our `PrependLogger` from above:
 ```js
 var CloneablePrependLogger = PrependLogger.compose(Cloneable);
 ```
@@ -80,17 +82,17 @@ Objects have the same state again. Awesome!
 ### Memory efficient cloning
 
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
-to every object but to the prototype. This will save us a little bit of memory.
+to every object but to the prototype. This will save us a little bit of memory per object.
 ```js
 var Cloneable = stampit.init(function (ctx) {
-  if (!ctx.stamp.fixed.methods.clone) { // check if prototype is already has the clone() method
-    var stamp = ctx.stamp;
+  if (!ctx.stamp.fixed.methods.clone) { // check if prototype has the clone() method already
+    var stamp = ctx.stamp; // Avoiding too much data referenced and potential memory leaks
     ctx.stamp.fixed.methods.clone = function () { return stamp(this) };
   }
 });
 ```
 The `ctx.stamp.fixed` property contains stamp's internal data.
-The `fixed.methods` object is used as new object instances' `.prototype`.
+The `fixed.methods` object is used as all object instances' `.prototype`.
 Compose it with our `PrependLogger` from above:
 ```js
 var CloneablePrependLogger = PrependLogger.compose(Cloneable);
@@ -107,6 +109,7 @@ Prints
 OUT: hello
 OUT: hello
 ```
+Memory efficient and safe cloning for each object. Yay!
 
 ------------------------------
 
