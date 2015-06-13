@@ -171,3 +171,36 @@ Memory efficient and safe cloning for each object. Yay!
 
 ------------------------------
 
+## Delayed object instantiation using Promises
+
+What if you can't create an object right now but have to retrieve data from a server or filesystem?
+
+To solve this we can make **any** stamp to return `Promise` instead of object itself.
+
+First, let's assume you have this stamp:
+```js
+var User = stampit.refs({ entityName: 'user' });
+```
+
+The following stamp should be composed *the last*, otherwise it won't work.
+```js
+var AsyncInitializable = stampit.refs({
+  db: mongo.connection
+}).methods({
+  getEntity: function(id) { // Gets id and return Promise which resolves into DB entity.
+    return Promise.resolve(this.db[this.entityName].getById(id));
+  }
+}).init(() => {
+  // If we return anything from an .init() function it becomes our object instance.
+  return this.getEntity(this.id);
+});
+```
+Let's compose it with our `User` stamp:
+```js
+var AsyncInitializableUser = User.compose(AsyncInitializable); // The stamp produces promises now.
+```
+Create object (ES6):
+```js
+var userEntity = yield AsyncInitializableUser({ id: '42' });
+```
+A random stamp received the behaviour which creates objects asynchronously. OMG!
