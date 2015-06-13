@@ -1,4 +1,4 @@
-------------------------------
+
 ## `object.getStamp()`. 2 ways.
 
 > Run the examples below for yourself:
@@ -204,3 +204,27 @@ Create object (ES6):
 var userEntity = yield AsyncInitializableUser({ id: '42' });
 ```
 A random stamp received the behaviour which creates objects asynchronously. OMG!
+
+------------------------------
+
+## Dependency injection tips
+
+Using the [node-dm](https://www.npmjs.com/package/node-dm) dependency management module you can
+receive preconfigured objects if you pass a stamp to it. It's possible because stamps are functions.
+
+Self printing behaviour. An object will log itself after being created.
+```js
+var PrintSelf = stampit.init(function() {
+  console.log(this);
+});
+```
+Supply the self printing stamp to the dependency manager:
+```js
+dm.resolve({db: true, config: true, pi: true}).then(PrintSelf);
+```
+Will print all the properties passed to it by the dependency manager module:
+```
+{ db: ...
+  config: ...
+  pi: ... }
+```
