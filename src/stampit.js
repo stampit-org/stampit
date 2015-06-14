@@ -12,7 +12,6 @@ import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
 import map from 'lodash/collection/map';
 import * as mixer from 'supermixer';
-import slice from 'lodash/array/slice';
 
 const create = Object.create;
 const isArray = Array.isArray;
@@ -24,21 +23,21 @@ let stampit;
 
 function extractFunctions(...args) {
   if (isFunction(args[0])) {
-    return map(slice(args), fn => {
+    return map(args, fn => {
       if (isFunction(fn)) {
         return fn;
       }
     });
   } else if (isObject(args[0])) {
     let arr = [];
-    forEach(slice(args), obj => {
+    forEach(args, obj => {
       forOwn(obj, fn => {
         arr.push(fn);
       });
     });
     return arr;
   } else if (isArray(args[0])) {
-    return slice(args[0]);
+    return args[0];
   }
   return [];
 }
@@ -128,7 +127,6 @@ stampit = function stampit(options) {
     mixer.mergeUnique(instance, fixed.props); // props are safely merged into refs
 
     if (fixed.init.length > 0) {
-      args = slice(args);
       forEach(fixed.init, fn => {
         if (isFunction(fn)) {
           instance = fn.call(instance, { args, instance, stamp: factory }) || instance;
