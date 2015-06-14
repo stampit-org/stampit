@@ -17,7 +17,7 @@ var User = stampit();
 ### First way
 Just compose the following stamp to any other stamp.
 ```js
-var SelfAware1 = stampit.init(function (ctx) {
+var SelfAware1 = stampit.init(function (ctx) { // the context, has `stamp` property
   this.getStamp = function () { return ctx.stamp; }
 });
 ```
@@ -36,7 +36,7 @@ So, now every object instance returns the exact stamp it was built with. Nice!
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
 ```js
-var SelfAware2 = stampit.init(function (ctx) {
+var SelfAware2 = stampit.init(function (ctx) { // the context, has `stamp` property
   if (!ctx.stamp.fixed.methods.getStamp) { // Let's add the method only once.
     var stamp = ctx.stamp; // We should reference only one object, otherwise it is memory leak risky
     ctx.stamp.fixed.methods.getStamp = function () { return stamp; }
@@ -45,6 +45,7 @@ var SelfAware2 = stampit.init(function (ctx) {
 ```
 The `ctx.stamp.fixed` property contains stamp's internal data.
 The `fixed.methods` object is used as all object instances' `.prototype`.
+
 Compose this new stamp with our `User` from above:
 ```js
 var SelfAwareUser2 = User.compose(SelfAware2);
@@ -72,7 +73,7 @@ var PrependLogger = stampit.methods({
   log: function (data) {
     console.log(this.prefix, data);
   }
-}).state({
+}).refs({
   prefix: 'STDOUT: '
 });
 ```
@@ -87,10 +88,13 @@ Prints `STDOUT: hello`
 
 Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
-var Cloneable = stampit.init(function (ctx) { // ctx has { instance, stamp, args }
+var Cloneable = stampit.init(function (ctx) { // the context, has `stamp` and `instance` properties
   this.clone = function () { return ctx.stamp(ctx.instance); };
 });
 ```
+All the properties of the object `instance` will be copied by reference to the new object
+when calling the factory - `stamp(instance)`.
+
 Compose it with our `PrependLogger` from above:
 ```js
 var CloneablePrependLogger = PrependLogger.compose(Cloneable);
@@ -107,7 +111,7 @@ Prints
 OUT: hello
 OUT: hello
 ```
-The `logger` and `loggerClone` work exactly the same! Woah! 
+The `logger` and `loggerClone` work exactly the same. Woah! 
 
 ### Another way of self cloning
 
@@ -117,7 +121,8 @@ var Cloneable = stampit.init(function (ctx) {
   this.clone = ctx.stamp.bind(null, this);
 });
 ```
-Stamp is a regular function, so we simply bound its first argument.
+Stamp is a regular function, so we simply bound its first argument to the object instance.
+All the properties of the object instance will be copied by reference to the new object.
 
 Composing it with our `PrependLogger` from above:
 ```js
@@ -215,7 +220,7 @@ receive preconfigured objects if you pass a stamp to it. It's possible because s
 Self printing behaviour. An object will log itself after being created.
 ```js
 var PrintSelf = stampit.init(function() {
-  console.log(this);
+  console.log(this); // same as console.log(ctx.instance) but shorter
 });
 ```
 Supply the self printing stamp to the dependency manager:
@@ -236,7 +241,7 @@ Will print all the properties passed to it by the dependency manager module:
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ node stampit/test/advanced-examples/self-aware.js
+$ node stampit/test/advanced-examples/prevalidate.js
 ```
 
 For example you can prevalidate the object instance before a function call.
