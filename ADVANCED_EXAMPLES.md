@@ -5,20 +5,14 @@
 - [`object.getStamp()`. 2 ways.](#objectgetstamp-2-ways)
   - [First way](#first-way)
   - [Second way](#second-way)
-- [](#)
 - [Self cloneable objects. 3 ways.](#self-cloneable-objects-3-ways)
   - [A composable stamp which adds `.clone()` to objects](#a-composable-stamp-which-adds-clone-to-objects)
   - [Another way of self cloning](#another-way-of-self-cloning)
   - [Memory efficient cloning](#memory-efficient-cloning)
-- [](#-1)
 - [Delayed object instantiation using Promises](#delayed-object-instantiation-using-promises)
-- [](#-2)
 - [Dependency injection tips](#dependency-injection-tips)
-- [](#-3)
 - [Validate before a function call](#validate-before-a-function-call)
-- [](#-4)
 - [EventEmitter without inheritance (`convertConstructor`)](#eventemitter-without-inheritance-convertconstructor)
-- [](#-5)
 - [Hacking stamps](#hacking-stamps)
   - ["Default" properties](#default-properties)
   - ["Default" properties as composable behavior](#default-properties-as-composable-behavior)
@@ -390,7 +384,7 @@ The stamp above will add all the `_enforcedDefaults` to the `.prototype`.
 
 Let's create user name and password enforcement.
 ```js
-var DefaultDbCredentials = ForcedDefaults.refs({ _enforcedDefaults: { user: { name: "guest", password: "guest" } } });
+var DefaultUserCredentials = ForcedDefaults.refs({ _enforcedDefaults: { user: { name: "guest", password: "guest" } } });
 ```
 Now, assume we have a `DbConnection` stamp.
 ```js
@@ -398,7 +392,7 @@ var DbConnection = stampit(); // whatever it is...
 ```
 Let's make the `DbConnection` to connect regardless if credentials were supplied or not.
 ```js
-var DbConnectionWithDefaults = DbConnection.compose(DefaultDbCredentials);
+var DbConnectionWithDefaults = DbConnection.compose(DefaultUserCredentials);
 ```
 Let's create two connections: with and without user credentials:
 ```js
