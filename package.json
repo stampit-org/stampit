@@ -6,7 +6,7 @@
     "name": "Eric Elliott",
     "url": "https://ericelliottjs.com"
   },
-  "main": "./stampit.js",
+  "main": "./dist/stampit.js",
   "keywords": [
     "objects",
     "prototypal",
@@ -25,6 +25,7 @@
     "supermixer": "^1.0.2"
   },
   "devDependencies": {
+    "babel": "^5.5.8",
     "browserify": "^10.2.1",
     "jshint": "^2.7.0",
     "require-all": "^1.1.0",
@@ -34,11 +35,11 @@
   },
   "scripts": {
     "prepublish": "npm run build && npm test",
-    "test": "npm run hint && node test/index.js",
+    "test": "npm run hint && babel-node test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
-    "hint": "jshint stampit.js test/ && echo JSHint: linting successful",
-    "build": "npm run clean && browserify stampit.js -s stampit -o dist/stampit.js && npm run uglify"
+    "hint": "jshint src/stampit.js test/ && echo JSHint: linting successful",
+    "build": "npm run clean && babel src --out-dir dist && npm run uglify"
   },
   "license": "MIT"
 }

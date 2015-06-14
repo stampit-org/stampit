@@ -1,5 +1,5 @@
 'use strict';
-var stampit = require('../stampit'),
+var stampit = require('../src/stampit'),
   test = require('tape');
 
 // stampit.methods, stampit.refs, stampit.init, stampit.props
