@@ -39,7 +39,7 @@ test('incorrect stampit({ init }) args', function (t) {
   t.same(stampit({ init: 42 }).fixed.init, []);
   t.same(stampit({ init: null }).fixed.init, []);
   t.same(stampit({ init: new RegExp() }).fixed.init, []);
-  t.same(stampit({ init: [42] }).fixed.init, [42]);
+  t.same(stampit({ init: [42] }).fixed.init, []);
   t.same(stampit({ init: "a string" }).fixed.init, []);
 
   t.end();
