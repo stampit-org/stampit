@@ -1,10 +1,37 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [`object.getStamp()`. 2 ways.](#objectgetstamp-2-ways)
+  - [First way](#first-way)
+  - [Second way](#second-way)
+- [](#)
+- [Self cloneable objects. 3 ways.](#self-cloneable-objects-3-ways)
+  - [A composable stamp which adds `.clone()` to objects](#a-composable-stamp-which-adds-clone-to-objects)
+  - [Another way of self cloning](#another-way-of-self-cloning)
+  - [Memory efficient cloning](#memory-efficient-cloning)
+- [](#-1)
+- [Delayed object instantiation using Promises](#delayed-object-instantiation-using-promises)
+- [](#-2)
+- [Dependency injection tips](#dependency-injection-tips)
+- [](#-3)
+- [Validate before a function call](#validate-before-a-function-call)
+- [](#-4)
+- [EventEmitter without inheritance (`convertConstructor`)](#eventemitter-without-inheritance-convertconstructor)
+- [](#-5)
+- [Hacking stamps](#hacking-stamps)
+  - ["Default" properties](#default-properties)
+  - ["Default" properties as composable behavior](#default-properties-as-composable-behavior)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## `object.getStamp()`. 2 ways.
 
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ node stampit/test/advanced-examples/self-aware.js
+$ node stampit/advanced-examples/self-aware.js
 ```
 
 You can add `.getStamp()` function to each object with ease. 
@@ -64,7 +91,7 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ node stampit/test/advanced-examples/cloneable.js
+$ node stampit/advanced-examples/cloneable.js
 ```
 
 This is simple stamp with a single method and a single data property.
@@ -241,7 +268,7 @@ Will print all the properties passed to it by the dependency manager module:
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ node stampit/test/advanced-examples/prevalidate.js
+$ node stampit/advanced-examples/prevalidate.js
 ```
 
 For example you can prevalidate the object instance before a function call.
@@ -279,3 +306,110 @@ You can replace silly `if`-validation logic with
 [is-my-json-valid](https://www.npmjs.com/package/is-my-json-valid) module usage.
 
 The point here is that validation of data and data usage can be split apart and combined back when needed.
+
+------------------------------
+
+## EventEmitter without inheritance (`convertConstructor`)
+
+> Run the examples below for yourself:
+```sh
+$ git clone https://github.com/stampit-org/stampit.git
+$ node stampit/advanced-examples/event-emitter.js
+```
+
+You can have a stamp which makes aby object an `EventEmitter` without inheriting from it.
+
+```js
+var EventEmitter = require('events').EventEmitter;
+var EventEmittable = stampit.convertConstructor(EventEmitter);
+```
+We have just used a special utility function `convertConstructor`.
+It converts classic JavaScript "classes" to a composable stamp.
+
+Let's compose it with any other stamp:
+```js
+var User = stampit.refs({ name: { first: "(unnamed)", last: "(unnamed)" } });
+var EmittableUser = User.compose(EventEmittable);
+var user = EmittableUser({ name: { first: "John", last: "Doe" } });
+```
+Now, let's subscribe and emit an event.
+```js
+user.on('name', console.log); // Does not throw exceptions like "user.on() has no method 'on'"
+user.emit('name', user.name); // correctly handled by the object.
+```
+Will print `{ first: "John", last: "Doe" }`.
+
+As of stampit v2 the `convertConstructor` has limitations. It can't handle constructors with arguments. 
+
+------------------------------
+
+## Hacking stamps
+
+Each stamp has the property `fixed`. It's an object with 4 properties. It's used by stampit in that order:
+* `Stamp.fixed.methods` - plain object. Stampit uses it to set new objects' prototype: `Object.create(fixed.methods)`.
+* `Stamp.fixed.refs` - plain object. Stampit uses it to set new objects' state: `_.assign(obj, fixed.refs)`.
+* `Stamp.fixed.props` - plain object. Stampit deeply merges it into new objects: `_.merge(obj, fixed.props)`.
+* `Stamp.fixed.init` - array of functions. Stampit calls them sequentially: `fixed.init.forEach(fn => fn.call(obj))`.
+
+> Run the examples below for yourself:
+```sh
+$ git clone https://github.com/stampit-org/stampit.git
+$ node stampit/advanced-examples/hacking.js
+```
+
+### "Default" properties
+
+You can add "default" state by changing `Stamp.fixed.methods`.
+```js
+var Stamp = stampit();
+Stamp.fixed.methods.data = 1;
+var instance = Stamp();
+console.log(instance.data); // 1
+```
+Will print `1`. But let's add some state:
+```js
+var instance2 = Stamp({ data: 2 });
+console.log(instance2.data); // 2
+```
+Will print `2`. But let's delete this property from the instance.
+```js
+delete instance2.data;
+console.log(instance2.data); // 1
+```
+Will print `1`. The `data` was removed from the object instance, but not from its prototype.
+
+### "Default" properties as composable behavior
+
+Let's enforce default values to new object instances.
+```js
+var ForcedDefaults = stampit.init(function (ctx) {
+  stampit.mixin(ctx.stamp.fixed.methods, this._enforcedDefaults);
+});
+```
+The stamp above will add all the `_enforcedDefaults` to the `.prototype`.
+
+Let's create user name and password enforcement.
+```js
+var DefaultDbCredentials = ForcedDefaults.refs({ _enforcedDefaults: { user: { name: "guest", password: "guest" } } });
+```
+Now, assume we have a `DbConnection` stamp.
+```js
+var DbConnection = stampit(); // whatever it is...
+```
+Let's make the `DbConnection` to connect regardless if credentials were supplied or not.
+```js
+var DbConnectionWithDefaults = DbConnection.compose(DefaultDbCredentials);
+```
+Let's create two connections: with and without user credentials:
+```js
+var connectionWithoutCredentials = DbConnectionWithDefaults();
+console.log(connectionWithoutCredentials.user);
+
+var connectionWithCredentials = DbConnectionWithDefaults({ user: { name: "admin", password: "123" } });
+console.log(connectionWithCredentials.user);
+```
+Will print:
+```
+{ user: { name: "guest", password: "guest" } }
+{ user: { name: "admin", password: "123" } }
+```

@@ -1,7 +1,7 @@
 // jshint ignore: start
 'use strict';
 var assert = require('assert');
-var stampit = require('../../stampit');
+var stampit = require('../stampit');
 
 var User = stampit.refs({ entityName: 'user' });
 

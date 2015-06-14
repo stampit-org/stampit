@@ -1,7 +1,7 @@
 /* jshint newcap: false */
 'use strict';
 var _ = require('lodash');
-var stampit = require('../../stampit');
+var stampit = require('../stampit');
 
 
 var UserWithValidation = stampit.methods({
@@ -19,7 +19,7 @@ var UserWithValidation = stampit.methods({
     }
 
     // Validation failed. Do something like throwing error.
-    throw new Error('user data is missing')
+    throw new Error('user data is missing');
   }.bind(this);
 });
 var user = UserWithValidation({user: {name: 'john', password: ''}});

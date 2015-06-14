@@ -1,6 +1,6 @@
 /* jshint newcap: false */
 'use strict';
-var stampit = require('../../stampit');
+var stampit = require('../stampit');
 
 var PrependLogger = stampit.methods({
   log: function (data) {
@@ -13,6 +13,8 @@ var originalLogger = PrependLogger();
 originalLogger.log('hello');
 
 
+// -----
+
 var Cloneable1 = stampit.init(function (ctx) {
   this.clone = function () { return ctx.stamp(ctx.instance); };
 });
@@ -23,6 +25,8 @@ logger1.log('hello'); // OUT: hello
 loggerClone1.log('hello'); // OUT: hello
 
 
+// -----
+
 var Cloneable2 = stampit.init(function (ctx) {
   this.clone = ctx.stamp.bind(null, this);
 });
@@ -32,6 +36,8 @@ var loggerClone2 = logger2.clone(); // cloning the object.
 logger2.log('hello'); // OUT: hello
 loggerClone2.log('hello'); // OUT: hello
 
+
+// -----
 
 var Cloneable3 = stampit.init(function (ctx) {
   if (!ctx.stamp.fixed.methods.clone) { // check if prototype is already has the clone() method

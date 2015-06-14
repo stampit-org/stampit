@@ -1,7 +1,7 @@
 /* jshint newcap: false */
 'use strict';
 var assert = require('assert');
-var stampit = require('../../stampit');
+var stampit = require('../stampit');
 var User = stampit();
 
 
@@ -13,6 +13,8 @@ var user1 = SelfAwareUser1();
 assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
 console.log('No worries');
 
+
+// -----
 
 var SelfAware2 = stampit.init(function (ctx) {
   if (!ctx.stamp.fixed.methods.getStamp) {
