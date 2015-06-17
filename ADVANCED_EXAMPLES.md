@@ -1,26 +1,28 @@
+This is a set of handy **composable** stamps, as well as few tops and tricks.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [`object.getStamp()`. 2 ways.](#objectgetstamp-2-ways)
-  - [First way](#first-way)
-  - [Second way](#second-way)
-- [Self cloneable objects. 3 ways.](#self-cloneable-objects-3-ways)
-  - [A composable stamp which adds `.clone()` to objects](#a-composable-stamp-which-adds-clone-to-objects)
-  - [Another way of self cloning](#another-way-of-self-cloning)
-  - [Memory efficient cloning](#memory-efficient-cloning)
+- [Self aware objects - `instance.getStamp()`. 2 ways.](#self-aware-objects---instancegetstamp-2-ways)
+  - [Attach function to object](#attach-function-to-object)
+  - [Attach function to prototype (memeory efficient)](#attach-function-to-prototype-memeory-efficient)
+- [Self cloneable objects - `instance.clone()`. 3 ways.](#self-cloneable-objects---instanceclone-3-ways)
+  - [Attach method to each object instance](#attach-method-to-each-object-instance)
+  - [Bind method to each object instance](#bind-method-to-each-object-instance)
+  - [Attach function to prototype (memory efficient)](#attach-function-to-prototype-memory-efficient)
 - [Delayed object instantiation using Promises](#delayed-object-instantiation-using-promises)
 - [Dependency injection tips](#dependency-injection-tips)
 - [Validate before a function call](#validate-before-a-function-call)
 - [EventEmitter without inheritance (`convertConstructor`)](#eventemitter-without-inheritance-convertconstructor)
 - [Hacking stamps](#hacking-stamps)
-  - ["Default" properties](#default-properties)
-  - ["Default" properties as composable behavior](#default-properties-as-composable-behavior)
+  - [Enforced default properties](#enforced-default-properties)
+  - [Enforced default properties as a composable behavior](#enforced-default-properties-as-a-composable-behavior)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-## `object.getStamp()`. 2 ways.
+## Self aware objects - `instance.getStamp()`. 2 ways.
 
 > Run the examples below for yourself:
 ```sh
@@ -36,7 +38,7 @@ First, let's assume you have a following stamp:
 const User = stampit();
 ```
 
-### First way
+### Attach function to object
 Just compose the following stamp to any other stamp.
 ```js
 const SelfAware1 = stampit.init(({ instance, stamp }) => {
@@ -54,7 +56,7 @@ assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
 ```
 So, now every object instance returns the exact stamp it was built with. Nice!
 
-### Second way
+### Attach function to prototype (memeory efficient)
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
 ```js
@@ -80,7 +82,7 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 
 ------------------------------
 
-## Self cloneable objects. 3 ways.
+## Self cloneable objects - `instance.clone()`. 3 ways.
 
 > Run the examples below for yourself:
 ```sh
@@ -106,7 +108,7 @@ originalLogger.log('hello');
 ```
 Prints `STDOUT: hello`
 
-### A composable stamp which adds `.clone()` to objects
+### Attach method to each object instance
 
 Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
@@ -135,7 +137,7 @@ OUT: hello
 ```
 The `logger` and `loggerClone` work exactly the same. Woah! 
 
-### Another way of self cloning
+### Bind method to each object instance
 
 This is how you can implement self cloning different: 
 ```js
@@ -164,7 +166,7 @@ OUT: hello
 ```
 Objects have the same state again. Awesome!
 
-### Memory efficient cloning
+### Attach function to prototype (memory efficient)
 
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
 to every object but to the prototype. This will save us a little bit of memory per object.
@@ -355,21 +357,21 @@ $ babel-node advanced-examples/event-emitter.js
 You can have a stamp which makes aby object an `EventEmitter` without inheriting from it.
 
 ```js
-var EventEmitter = require('events').EventEmitter;
-var EventEmittable = stampit.convertConstructor(EventEmitter);
+const EventEmitter = require('events').EventEmitter;
+const EventEmittable = stampit.convertConstructor(EventEmitter);
 ```
 We have just used a special utility function `convertConstructor`.
 It converts classic JavaScript "classes" to a composable stamp.
 
 Let's compose it with any other stamp:
 ```js
-var User = stampit.refs({ name: { first: "(unnamed)", last: "(unnamed)" } });
-var EmittableUser = User.compose(EventEmittable);
-var user = EmittableUser({ name: { first: "John", last: "Doe" } });
+const User = stampit.refs({ name: { first: "(unnamed)", last: "(unnamed)" } });
+const EmittableUser = User.compose(EventEmittable);
+const user = EmittableUser({ name: { first: "John", last: "Doe" } });
 ```
 Now, let's subscribe and emit an event.
 ```js
-user.on('name', console.log); // Does not throw exceptions like "user.on() has no method 'on'"
+user.on('name', console.log); // Does not throw exceptions, e.g. "'user' has no method 'on'"
 user.emit('name', user.name); // correctly handled by the object.
 ```
 Will print `{ first: "John", last: "Doe" }`.
@@ -393,59 +395,72 @@ $ cd stampit && npm i babel -g
 $ babel-node advanced-examples/hacking.js
 ```
 
-### "Default" properties
+### Enforced default properties
 
-You can add "default" state by changing `Stamp.fixed.methods`.
+You can add **non-removable** "default" state by changing `Stamp.fixed.methods`.
+I.e. you can modify object instances' `.prototype`.
 ```js
-var Stamp = stampit();
-Stamp.fixed.methods.data = 1;
-var instance = Stamp();
+const Stamp = stampit();
+Stamp.fixed.methods.data = 1; // fixed.methods is the prototype for each new object.
+const instance = Stamp(); // Creating object, it's prototype is set to fixed.methods. It has property 'data'.
 console.log(instance.data); // 1
 ```
 Will print `1`. But let's add some state:
 ```js
-var instance2 = Stamp({ data: 2 });
+const instance2 = Stamp({ data: 2 }); // Creating second object. It'll have property 'data' too.
 console.log(instance2.data); // 2
 ```
 Will print `2`. But let's delete this property from the instance.
 ```js
-delete instance2.data;
-console.log(instance2.data); // 1
+delete instance2.data; // Deleting 'data' assigned to the instance.
+console.log(instance2.data); // 1 <- The .prototype.data is still there.
 ```
 Will print `1`. The `data` was removed from the object instance, but not from its prototype.
 
-### "Default" properties as composable behavior
+### Enforced default properties as a composable behavior
 
-Let's enforce default values to new object instances.
+Let's enforce **non-removable default values** to new object instances. Here is the composable stamp:
 ```js
-var ForcedDefaults = stampit.init(function (ctx) {
-  stampit.mixin(ctx.stamp.fixed.methods, this._enforcedDefaults);
+const UndeletableDefaults = stampit.static({
+  forceDefaults(defaults) { //creating new function in the stamp
+    const defaultRefs = this.fixed.static.defaultRefs || {}; // Taking existing defaults
+    stampit.mixin(defaultRefs, defaults); // add new defaults to it.
+    const newStamp = this.static({defaultRefs}); // Cloning self and (re)assigning static references.
+    stampit.mixin(newStamp.fixed.methods, defaults); // add new data to the prototype
+    return newStamp;
+  }
 });
 ```
-The stamp above will add all the `_enforcedDefaults` to the `.prototype`.
+The stamp above adds a "static" method to the stamp. 
+The method `forceDefaults` extends prototype of the new object instances.
 
-Let's create user name and password enforcement.
+Let's create user name and password enforcement behavior (stamp).
 ```js
-var DefaultUserCredentials = ForcedDefaults.refs({ _enforcedDefaults: { user: { name: "guest", password: "guest" } } });
+const DefaultUserCredentials = UndeletableDefaults.forceDefaults({ user: { name: "guest", password: "guest" } });
 ```
 Now, assume we have a `DbConnection` stamp.
 ```js
-var DbConnection = stampit(); // whatever it is...
+const DbConnection = stampit(); // whatever it is...
 ```
 Let's make the `DbConnection` to connect regardless if credentials were supplied or not.
 ```js
-var DbConnectionWithDefaults = DbConnection.compose(DefaultUserCredentials);
+const DbConnectionWithDefaults = DbConnection.compose(DefaultUserCredentials);
 ```
 Let's create two connections: with and without user credentials:
 ```js
-var connectionWithoutCredentials = DbConnectionWithDefaults();
-console.log(connectionWithoutCredentials.user);
+const connectionWithoutCredentials = DbConnectionWithDefaults();
+console.log('No credentials were given: ', connectionWithoutCredentials.user);
 
-var connectionWithCredentials = DbConnectionWithDefaults({ user: { name: "admin", password: "123" } });
-console.log(connectionWithCredentials.user);
+const connectionWithCredentials = DbConnectionWithDefaults({ user: { name: "admin", password: "123" } });
+console.log('Credentials were given: ', connectionWithCredentials.user);
+
+delete connectionWithCredentials.user;
+console.log('Reusing the default credentials after deleting them: ', connectionWithCredentials.user);
 ```
 Will print:
 ```
-{ user: { name: "guest", password: "guest" } }
-{ user: { name: "admin", password: "123" } }
+No credentials were given:  { name: 'guest', password: 'guest' }
+Credentials were given:  { name: 'admin', password: '123' }
+Reusing the default credentials:  { name: 'guest', password: 'guest' }
 ```
+The `user` was removed from the object instance, but not from its prototype.

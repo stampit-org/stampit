@@ -21,7 +21,6 @@ test('incorrect stampit({ methods }) args', function (t) {
   t.same(stampit({ methods: null }).fixed.methods, {});
   t.same(stampit({ methods: new RegExp() }).fixed.methods, {});
   t.same(stampit({ methods: [42] }).fixed.methods, {});
-  t.same(stampit({ methods: "a string" }).fixed.methods, {});
 
   t.end();
 });

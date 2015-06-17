@@ -32,10 +32,10 @@ test('stampit().methods()', function (t) {
     'Should let you chain .methods() to add more.');
   t.ok(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
     'Should let you override by chaining .methods().');
-  t.ok(!obj.prop1 && !obj.hasOwnProperty('prop1'),
-    'Should not mix properties.');
-  t.ok(!obj.prop2 && !obj.hasOwnProperty('prop1'),
-    'Should not mix properties.');
+  t.ok(obj.prop1 && !obj.hasOwnProperty('prop1'),
+    'Should mix properties too.');
+  t.ok(obj.prop2 && !obj.hasOwnProperty('prop1'),
+    'Should mix properties too.');
 
   t.end();
 });
@@ -57,10 +57,10 @@ test('stampit({ methods }).methods()', function (t) {
     'Should let you chain .methods() to add more.');
   t.ok(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
     'Should let you override by chaining .methods().');
-  t.ok(!obj.prop1 && !obj.hasOwnProperty('prop1'),
-    'Should not mix properties.');
-  t.ok(!obj.prop2 && !obj.hasOwnProperty('prop1'),
-    'Should not mix properties.');
+  t.ok(obj.prop1 && !obj.hasOwnProperty('prop1'),
+    'Should mix properties too.');
+  t.ok(obj.prop2 && !obj.hasOwnProperty('prop1'),
+    'Should mix properties too.');
 
   t.end();
 });

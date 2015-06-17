@@ -45,7 +45,7 @@ function extractFunctions(arg) {
 
 function addMethods(fixed, methods) {
   var args = [fixed.methods].concat(methods);
-  mixer.mixinFunctions.apply(null, args);
+  mixer.mixin.apply(null, args);
   return fixed.methods;
 }
 function addRefs(fixed, refs) {
