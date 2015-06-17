@@ -1,26 +1,48 @@
-/* jshint newcap: false */
-'use strict';
 var _ = require('lodash');
+var joi = require('joi'); // object validation module
 var stampit = require('../stampit');
 
 
-var UserWithValidation = stampit.methods({
-  authorise: function () {
-    return true || false; // dummy implementation
+const User = stampit.methods({
+  authorize: function () {
+    // dummy implementation. Don't bother. :)
+    return this.authorized = (this.user.name === 'john' && this.user.password === '123');
   }
-}).init(function () {
-  var authorise = this.authorise; // Replacing function.
-  this.authorise = function () {
-    // Do our validation logic. It can be anything really.
-    if (this.user &&
-      !_.isEmpty(this.user.name) && !_.isEmpty(this.user.password) &&
-      _.isString(this.user.name) && _.isString(this.user.password)) {
-      return authorise.apply(this, arguments); // call the original function if all went fine.
-    }
-
-    // Validation failed. Do something like throwing error.
-    throw new Error('user data is missing');
-  }.bind(this);
 });
-var user = UserWithValidation({user: {name: 'john', password: ''}});
-user.authorise();
+
+const JoiPrevalidator = stampit
+  .static({ // Adding properties (this function) to stamps, not object instances.
+    prevalidate(mathodName, schema) {
+      var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
+      prevalidations[mathodName] = schema; // Adding/overriding one more validation schema.
+      return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
+    }
+  })
+  .init(function () { // This will be called for each new object instance.
+    _.forOwn(this.prevalidations, (value, key) => { // overriding functions
+      const actualFunc = this[key];
+      this[key] = () => { // Overwrite real function with our.
+        const result = joi.validate(this, value, {allowUnknown: true});
+        if (result.error) {
+          throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);
+        }
+
+        return actualFunc.apply(this, arguments);
+      }
+    });
+  });
+
+const UserWithValidation = User.compose(JoiPrevalidator) // Adds new method prevalidate() to the stamp.
+  .prevalidate('authorize', { // Setup a prevalidation rule
+    user: {
+      name: joi.string().required(),
+      password: joi.string().required()
+    }
+  });
+
+const okUser = UserWithValidation({user: {name: 'john', password: '123'}});
+okUser.authorize(); // No error. Validation successful.
+console.log('Authorised:', okUser.authorized);
+
+const throwingUser = UserWithValidation({user: {name: 'john', password: ''}});
+throwingUser.authorize(); // will throw because password is absent

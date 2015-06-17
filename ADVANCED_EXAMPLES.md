@@ -25,7 +25,7 @@
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ npm i babel -g
+$ cd stampit && npm i babel -g
 $ babel-node stampit/advanced-examples/self-aware.js
 ```
 
@@ -85,7 +85,7 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ npm i babel -g
+$ cd stampit && npm i babel -g
 $ node stampit/advanced-examples/cloneable.js
 ```
 
@@ -202,7 +202,7 @@ Memory efficient and safe cloning for each object. Yay!
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ npm i babel -g
+$ cd stampit && npm i babel -g
 $ babel-node stampit/advanced-examples/delayed-instantiation.js
 ```
 
@@ -269,45 +269,77 @@ Will print all the properties passed to it by the dependency manager module:
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ npm i babel -g
+$ cd stampit && npm i babel -g
+$ npm i joi
 $ node stampit/advanced-examples/prevalidate.js
 ```
 
 For example you can prevalidate the object instance before a function call.
 
-This stamp separates the function definition and the prevalidation logic:
+First, let's assume you have this stamp:
 ```js
-var UserWithValidation = stampit.methods({
-  authorise: function () {
-    return true || false; // dummy implementation
+const User = stampit.methods({
+  authorize: function () {
+    // dummy implementation. Don't bother. :)
+    return this.authorized = (this.user.name === 'john' && this.user.password === '123');
   }
-}).init(function () {
-  var authorise = this.authorise; // Replacing function.
-  this.authorise = function () {
-    // Do our validation logic. It can be anything really.
-    if (this.user &&
-      !_.isEmpty(this.user.name) && !_.isEmpty(this.user.password) &&
-      _.isString(this.user.name) && _.isString(this.user.password)) {
-      return authorise.apply(this, arguments); // call the original function if all went fine.
-    }
-
-    // Validation failed. Do something like throwing error.
-    throw new Error('user data is missing')
-  }.bind(this);
 });
 ```
+It requires the user object to have both name and password set.
+
+Now, let's implement a stamp which validates a state just before a function call.
+```js
+const JoiPrevalidator = stampit
+  .static({ // Adds properties to stamps, not object instances.
+    prevalidate(mathodName, schema) {
+      var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
+      prevalidations[mathodName] = schema; // Adding/overriding one more validation schema.
+      return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
+    }
+  })
+  .init(function () { // This will be called for each new object instance.
+    _.forOwn(this.prevalidations, (value, key) => { // overriding functions
+      const actualFunc = this[key];
+      this[key] = () => { // Overwrite real function with our.
+        const result = joi.validate(this, value, {allowUnknown: true});
+        if (result.error) {
+          throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);
+        }
+
+        return actualFunc.apply(this, arguments);
+      }
+    });
+  });
+```
+Note, you can validate anything in any way you want and need.
+
+Compose the new validator stamp to our `User` stamp:
+```js
+const UserWithValidation = User.compose(JoiPrevalidator) // Adds new method prevalidate() to the stamp.
+  .prevalidate('authorize', { // Setup a prevalidation rule using our new "static" function.
+    user: { // Joi schema.
+      name: joi.string().required(),
+      password: joi.string().required()
+    }
+  });
+```
+
 Let's try it:
 ```js
-var user = UserWithValidation({user: {name: 'john', password: ''}}); // password is missing
-user.authorise(); // throws "Error: user data is missing"
+const okUser = UserWithValidation({user: {name: 'john', password: '123'}});
+okUser.authorize(); // No error. Validation successful.
+console.log('Authorised:', okUser.authorized);
+
+const throwingUser = UserWithValidation({user: {name: 'john', password: ''}});
+throwingUser.authorize(); // will throw an error because password is absent
 ```
-The code will throw error because password is missing.
+Will print `Authorised: true` and then an error stack. The code throws error because password is missing.
 
-You can replace silly `if`-validation logic with
-[joi](https://www.npmjs.com/package/joi) or [strummer](https://www.npmjs.com/package/strummer) or 
-[is-my-json-valid](https://www.npmjs.com/package/is-my-json-valid) module usage.
+You can replace `joi` validation logic with
+[strummer](https://www.npmjs.com/package/strummer) or 
+[is-my-json-valid](https://www.npmjs.com/package/is-my-json-valid) or any other module.
 
-The point here is that validation of data and data usage can be split apart and combined back when needed.
+So, now you have a **composable** behavior to validate any function just before it's called. Incredible!
 
 ------------------------------
 
@@ -316,6 +348,7 @@ The point here is that validation of data and data usage can be split apart and 
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
+$ cd stampit && npm i babel -g
 $ node stampit/advanced-examples/event-emitter.js
 ```
 
@@ -356,6 +389,7 @@ Each stamp has the property `fixed`. It's an object with 4 properties. It's used
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
+$ cd stampit && npm i babel -g
 $ node stampit/advanced-examples/hacking.js
 ```
 
