@@ -25,30 +25,31 @@
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
-$ node stampit/advanced-examples/self-aware.js
+$ npm i babel -g
+$ babel-node stampit/advanced-examples/self-aware.js
 ```
 
 You can add `.getStamp()` function to each object with ease. 
 
 First, let's assume you have a following stamp:
 ```js
-var User = stampit();
+const User = stampit();
 ```
 
 ### First way
 Just compose the following stamp to any other stamp.
 ```js
-var SelfAware1 = stampit.init(function (ctx) { // the context, has `stamp` property
-  this.getStamp = function () { return ctx.stamp; }
+const SelfAware1 = stampit.init(({ instance, stamp }) => {
+  instance.getStamp = () => stamp;
 });
 ```
 Let's compose it with the `User` stamp from above:
 ```js
-var SelfAwareUser1 = User.compose(SelfAware1);
+const SelfAwareUser1 = User.compose(SelfAware1);
 ```
 Now, let's create a user and call the `.getStamp()`:
 ```js
-var user1 = SelfAwareUser1();
+const user1 = SelfAwareUser1();
 assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
 ```
 So, now every object instance returns the exact stamp it was built with. Nice!
@@ -57,10 +58,9 @@ So, now every object instance returns the exact stamp it was built with. Nice!
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
 ```js
-var SelfAware2 = stampit.init(function (ctx) { // the context, has `stamp` property
-  if (!ctx.stamp.fixed.methods.getStamp) { // Let's add the method only once.
-    var stamp = ctx.stamp; // We should reference only one object, otherwise it is memory leak risky
-    ctx.stamp.fixed.methods.getStamp = function () { return stamp; }
+const SelfAware2 = stampit.init(({ instance, stamp }) => {
+  if (instance.getStamp) {
+    stamp.fixed.methods.getStamp = () => stamp;
   }
 });
 ```
@@ -69,11 +69,11 @@ The `fixed.methods` object is used as all object instances' `.prototype`.
 
 Compose this new stamp with our `User` from above:
 ```js
-var SelfAwareUser2 = User.compose(SelfAware2);
+const SelfAwareUser2 = User.compose(SelfAware2);
 ```
 Let's test it:
 ```js
-var user2 = SelfAwareUser2();
+const user2 = SelfAwareUser2();
 assert.strictEqual(user2.getStamp(), SelfAwareUser2); // All good
 ```
 And again, every new object instance knows which stamp it was made of. Brilliant!
@@ -85,23 +85,24 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
+$ npm i babel -g
 $ node stampit/advanced-examples/cloneable.js
 ```
 
 This is simple stamp with a single method and a single data property.
 ```js
-var PrependLogger = stampit.methods({
+const PrependLogger = stampit.methods({
   log: function (data) {
     console.log(this.prefix, data);
   }
-}).refs({
+}).state({
   prefix: 'STDOUT: '
 });
 ```
 Using it:
 ```js
-var logger = PrependLogger();
-logger.log('hello');
+const originalLogger = PrependLogger();
+originalLogger.log('hello');
 ```
 Prints `STDOUT: hello`
 
@@ -109,8 +110,8 @@ Prints `STDOUT: hello`
 
 Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
-var Cloneable = stampit.init(function (ctx) { // the context, has `stamp` and `instance` properties
-  this.clone = function () { return ctx.stamp(ctx.instance); };
+const Cloneable1 = stampit.init(({ instance, stamp }) => {
+  instance.clone = () => stamp(instance);
 });
 ```
 All the properties of the object `instance` will be copied by reference to the new object
@@ -118,14 +119,14 @@ when calling the factory - `stamp(instance)`.
 
 Compose it with our `PrependLogger` from above:
 ```js
-var CloneablePrependLogger = PrependLogger.compose(Cloneable);
+const CloneablePrependLogger1 = PrependLogger.compose(Cloneable1);
 ```
 Let's create an instance, then clone it, and see the result:
 ```js
-var logger = CloneablePrependLogger({ prefix: 'OUT: ' }); // creating first object
-var loggerClone = logger.clone(); // cloning the object.
-logger.log('hello'); // OUT: hello
-loggerClone.log('hello'); // OUT: hello
+const logger1 = CloneablePrependLogger1({ prefix: 'OUT: ' }); // creating first object
+const loggerClone1 = logger1.clone(); // cloning the object.
+logger1.log('hello'); // OUT: hello
+loggerClone1.log('hello'); // OUT: hello
 ```
 Prints
 ```
@@ -138,8 +139,8 @@ The `logger` and `loggerClone` work exactly the same. Woah!
 
 This is how you can implement self cloning different: 
 ```js
-var Cloneable = stampit.init(function (ctx) {
-  this.clone = ctx.stamp.bind(null, this);
+const Cloneable2 = stampit.init(({ instance, stamp }) => {
+  instance.clone = stamp.bind(null, instance);
 });
 ```
 Stamp is a regular function, so we simply bound its first argument to the object instance.
@@ -147,14 +148,14 @@ All the properties of the object instance will be copied by reference to the new
 
 Composing it with our `PrependLogger` from above:
 ```js
-var CloneablePrependLogger = PrependLogger.compose(Cloneable);
+const CloneablePrependLogger2 = PrependLogger.compose(Cloneable2);
 ```
 Create an instance, then clone it, and see the result:
 ```js
-var logger = CloneablePrependLogger({ prefix: 'OUT: ' }); // creating first object
-var loggerClone = logger.clone(); // cloning the object.
-logger.log('hello'); // OUT: hello
-loggerClone.log('hello'); // OUT: hello
+const logger2 = CloneablePrependLogger2({ prefix: 'OUT: ' }); // creating first object
+const loggerClone2 = logger2.clone(); // cloning the object.
+logger2.log('hello'); // OUT: hello
+loggerClone2.log('hello'); // OUT: hello
 ```
 Prints
 ```
@@ -168,10 +169,9 @@ Objects have the same state again. Awesome!
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
 to every object but to the prototype. This will save us a little bit of memory per object.
 ```js
-var Cloneable = stampit.init(function (ctx) {
-  if (!ctx.stamp.fixed.methods.clone) { // check if prototype has the clone() method already
-    var stamp = ctx.stamp; // Avoiding too much data referenced and potential memory leaks
-    ctx.stamp.fixed.methods.clone = function () { return stamp(this) };
+const Cloneable3 = stampit.init(({ instance, stamp }) => {
+  if (!stamp.clone) { // check if prototype is already has the clone() method
+    stamp.fixed.methods.clone = function () { return stamp(this); };
   }
 });
 ```
@@ -179,14 +179,14 @@ The `ctx.stamp.fixed` property contains stamp's internal data.
 The `fixed.methods` object is used as all object instances' `.prototype`.
 Compose this new stamp with our `PrependLogger` from above:
 ```js
-var CloneablePrependLogger = PrependLogger.compose(Cloneable);
+const CloneablePrependLogger3 = PrependLogger.compose(Cloneable3);
 ```
 Let's see how it works:
 ```js
-var logger = CloneablePrependLogger({ prefix: 'OUT: ' }); // creating first object
-var loggerClone = logger.clone(); // cloning the object.
-logger.log('hello'); // OUT: hello
-loggerClone.log('hello'); // OUT: hello
+const logger3 = CloneablePrependLogger3({ prefix: 'OUT: ' });  // creating first object
+const loggerClone3 = logger3.clone(); // cloning the object.
+logger3.log('hello'); // OUT: hello
+loggerClone3.log('hello'); // OUT: hello
 ```
 Prints
 ```
@@ -199,35 +199,42 @@ Memory efficient and safe cloning for each object. Yay!
 
 ## Delayed object instantiation using Promises
 
+> Run the examples below for yourself:
+```sh
+$ git clone https://github.com/stampit-org/stampit.git
+$ npm i babel -g
+$ babel-node stampit/advanced-examples/delayed-instantiation.js
+```
+
 What if you can't create an object right now but have to retrieve data from a server or filesystem?
 
 To solve this we can make **any** stamp to return `Promise` instead of object itself.
 
 First, let's assume you have this stamp:
 ```js
-var User = stampit.refs({ entityName: 'user' });
+const User = stampit.refs({ entityName: 'user' });
 ```
 
 The following stamp should be composed *the last*, otherwise it won't work.
 ```js
-var AsyncInitializable = stampit.refs({
-  db: mongo.connection
+const AsyncInitializable = stampit.refs({
+  db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
 }).methods({
   getEntity: function(id) { // Gets id and return Promise which resolves into DB entity.
     return Promise.resolve(this.db[this.entityName].getById(id));
   }
-}).init(() => {
+}).init(function () {
   // If we return anything from an .init() function it becomes our object instance.
   return this.getEntity(this.id);
 });
 ```
 Let's compose it with our `User` stamp:
 ```js
-var AsyncInitializableUser = User.compose(AsyncInitializable); // The stamp produces promises now.
+const AsyncInitializableUser = User.compose(AsyncInitializable); // The stamp produces promises now.
 ```
 Create object (ES6):
 ```js
-var userEntity = yield AsyncInitializableUser({ id: '42' });
+const userEntity = AsyncInitializableUser({ id: '42' }).then(console.log);
 ```
 A random stamp received the behaviour which creates objects asynchronously. OMG!
 
@@ -240,8 +247,8 @@ receive preconfigured objects if you pass a stamp to it. It's possible because s
 
 Self printing behaviour. An object will log itself after being created.
 ```js
-var PrintSelf = stampit.init(function() {
-  console.log(this); // same as console.log(ctx.instance) but shorter
+const PrintSelf = stampit.init(({ instance }) => {
+  console.log(instance);
 });
 ```
 Supply the self printing stamp to the dependency manager:
@@ -262,6 +269,7 @@ Will print all the properties passed to it by the dependency manager module:
 > Run the examples below for yourself:
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
+$ npm i babel -g
 $ node stampit/advanced-examples/prevalidate.js
 ```
 
