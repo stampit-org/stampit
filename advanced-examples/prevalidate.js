@@ -12,16 +12,16 @@ const User = stampit.methods({
 
 const JoiPrevalidator = stampit
   .static({ // Adding properties (this function) to stamps, not object instances.
-    prevalidate(mathodName, schema) {
+    prevalidate(methodName, schema) {
       var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
-      prevalidations[mathodName] = schema; // Adding/overriding one more validation schema.
+      prevalidations[methodName] = schema; // Adding/overriding a validation schema.
       return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
     }
   })
   .init(function () { // This will be called for each new object instance.
     _.forOwn(this.prevalidations, (value, key) => { // overriding functions
       const actualFunc = this[key];
-      this[key] = () => { // Overwrite real function with our.
+      this[key] = () => { // Overwrite a real function with our.
         const result = joi.validate(this, value, {allowUnknown: true});
         if (result.error) {
           throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);

@@ -26,7 +26,7 @@
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
-$ babel-node stampit/advanced-examples/self-aware.js
+$ babel-node advanced-examples/self-aware.js
 ```
 
 You can add `.getStamp()` function to each object with ease. 
@@ -86,7 +86,7 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
-$ node stampit/advanced-examples/cloneable.js
+$ babel-node advanced-examples/cloneable.js
 ```
 
 This is simple stamp with a single method and a single data property.
@@ -203,7 +203,7 @@ Memory efficient and safe cloning for each object. Yay!
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
-$ babel-node stampit/advanced-examples/delayed-instantiation.js
+$ babel-node advanced-examples/delayed-instantiation.js
 ```
 
 What if you can't create an object right now but have to retrieve data from a server or filesystem?
@@ -271,10 +271,10 @@ Will print all the properties passed to it by the dependency manager module:
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
 $ npm i joi
-$ node stampit/advanced-examples/prevalidate.js
+$ babel-node advanced-examples/prevalidate.js
 ```
 
-For example you can prevalidate the object instance before a function call.
+For example you can prevalidate an object instance before a function call.
 
 First, let's assume you have this stamp:
 ```js
@@ -291,16 +291,16 @@ Now, let's implement a stamp which validates a state just before a function call
 ```js
 const JoiPrevalidator = stampit
   .static({ // Adds properties to stamps, not object instances.
-    prevalidate(mathodName, schema) {
+    prevalidate(methodName, schema) {
       var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
-      prevalidations[mathodName] = schema; // Adding/overriding one more validation schema.
+      prevalidations[methodName] = schema; // Adding/overriding a validation schema.
       return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
     }
   })
   .init(function () { // This will be called for each new object instance.
     _.forOwn(this.prevalidations, (value, key) => { // overriding functions
       const actualFunc = this[key];
-      this[key] = () => { // Overwrite real function with our.
+      this[key] = () => { // Overwrite a real function with ours.
         const result = joi.validate(this, value, {allowUnknown: true});
         if (result.error) {
           throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);
@@ -313,7 +313,7 @@ const JoiPrevalidator = stampit
 ```
 Note, you can validate anything in any way you want and need.
 
-Compose the new validator stamp to our `User` stamp:
+Compose the new validator stamp with our `User` stamp:
 ```js
 const UserWithValidation = User.compose(JoiPrevalidator) // Adds new method prevalidate() to the stamp.
   .prevalidate('authorize', { // Setup a prevalidation rule using our new "static" function.
@@ -333,7 +333,7 @@ console.log('Authorised:', okUser.authorized);
 const throwingUser = UserWithValidation({user: {name: 'john', password: ''}});
 throwingUser.authorize(); // will throw an error because password is absent
 ```
-Will print `Authorised: true` and then an error stack. The code throws error because password is missing.
+Will print `Authorised: true` and then an error stack. The code throws an error because the password is missing.
 
 You can replace `joi` validation logic with
 [strummer](https://www.npmjs.com/package/strummer) or 
@@ -349,7 +349,7 @@ So, now you have a **composable** behavior to validate any function just before 
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
-$ node stampit/advanced-examples/event-emitter.js
+$ babel-node advanced-examples/event-emitter.js
 ```
 
 You can have a stamp which makes aby object an `EventEmitter` without inheriting from it.
@@ -390,7 +390,7 @@ Each stamp has the property `fixed`. It's an object with 4 properties. It's used
 ```sh
 $ git clone https://github.com/stampit-org/stampit.git
 $ cd stampit && npm i babel -g
-$ node stampit/advanced-examples/hacking.js
+$ babel-node advanced-examples/hacking.js
 ```
 
 ### "Default" properties
