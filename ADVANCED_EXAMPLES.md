@@ -380,6 +380,12 @@ As of stampit v2 the `convertConstructor` has limitations. It can't handle const
 
 ------------------------------
 
+## Mocking in the unit tests
+
+
+
+------------------------------
+
 ## Hacking stamps
 
 Each stamp has the property `fixed`. It's an object with 4 properties. It's used by stampit in that order:
