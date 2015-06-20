@@ -218,7 +218,7 @@ First, let's assume you have this stamp:
 const User = stampit.refs({ entityName: 'user' });
 ```
 
-The following stamp should be composed *the last*, otherwise it won't work.
+The following stamp should be composed *last*, otherwise it won't work.
 ```js
 const AsyncInitializable = stampit.refs({
   db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
@@ -331,12 +331,12 @@ Let's try it:
 ```js
 const okUser = UserWithValidation({user: {name: 'john', password: '123'}});
 okUser.authorize(); // No error. Validation successful.
-console.log('Authorised:', okUser.authorized);
+console.log('Authorized:', okUser.authorized);
 
 const throwingUser = UserWithValidation({user: {name: 'john', password: ''}});
 throwingUser.authorize(); // will throw an error because password is absent
 ```
-Will print `Authorised: true` and then an error stack. The code throws an error because the password is missing.
+Will print `Authorized: true` and then an error stack. The code throws an error because the password is missing.
 
 You can replace `joi` validation logic with
 [strummer](https://www.npmjs.com/package/strummer) or 
@@ -512,7 +512,7 @@ Do you see the idea? The reusable DB mock can be attached to any behavior. Fanta
 
 ## Hacking stamps
 
-Each stamp has the property `fixed`. It's an object with 4 properties. It's used by stampit in that order:
+Each stamp has the property `fixed`. It's an object with 4 properties. It's used by stampit in the following order:
 * `Stamp.fixed.methods` - plain object. Stampit uses it to set new objects' prototype: `Object.create(fixed.methods)`.
 * `Stamp.fixed.refs` - plain object. Stampit uses it to set new objects' state: `_.assign(obj, fixed.refs)`.
 * `Stamp.fixed.props` - plain object. Stampit deeply merges it into new objects: `_.merge(obj, fixed.props)`.
