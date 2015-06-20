@@ -390,12 +390,12 @@ $ cd stampit && npm i babel -g
 $ babel-node advanced-examples/mocking.js
 ```
 
-Consider the following example.
+Consider the following stamp composition:
 ```js
-const NewStamp = AStamp.compose(FirstStamp, SecondsStamp
+const NewStamp = AStamp.compose(FirstStamp, SecondsStamp);
 ```
 Last composed stamp always wins. This means that `SecondStamp` will override methods 
-of the `AStamp` and `FirstStamp` if any. Let's use this feature to override DB calls with mock functions.
+of the `AStamp` and `FirstStamp` if case of conflicts. Let's use this feature to override DB calls with mock functions.
 
 Define few following stamps:
 ```js
