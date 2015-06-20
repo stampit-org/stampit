@@ -1,4 +1,4 @@
-This is a set of handy **composable** stamps, as well as few tops and tricks.
+This is a set of handy **composable** stamps, as well as few tips and tricks.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
