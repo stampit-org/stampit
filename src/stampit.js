@@ -6,80 +6,76 @@
  * Copyright (c) 2013 Eric Elliott
  * http://opensource.org/licenses/MIT
  **/
-'use strict';
-var forEach = require('lodash/collection/forEach');
-var map = require('lodash/collection/map');
-var forOwn = require('lodash/object/forOwn');
-var isFunction = require('lodash/lang/isFunction');
-var isArray = Array.isArray;
-var isObject = require('lodash/lang/isObject');
-var create = Object.create;
-var slice = require('lodash/array/slice');
-var mixer = require('supermixer');
+import forEach from 'lodash/collection/forEach';
+import forOwn from 'lodash/object/forOwn';
+import isFunction from 'lodash/lang/isFunction';
+import isObject from 'lodash/lang/isObject';
+import map from 'lodash/collection/map';
+import {
+  merge,
+  mergeChainNonFunctions,
+  mergeUnique,
+  mixin,
+  mixinChainFunctions,
+  mixinFunctions,
+} from 'supermixer';
+
+const create = Object.create;
 
 /* jshint -W024 */
 
 // Avoiding JSHist W003 violations.
-var stampit;
+let stampit;
 
-function extractFunctions(arg) {
-  if (isFunction(arg)) {
-    return map(slice(arguments), function (fn) {
+function extractFunctions(...args) {
+  if (isFunction(args[0])) {
+    return map(args, fn => {
       if (isFunction(fn)) {
         return fn;
       }
     });
-  } else if (isObject(arg)) {
-    var arr = [];
-    forEach(slice(arguments), function (obj) {
-      forOwn(obj, function (fn) {
-        arr.push(fn);
+  } else if (isObject(args[0])) {
+    const arr = [];
+    forEach(args, obj => {
+      forOwn(obj, fn => {
+        if (isFunction(fn)) {
+          arr.push(fn);
+        }
       });
     });
     return arr;
-  } else if (isArray(arg)) {
-    return slice(arg);
   }
   return [];
 }
 
-function addMethods(fixed, methods) {
-  var args = [fixed.methods].concat(methods);
-  mixer.mixinFunctions.apply(null, args);
-  return fixed.methods;
+function addMethods(fixed, ...methods) {
+  return mixinFunctions(fixed.methods, ...methods);
 }
-function addRefs(fixed, refs) {
-  var args = [fixed.refs || fixed.state].concat(refs);
-  fixed.refs = fixed.state = mixer.mixin.apply(null, args);
+function addRefs(fixed, ...refs) {
+  fixed.refs = fixed.state = mixin(fixed.refs || fixed.state, ...refs);
   return fixed.refs;
 }
-function addInit(fixed, inits) {
-  inits = isArray(inits) ? extractFunctions.apply(null, inits) : extractFunctions(inits);
+function addInit(fixed, ...inits) {
+  inits = extractFunctions(...inits);
   fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(inits);
   return fixed.init;
 }
-function addProps(fixed, propses) {
-  var args = [fixed.props].concat(propses);
-  fixed.props = mixer.merge.apply(null, args);
-  return fixed.props;
+function addProps(fixed, ...propses) {
+  return merge(fixed.props, ...propses);
 }
-function addStatic(fixed, statics) {
-  var args = [fixed.static].concat(statics);
-  fixed.static = mixer.mixin.apply(null, args);
-  return fixed.static;
+function addStatic(fixed, ...statics) {
+  return mixin(fixed.static, ...statics);
 }
 
-function cloneAndExtend(fixed, extensionFunction, args) {
-  args = arguments.length > 3 ? slice(arguments, 2, arguments.length) : args;
-  var stamp = stampit(fixed);
-  extensionFunction(stamp.fixed, args);
+function cloneAndExtend(fixed, extensionFunction, ...args) {
+  const stamp = stampit(fixed);
+  extensionFunction(stamp.fixed, ...args);
   return stamp;
 }
 
-function compose(factories) {
-  factories = isArray(factories) ? factories : slice(arguments);
-  var result = stampit();
-  forEach(factories, function (source) {
+function compose(...factories) {
+  const result = stampit();
+  forEach(factories, source => {
     if (source && source.fixed) {
       addMethods(result.fixed, source.fixed.methods);
       // We might end up having two different stampit modules loaded and used in conjunction.
@@ -90,7 +86,7 @@ function compose(factories) {
       addStatic(result.fixed, source.fixed.static);
     }
   });
-  return mixer.mixin(result, result.fixed.static);
+  return mixin(result, result.fixed.static);
 }
 
 /**
@@ -114,7 +110,7 @@ function compose(factories) {
  * @return {Function(statics)} factory.static Add properties to the stamp (not objects!). Chainable.
  */
 stampit = function stampit(options) {
-  var fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
+  const fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
   fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
   if (options) {
@@ -125,15 +121,14 @@ stampit = function stampit(options) {
     addStatic(fixed, options.static);
   }
 
-  var factory = function Factory(refs, args) {
-    var instance = mixer.mixin(create(fixed.methods), fixed.refs, refs);
-    mixer.mergeUnique(instance, fixed.props); // props are safely merged into refs
+  const factory = function Factory(refs, ...args) {
+    let instance = mixin(create(fixed.methods), fixed.refs, refs);
+    mergeUnique(instance, fixed.props); // props are safely merged into refs
 
     if (fixed.init.length > 0) {
-      args = slice(arguments, 1, arguments.length);
-      forEach(fixed.init, function (fn) {
+      forEach(fixed.init, fn => {
         if (isFunction(fn)) {
-          instance = fn.call(instance, { args: args, instance: instance, stamp: factory }) || instance;
+          instance = fn.call(instance, { args, instance, stamp: factory }) || instance;
         }
       });
     }
@@ -141,9 +136,9 @@ stampit = function stampit(options) {
     return instance;
   };
 
-  var refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
-  var initMethod = cloneAndExtend.bind(null, fixed, addInit);
-  return mixer.mixin(factory, {
+  const refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
+  const initMethod = cloneAndExtend.bind(null, fixed, addInit);
+  return mixin(factory, {
     /**
      * Creates a new object instance form the stamp.
      */
@@ -152,7 +147,7 @@ stampit = function stampit(options) {
     /**
      * The stamp components.
      */
-    fixed: fixed,
+    fixed,
 
     /**
      * Take n objects and add them to the methods list of a new stamp. Creates new stamp.
@@ -195,9 +190,9 @@ stampit = function stampit(options) {
      * Take n objects and add all props to the factory object. Creates new stamp.
      * @return {Function} A new stamp (factory object).
      */
-    static: function () {
-      var newStamp = cloneAndExtend(factory.fixed, addStatic, slice(arguments));
-      return mixer.mixin(newStamp, newStamp.fixed.static);
+    static(...statics) {
+      const newStamp = cloneAndExtend(factory.fixed, addStatic, ...statics);
+      return mixin(newStamp, newStamp.fixed.static);
     },
 
     /**
@@ -207,11 +202,7 @@ stampit = function stampit(options) {
      * @param {[Function]|...Function} factories Stampit factories.
      * @return {Function} A new stampit factory composed from arguments.
      */
-    compose: function (factories) {
-      var args = isArray(factories) ? factories : slice(arguments);
-      args = [factory].concat(args);
-      return compose(args);
-    }
+    compose: (...factories) => compose(factory, ...factories)
   }, fixed.static);
 };
 
@@ -219,35 +210,36 @@ stampit = function stampit(options) {
 
 function isStamp(obj) {
   return (
-  isFunction(obj) &&
-  isFunction(obj.methods) &&
-  // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
-  (isFunction(obj.refs) || isFunction(obj.state)) &&
-  (isFunction(obj.init) || isFunction(obj.enclose)) &&
-  isFunction(obj.props) &&
-  isFunction(obj.static) &&
-  isObject(obj.fixed)
+    isFunction(obj) &&
+    isFunction(obj.methods) &&
+    // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
+    (isFunction(obj.refs) || isFunction(obj.state)) &&
+    (isFunction(obj.init) || isFunction(obj.enclose)) &&
+    isFunction(obj.props) &&
+    isFunction(obj.static) &&
+    isObject(obj.fixed)
   );
 }
 
 function convertConstructor(Constructor) {
-  var stamp = stampit();
-  mixer.mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  stamp.fixed.refs = stamp.fixed.state = mixer.mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
-  addInit(stamp.fixed, function (opts) {
-    return Constructor.apply(opts.instance, opts.args);
-  });
+  const stamp = stampit();
+  stamp.fixed.refs = stamp.fixed.state = mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
+
+  mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
+  addInit(stamp.fixed, opts => Constructor.apply(opts.instance, opts.args));
+
   return stamp;
 }
 
-function shortcutMethod(extensionFunction, args) {
-  args = arguments.length > 2 ? slice(arguments, 1, arguments.length) : args;
-  var stamp = stampit();
-  extensionFunction(stamp.fixed, args);
+function shortcutMethod(extensionFunction, ...args) {
+  const stamp = stampit();
+
+  extensionFunction(stamp.fixed, ...args);
+
   return stamp;
 }
 
-module.exports = mixer.mixin(stampit, {
+export default mixin(stampit, {
 
   /**
    * Take n objects and add them to the methods list of a new stamp. Creates new stamp.
@@ -278,9 +270,9 @@ module.exports = mixer.mixin(stampit, {
    * Take n objects and add all props to the factory object. Creates new stamp.
    * @return {Function} A new stamp (factory object).
    */
-  static: function () {
-    var newStamp = shortcutMethod(addStatic, slice(arguments));
-    return mixer.mixin(newStamp, newStamp.fixed.static);
+  static(...statics) {
+    const newStamp = shortcutMethod(addStatic, ...statics);
+    return mixin(newStamp, newStamp.fixed.static);
   },
 
   /**
@@ -293,18 +285,6 @@ module.exports = mixer.mixin(stampit, {
   compose: compose,
 
   /**
-   * Alias for mixin
-   */
-  extend: mixer.mixin,
-  /**
-   * Alias for mixin
-   */
-  mixIn: mixer.mixin,
-  /**
-   * Alias for mixin
-   */
-  assign: mixer.mixin,
-  /**
    * Take a destination object followed by one or more source objects,
    * and copy the source object properties to the destination object,
    * with last in priority overrides.
@@ -312,14 +292,17 @@ module.exports = mixer.mixin(stampit, {
    * @param {...Object} source An object to copy properties from.
    * @returns {Object}
    */
-  mixin: mixer.mixin,
+  mixin,
+  extend: mixin,
+  mixIn: mixin,
+  assign: mixin,
 
   /**
    * Check if an object is a stamp.
    * @param {Object} obj An object to check.
    * @returns {Boolean}
    */
-  isStamp: isStamp,
+  isStamp,
 
   /**
    * Take an old-fashioned JS constructor and return a stampit stamp
@@ -327,5 +310,5 @@ module.exports = mixer.mixin(stampit, {
    * @param  {Function} Constructor
    * @return {Function} A composable stampit factory (aka stamp).
    */
-  convertConstructor: convertConstructor
+  convertConstructor
 });
