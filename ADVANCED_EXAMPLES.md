@@ -15,6 +15,7 @@ This is a set of handy **composable** stamps, as well as few tops and tricks.
 - [Dependency injection tips](#dependency-injection-tips)
 - [Validate before a function call](#validate-before-a-function-call)
 - [EventEmitter without inheritance (`convertConstructor`)](#eventemitter-without-inheritance-convertconstructor)
+- [Mocking in the unit tests](#mocking-in-the-unit-tests)
 - [Hacking stamps](#hacking-stamps)
   - [Enforced default properties](#enforced-default-properties)
   - [Enforced default properties as a composable behavior](#enforced-default-properties-as-a-composable-behavior)
