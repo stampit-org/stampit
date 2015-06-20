@@ -1,8 +1,8 @@
 const stampit = require('../stampit');
 
 const PrependLogger = stampit.methods({
-  log: function (data) {
-    console.log(this.prefix, data);
+  log: function (obj) {
+    console.log(this.prefix, obj);
   }
 }).state({
   prefix: 'STDOUT: '

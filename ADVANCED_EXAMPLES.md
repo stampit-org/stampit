@@ -92,13 +92,13 @@ $ cd stampit && npm i babel -g
 $ babel-node advanced-examples/cloneable.js
 ```
 
-This is simple stamp with a single method and a single data property.
+This is simple stamp with a single method and a single state property `prefix`.
 ```js
 const PrependLogger = stampit.methods({
-  log: function (data) {
-    console.log(this.prefix, data);
+  log: function (obj) {
+    console.log(this.prefix, obj);
   }
-}).state({
+}).refs({
   prefix: 'STDOUT: '
 });
 ```
