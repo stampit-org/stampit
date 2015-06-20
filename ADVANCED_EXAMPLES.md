@@ -354,7 +354,7 @@ $ cd stampit && npm i babel -g
 $ babel-node advanced-examples/event-emitter.js
 ```
 
-You can have a stamp which makes aby object an `EventEmitter` without inheriting from it.
+You can have a stamp which makes any object an `EventEmitter` without inheriting from it.
 
 ```js
 const EventEmitter = require('events').EventEmitter;
@@ -382,7 +382,130 @@ As of stampit v2 the `convertConstructor` has limitations. It can't handle const
 
 ## Mocking in the unit tests
 
+> Run the examples below for yourself:
+```sh
+$ git clone https://github.com/stampit-org/stampit.git
+$ cd stampit && npm i babel -g
+$ babel-node advanced-examples/mocking.js
+```
 
+Consider the following example.
+```js
+const NewStamp = AStamp.compose(FirstStamp, SecondsStamp
+```
+Last composed stamp always wins. This means that `SecondStamp` will override methods 
+of the `AStamp` and `FirstStamp` if any. Let's use this feature to override DB calls with mock functions.
+
+Define few following stamps:
+```js
+/**
+ * Implements convertOne() method for future usage.
+ */
+const DbToApiCommodityConverter = stampit.methods({
+  convertOne(entity) {
+    var keysMap = {_id: 'id'};
+    return _.mapKeys(_.pick(entity, ['category', '_id', 'name', 'price']), (v, k) => keysMap[k] || k);
+  }
+});
+
+/**
+ * Abstract converter. Implements convert() which does argument validation and can convert both arrays and single items.
+ * Requires this.convertOne() to be defined.
+ */
+const Converter = stampit.methods({
+  convert(entities) {
+    if (!entities) {
+      return;
+    }
+
+    if (!Array.isArray(entities)) {
+      return this.convertOne(entities);
+    }
+
+    return _.map(entities, this.convertOne);
+  }
+});
+
+/**
+ * Database querying implementation: findById() and find()
+ * Requires this.schema to be defined.
+ */
+const MongoDb = stampit.methods({
+  findById(id) {
+    return this.schema.findById(id);
+  },
+
+  find(params) {
+    return this.schema.find(params);
+  }
+});
+```
+
+Okay, let's define few business logic functions to retrieve data from the DB using the stamps above:
+```js
+/**
+ * The business logic. Defines getById() and search() which query DB and convert data with this.convert().
+ * Requires this.convert(), this.findById(), and this.find() to be defined.
+ */
+const Commodity = stampit.methods({
+  getById(id) {
+    return this.findById(id).then(this.convert.bind(this));
+  },
+
+  search(fields = {price: {from: 0, to: Infinity}}) {
+    return this.find({category: fields.categories, price: {gte: fields.price.from, lte: fields.price.to}})
+      .then(this.convert.bind(this));
+  }
+})
+  .compose(Converter, DbToApiCommodityConverter, MongoDb); // Adding the missing behavior
+```
+
+The usage is quite straightforward.
+```js
+const commodity = Commodity({
+  schema: MongooseCommoditySchema
+});
+
+commodity.getById(42).then(console.log);
+commodity.find({categories: 'kettle', price: {from: 0, to: 20}}).then(console.log);
+```
+
+Finally, the mocking! All we need to do is to have a stamp with the `findById()` and `find()` methods.
+```js
+const _mockItem = {category: 'kettle', _id: 42, name: 'Samsung Kettle', price: 4.2};
+const FakeDb = stampit.methods({
+  findById(id) { // Mocking the DB call
+    return Promise.resolve(_mockItem);
+  },
+  find(params) { // Mocking the DB call
+    return Promise.resolve([_mockItem]);
+  }
+});
+```
+
+Let's test.
+```js
+const MockedCommodity = Commodity.compose(FakeDb);
+
+const commodity = MockedCommodity();
+commodity.getById().then(data => {
+  assert.equal(data.category, _mockItem.category);
+  assert.equal(data.id, _mockItem._id);
+  assert.equal(data.name, _mockItem.name);
+  assert.equal(data.price, _mockItem.price);
+  console.log('getById works!');
+}).catch(console.error);
+commodity.search().then(data => {
+  assert.equal(data.length, 1);
+  assert.equal(data[0].category, _mockItem.category);
+  assert.equal(data[0].id, _mockItem._id);
+  assert.equal(data[0].name, _mockItem.name);
+  assert.equal(data[0].price, _mockItem.price);
+  console.log('search works!');
+}).catch(console.error);
+```
+
+Do you see the idea? The reusable DB mock can be attached to any behavior. Fantastic!
 
 ------------------------------
 

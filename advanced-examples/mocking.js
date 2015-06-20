@@ -47,7 +47,7 @@ const MongoDb = stampit.methods({
 });
 
 /**
- * The business logic. Defines getById() and search() which query DB and convert it back with this.convert().
+ * The business logic. Defines getById() and search() which query DB and convert data with this.convert().
  * Requires this.convert() to be defined.
  */
 const Commodity = stampit.methods({
@@ -60,12 +60,14 @@ const Commodity = stampit.methods({
       .then(this.convert.bind(this));
   }
 })
-  .compose(Converter, DbToApiCommodityConverter, MongoDb);
+  .compose(Converter, DbToApiCommodityConverter, MongoDb); // Adding the missing behavior
 
 // Production code would look like so:
 // const commodity = Commodity({
 //   schema: MongooseCommoditySchema
 // });
+// commodity.getById(123).then(console.log);
+// commodity.find({categories: 'kettle', price: {from: 0, to: 20}}).then(console.log);
 
 
 // Unit testing code
