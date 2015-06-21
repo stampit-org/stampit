@@ -51,8 +51,8 @@ function addRefs(fixed, ...refs) {
   return fixed.refs;
 }
 function addInit(fixed, ...inits) {
-  inits = extractFunctions(...inits);
-  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(inits);
+  const extractedInits = extractFunctions(...inits);
+  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(extractedInits);
   return fixed.init;
 }
 function addProps(fixed, ...propses) {

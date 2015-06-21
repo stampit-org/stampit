@@ -1,3 +1,9 @@
+/*
+This is Aribnb widely used linting configuration. https://github.com/airbnb/javascript
+Two differneces:
+1) We've stripped out JSX support. Minus two devDependency in project.json.
+2) We've disabled few checks due to stampit nature.
+*/
 {
   "parser": "babel-eslint",
   "env": {
@@ -44,7 +50,9 @@
       "vars": "local",
       "args": "after-used"
     }],
-    "no-use-before-define": 2,       // http://eslint.org/docs/rules/no-use-before-define
+
+// disabled due to stampit nature. stampit() uses copmose(), compose() uses stampit().
+    "no-use-before-define": 0,       // http://eslint.org/docs/rules/no-use-before-define
 
 /**
  * Possible errors
@@ -66,11 +74,16 @@
     "no-invalid-regexp": 2,          // http://eslint.org/docs/rules/no-invalid-regexp
     "no-irregular-whitespace": 2,    // http://eslint.org/docs/rules/no-irregular-whitespace
     "no-obj-calls": 2,               // http://eslint.org/docs/rules/no-obj-calls
-    "no-reserved-keys": 2,           // http://eslint.org/docs/rules/no-reserved-keys
+
+// Disabled because stampit is using 'static' keyword.
+//    "no-reserved-keys": 2,           // http://eslint.org/docs/rules/no-reserved-keys
     "no-sparse-arrays": 2,           // http://eslint.org/docs/rules/no-sparse-arrays
+
     "no-unreachable": 2,             // http://eslint.org/docs/rules/no-unreachable
     "use-isnan": 2,                  // http://eslint.org/docs/rules/use-isnan
-    "block-scoped-var": 2,           // http://eslint.org/docs/rules/block-scoped-var
+
+// Disabled bue to `stampit` variable usage in compose().
+//    "block-scoped-var": 2,           // http://eslint.org/docs/rules/block-scoped-var
 
 /**
  * Best practices
@@ -135,7 +148,10 @@
     }],
     "comma-style": [2, "last"],      // http://eslint.org/docs/rules/comma-style
     "eol-last": 2,                   // http://eslint.org/docs/rules/eol-last
-    "func-names": 1,                 // http://eslint.org/docs/rules/func-names
+
+// Disabled the warning because tests are widely using anonymous functions.
+//    "func-names": 1,                 // http://eslint.org/docs/rules/func-names
+
     "key-spacing": [2, {             // http://eslint.org/docs/rules/key-spacing
         "beforeColon": false,
         "afterColon": true
@@ -164,6 +180,9 @@
     "space-before-function-paren": [2, "never"], // http://eslint.org/docs/rules/space-before-function-paren
     "space-infix-ops": 2,            // http://eslint.org/docs/rules/space-infix-ops
     "space-return-throw-case": 2,    // http://eslint.org/docs/rules/space-return-throw-case
-    "spaced-line-comment": 2        // http://eslint.org/docs/rules/spaced-line-comment
+    "spaced-line-comment": 2,        // http://eslint.org/docs/rules/spaced-line-comment
+
+// Disabled this check because several tests are testing `undefined` variables as input parameters.
+    "no-undef-init": 0
   }
 }

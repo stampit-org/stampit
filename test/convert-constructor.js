@@ -1,21 +1,20 @@
-'use strict';
-var stampit = require('../src/stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Oldskool
 
-test('stampit.convertConstructor()', function (t) {
-  var Base = function () { this.base = 'base'; };
-  Base.prototype.baseFunc = function () { return 'baseFunc'; };
+test('stampit.convertConstructor()', (t) => {
+  const Base = function() { this.base = 'base'; };
+  Base.prototype.baseFunc = function() { return 'baseFunc'; };
 
-  var Constructor = function Constructor() { this.thing = 'initialized'; };
-  Constructor.staticFunc = function () {};
+  const Constructor = function Constructor() { this.thing = 'initialized'; };
+  Constructor.staticFunc = function() {};
   Constructor.staticProp = 'static';
   Constructor.prototype = new Base();
   Constructor.prototype.foo = function foo() { return 'foo'; };
 
-  var oldskool = stampit.convertConstructor(Constructor);
-  var obj = oldskool();
+  const oldskool = stampit.convertConstructor(Constructor);
+  const obj = oldskool();
 
   t.equal(obj.thing, 'initialized',
     'Constructor should execute.');
@@ -38,39 +37,39 @@ test('stampit.convertConstructor()', function (t) {
   t.end();
 });
 
-test('stampit.convertConstructor() composed', function (t) {
+test('stampit.convertConstructor() composed', (t) => {
   // The old constructor / class thing...
-  var BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
-  BaseOfBase.prototype.baseOfBaseFunc = function () { return 'baseOfBaseFunc'; };
+  const BaseOfBase = function() { this.baseOfBase = 'baseOfBase'; };
+  BaseOfBase.prototype.baseOfBaseFunc = function() { return 'baseOfBaseFunc'; };
 
-  var Base = function () { this.base = 'base'; };
+  const Base = function() { this.base = 'base'; };
   Base.prototype = new BaseOfBase();
-  Base.prototype.baseFunc = function () { return 'baseFunc'; };
+  Base.prototype.baseFunc = function() { return 'baseFunc'; };
 
-  var Constructor = function Constructor() {
+  const Constructor = function Constructor() {
     this.thing = 'initialized';
   };
   Constructor.prototype = new Base();
   Constructor.prototype.foo = function foo() { return 'foo'; };
 
   // The conversion
-  var oldskool = stampit.convertConstructor(Constructor);
+  const oldskool = stampit.convertConstructor(Constructor);
 
   // A new stamp to compose with...
-  var newskool = stampit().methods({
+  const newskool = stampit().methods({
     bar: function bar() { return 'bar'; }
     // your methods here...
-  }).init(function () {
+  }).init(function() {
     this.baz = 'baz';
   });
 
   // Now you can compose those old constructors just like you could
   // with any other factory...
-  var myThing = stampit.compose(oldskool, newskool);
-  var myThing2 = stampit.compose(newskool, oldskool);
+  const myThing = stampit.compose(oldskool, newskool);
+  const myThing2 = stampit.compose(newskool, oldskool);
 
-  var thing = myThing();
-  var u = myThing2();
+  const thing = myThing();
+  const u = myThing2();
 
   t.equal(thing.thing, 'initialized',
     'Constructor should execute.');
