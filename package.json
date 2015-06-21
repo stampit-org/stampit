@@ -8,13 +8,15 @@
   },
   "main": "./dist/stampit.js",
   "keywords": [
-    "objects",
-    "prototypal",
+    "object",
+    "prototypy",
     "object oriented",
     "browser",
     "inheritance",
     "oo",
-    "node"
+    "node",
+    "factory",
+    "class"
   ],
   "repository": {
     "type": "git",
@@ -26,8 +28,9 @@
   },
   "devDependencies": {
     "babel": "^5.5.8",
+    "babel-eslint": "^3.1.17",
     "browserify": "^10.2.1",
-    "jshint": "^2.7.0",
+    "eslint": "^0.23.0",
     "require-all": "^1.1.0",
     "rimraf": "^2.3.4",
     "tape": "^4.0.0",
@@ -35,10 +38,10 @@
   },
   "scripts": {
     "prepublish": "npm run build && npm test",
-    "test": "npm run hint && babel-node test/index.js",
+    "test": "npm run lint && babel-node test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
-    "hint": "jshint src/stampit.js test/ && echo JSHint: linting successful",
+    "lint": "eslint src && eslint test",
     "build": "npm run clean && babel src --out-dir dist && npm run uglify"
   },
   "license": "MIT"
