@@ -4,12 +4,12 @@ import test from 'tape';
 // Immutability
 
 test('Basic stamp immutability', (t) => {
-  const methods = { f: function F1() {} };
+  const methods = { f() {} };
   const refs = { s: { deep: 1 } };
   const props = { p: { deep: 1 } };
   const stamp1 = stampit({ methods: methods, refs: refs, props: props });
 
-  methods.f = function F2() {};
+  methods.f = () => {};
   refs.s.deep = 2;
   props.p.deep = 2;
   const stamp2 = stampit({ methods: methods, refs: refs, props: props });
@@ -28,7 +28,7 @@ test('Basic stamp immutability', (t) => {
 });
 
 test('Stamp immutability made of same source', (t) => {
-  const methods = { f: function F1() {} };
+  const methods = { f() {} };
   const refs = { s: { deep: 1 } };
   const props = { p: { deep: 1 } };
   const stamp1 = stampit({ methods: methods, refs: refs, props: props });
@@ -45,12 +45,12 @@ test('Stamp immutability made of same source', (t) => {
 });
 
 test('Basic object immutability', (t) => {
-  const methods = { f: function F1() {} };
+  const methods = { f() {} };
   const refs = { s: { deep: 1 } };
   const props = { p: { deep: 1 } };
   const o1 = stampit({ methods: methods, refs: refs, props: props })();
 
-  methods.f = function F2() {};
+  methods.f = () => {};
   refs.s.deep = 2;
   props.p.deep = 2;
   const o2 = stampit({ methods: methods, refs: refs, props: props })();
@@ -67,9 +67,9 @@ test('Basic object immutability', (t) => {
 
 test('Stamp chaining functions immutability', (t) => {
   const stamp1 = stampit();
-  const stamp2 = stamp1.methods({ f: function F1() {} });
+  const stamp2 = stamp1.methods({ f() {} });
   const stamp3 = stamp2.refs( { s: { deep: 1 } });
-  const stamp4 = stamp3.init(function() {});
+  const stamp4 = stamp3.init(() => {});
   const stamp5 = stamp2.props( { p: { deep: 1 } });
   const stamp6 = stamp4.compose(stampit());
 

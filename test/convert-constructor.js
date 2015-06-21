@@ -5,13 +5,13 @@ import test from 'tape';
 
 test('stampit.convertConstructor()', (t) => {
   const Base = function() { this.base = 'base'; };
-  Base.prototype.baseFunc = function() { return 'baseFunc'; };
+  Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
   const Constructor = function Constructor() { this.thing = 'initialized'; };
-  Constructor.staticFunc = function() {};
+  Constructor.staticFunc = () => {};
   Constructor.staticProp = 'static';
   Constructor.prototype = new Base();
-  Constructor.prototype.foo = function foo() { return 'foo'; };
+  Constructor.prototype.foo = () => { return 'foo'; };
 
   const oldskool = stampit.convertConstructor(Constructor);
   const obj = oldskool();
@@ -40,24 +40,24 @@ test('stampit.convertConstructor()', (t) => {
 test('stampit.convertConstructor() composed', (t) => {
   // The old constructor / class thing...
   const BaseOfBase = function() { this.baseOfBase = 'baseOfBase'; };
-  BaseOfBase.prototype.baseOfBaseFunc = function() { return 'baseOfBaseFunc'; };
+  BaseOfBase.prototype.baseOfBaseFunc = () => { return 'baseOfBaseFunc'; };
 
   const Base = function() { this.base = 'base'; };
   Base.prototype = new BaseOfBase();
-  Base.prototype.baseFunc = function() { return 'baseFunc'; };
+  Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
   const Constructor = function Constructor() {
     this.thing = 'initialized';
   };
   Constructor.prototype = new Base();
-  Constructor.prototype.foo = function foo() { return 'foo'; };
+  Constructor.prototype.foo = () => { return 'foo'; };
 
   // The conversion
   const oldskool = stampit.convertConstructor(Constructor);
 
   // A new stamp to compose with...
   const newskool = stampit().methods({
-    bar: function bar() { return 'bar'; }
+    bar() { return 'bar'; }
     // your methods here...
   }).init(function() {
     this.baz = 'baz';

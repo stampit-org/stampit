@@ -26,7 +26,7 @@ test('stampit.isStamp() with non stamps', (t) => {
     this.init = this;
   };
   const obj4 = function() {
-    this.fixed = function() { };
+    this.fixed = () => {};
   };
 
   t.ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
