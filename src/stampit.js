@@ -22,11 +22,6 @@ import {
 
 const create = Object.create;
 
-/* jshint -W024 */
-
-// Avoiding JSHist W003 violations.
-let stampit;
-
 function extractFunctions(...args) {
   if (isFunction(args[0])) {
     return map(args, fn => {
@@ -56,8 +51,8 @@ function addRefs(fixed, ...refs) {
   return fixed.refs;
 }
 function addInit(fixed, ...inits) {
-  inits = extractFunctions(...inits);
-  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(inits);
+  const extractedInits = extractFunctions(...inits);
+  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(extractedInits);
   return fixed.init;
 }
 function addProps(fixed, ...propses) {
@@ -109,7 +104,7 @@ function compose(...factories) {
  * @return {Function(stamps)} factory.compose Combine several stamps into single. Chainable.
  * @return {Function(statics)} factory.static Add properties to the stamp (not objects!). Chainable.
  */
-stampit = function stampit(options) {
+const stampit = function stampit(options) {
   const fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
   fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
@@ -226,7 +221,7 @@ function convertConstructor(Constructor) {
   stamp.fixed.refs = stamp.fixed.state = mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
 
   mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  addInit(stamp.fixed, opts => Constructor.apply(opts.instance, opts.args));
+  addInit(stamp.fixed, ({ instance, args }) => Constructor.apply(instance, args));
 
   return stamp;
 }

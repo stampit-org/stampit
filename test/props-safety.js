@@ -1,16 +1,15 @@
-'use strict';
-var stampit = require('../src/stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Props safety
 
-test('Stamp props deep cloned for object created', function (t) {
-  var deep = { foo: 'foo', bar: 'bar' };
-  var stamp1 = stampit().props({ deep: deep, foo: 'foo' });
-  var stamp2 = stampit({ props: { deep: deep, foo: 'foo' } });
+test('Stamp props deep cloned for object created', (t) => {
+  const deep = { foo: 'foo', bar: 'bar' };
+  const stamp1 = stampit().props({ deep: deep, foo: 'foo' });
+  const stamp2 = stampit({ props: { deep: deep, foo: 'foo' } });
 
-  var o1 = stamp1();
-  var o2 = stamp1();
+  let o1 = stamp1();
+  let o2 = stamp1();
   o1.foo = 'another value';
   t.notEqual(o1.foo, o2.foo);
   o1.deep.foo = 'another value';
@@ -26,13 +25,13 @@ test('Stamp props deep cloned for object created', function (t) {
   t.end();
 });
 
-test('stamp(refs) deep merges props into refs', function (t) {
-  var deepInProps = { deepProp1: 'should not be merged', deepProp2: 'merge me!' };
-  var stamp1 = stampit().props({ deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' });
-  var stamp2 = stampit({ props: { deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' } });
+test('stamp(refs) deep merges props into refs', (t) => {
+  const deepInProps = { deepProp1: 'should not be merged', deepProp2: 'merge me!' };
+  const stamp1 = stampit().props({ deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' });
+  const stamp2 = stampit({ props: { deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' } });
 
-  var o1 = stamp1({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
-  var o2 = stamp2({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
+  const o1 = stamp1({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
+  const o2 = stamp2({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
 
   t.equal(o1.shallow1, 'leave me as is', 'A conflicting shallow reference must not be touched by props');
   t.equal(o1.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged from props');
@@ -46,11 +45,11 @@ test('stamp(refs) deep merges props into refs', function (t) {
   t.end();
 });
 
-test('stampit.props(props) deep merge into stamp', function (t) {
-  var stamp = stampit()
+test('stampit.props(props) deep merge into stamp', (t) => {
+  const stamp = stampit()
     .props({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
     .props({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
-  var o = stamp();
+  const o = stamp();
 
   t.equal(o.foo, 'override');
   t.equal(o.bar, 'bar');
@@ -62,10 +61,10 @@ test('stampit.props(props) deep merge into stamp', function (t) {
   t.end();
 });
 
-test('stamp.compose() deep merge props', function (t) {
-  var stamp = stampit({ props: { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' } })
+test('stamp.compose() deep merge props', (t) => {
+  const stamp = stampit({ props: { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' } })
     .compose(stampit({ props: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
-  var o = stamp();
+  const o = stamp();
 
   t.equal(o.foo, 'override');
   t.equal(o.bar, 'bar');

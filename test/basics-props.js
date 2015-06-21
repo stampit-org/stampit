@@ -1,11 +1,10 @@
-'use strict';
-var stampit = require('../src/stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics Props
 
-test('stampit({ props })', function (t) {
-  var obj = stampit({ props: { foo: { bar: 'bar' } } }).create();
+test('stampit({ props })', (t) => {
+  const obj = stampit({ props: { foo: { bar: 'bar' } } }).create();
 
   t.equal(obj.foo.bar, 'bar',
     'Should set default props.');
@@ -13,15 +12,15 @@ test('stampit({ props })', function (t) {
   t.end();
 });
 
-test('stampit().props()', function (t) {
-  var obj = stampit().props({
+test('stampit().props()', (t) => {
+  const obj = stampit().props({
     foo: { bar: 'bar' },
     propsOverride: false,
-    func1: function(){}
+    func1() {}
   }).props({
     bar: 'bar',
     propsOverride: true,
-    func2: function(){}
+    func2() {}
   }).create();
 
   t.equal(obj.foo.bar, 'bar',
@@ -38,15 +37,15 @@ test('stampit().props()', function (t) {
   t.end();
 });
 
-test('stampit({ props }).props()', function (t) {
-  var obj = stampit({ props: {
+test('stampit({ props }).props()', (t) => {
+  const obj = stampit({ props: {
     foo: { bar: 'bar' },
     propsOverride: false,
-    func1: function(){}
+    func1() {}
   }}).props({
     bar: 'bar',
     propsOverride: true,
-    func2: function(){}
+    func2() {}
   }).create();
 
   t.equal(obj.foo.bar, 'bar',
@@ -63,8 +62,8 @@ test('stampit({ props }).props()', function (t) {
   t.end();
 });
 
-test('stampit().props(a, b)', function (t) {
-  var obj = stampit().props({
+test('stampit().props(a, b)', (t) => {
+  const obj = stampit().props({
     a: 'a'
   }, {
     b: 'b'
