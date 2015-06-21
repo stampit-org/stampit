@@ -31,12 +31,16 @@
     "babel-eslint": "^3.1.17",
     "browserify": "^10.2.1",
     "eslint": "^0.23.0",
+    "isparta": "^3.0.3",
     "require-all": "^1.1.0",
     "rimraf": "^2.3.4",
     "tape": "^4.0.0",
     "uglifyjs": "^2.4.10"
   },
   "scripts": {
+    "cov": "npm run cov:clean && npm run cov:generate",
+    "cov:clean": "rimraf ./coverage/",
+    "cov:generate": "babel-node node_modules/.bin/isparta cover --report text --report html test/index.js",
     "prepublish": "npm run build && npm test",
     "test": "npm run lint && babel-node test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
