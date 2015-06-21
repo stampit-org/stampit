@@ -221,7 +221,7 @@ function convertConstructor(Constructor) {
   stamp.fixed.refs = stamp.fixed.state = mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
 
   mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
-  addInit(stamp.fixed, opts => Constructor.apply(opts.instance, opts.args));
+  addInit(stamp.fixed, ({ instance, args }) => Constructor.apply(instance, args));
 
   return stamp;
 }

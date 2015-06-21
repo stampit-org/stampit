@@ -7,25 +7,25 @@ import isArray from 'lodash/lang/isArray';
 test('stamp.init() arguments are passed', (t) => {
   let initStamp = undefined;
   const outerStamp = stampit().init(({ instance, stamp, args }) => {
-    t.ok(instance, 'opts.instance should exist');
-    t.equal(typeof instance, 'object', 'opts.instance should be object');
-    t.ok(stamp, 'opts.stamp should exist');
-    t.equal(typeof stamp, 'function', 'opts.stamp should be function');
-    t.ok(args, 'opts.args should exist');
-    t.ok(isArray(args), 'opts.args should be array');
+    t.ok(instance, '{ instance } should exist');
+    t.equal(typeof instance, 'object', '{ instance } should be object');
+    t.ok(stamp, '{ stamp } should exist');
+    t.equal(typeof stamp, 'function', '{ stamp } should be function');
+    t.ok(args, '{ args } should exist');
+    t.ok(isArray(args), '{ args } should be array');
     initStamp = stamp;
   });
 
   outerStamp();
 
-  t.strictEqual(outerStamp, initStamp, 'opts.stamp === stamp returned');
+  t.strictEqual(outerStamp, initStamp, '{ stamp } === stamp returned');
 
   t.end();
 });
 
-test('stamp.init() should assign `this` to `opts.instance`', (t) => {
+test('stamp.init() should assign `this` to `{ instance }`', (t) => {
   const stamp = stampit().init(function({ instance }) {
-    t.ok(instance === this, 'opts.instance should equal `this`');
+    t.ok(instance === this, '{ instance } should equal `this`');
   });
 
   stamp();
@@ -33,9 +33,9 @@ test('stamp.init() should assign `this` to `opts.instance`', (t) => {
   t.end();
 });
 
-test('stamp.init() should assign stamp to `opts.stamp`', (t) => {
+test('stamp.init() should assign stamp to `{ stamp }`', (t) => {
   const outerStamp = stampit().init(({ stamp }) => {
-    t.ok(outerStamp === stamp, 'opts.stamp should equal stamp');
+    t.ok(outerStamp === stamp, '{ stamp } should equal stamp');
   });
 
   outerStamp();
@@ -43,11 +43,11 @@ test('stamp.init() should assign stamp to `opts.stamp`', (t) => {
   t.end();
 });
 
-test('stamp.init() should assign arguments to `opts.args`', (t) => {
+test('stamp.init() should assign arguments to `{ args }`', (t) => {
   const stamp = stampit().init(({ args }) => {
-    t.equal(args[0], 'arg1', 'opts.args should equal arguments');
-    t.equal(args[1], undefined, 'opts.args should equal arguments');
-    t.equal(args[2], 'arg3', 'opts.args should equal arguments');
+    t.equal(args[0], 'arg1', '{ args } should equal arguments');
+    t.equal(args[1], undefined, '{ args } should equal arguments');
+    t.equal(args[2], 'arg3', '{ args } should equal arguments');
   });
 
   stamp({}, 'arg1', undefined, 'arg3');
