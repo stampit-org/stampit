@@ -4,7 +4,7 @@ var stampit = require('../stampit');
 
 
 const User = stampit.methods({
-  authorize: function () {
+  authorize() {
     // dummy implementation. Don't bother. :)
     return this.authorized = (this.user.name === 'john' && this.user.password === '123');
   }

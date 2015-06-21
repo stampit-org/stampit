@@ -6,7 +6,7 @@ This is a set of handy **composable** stamps, as well as few tips and tricks.
 
 - [Self aware objects - `instance.getStamp()`. 2 ways.](#self-aware-objects---instancegetstamp-2-ways)
   - [Attach function to object](#attach-function-to-object)
-  - [Attach function to prototype (memeory efficient)](#attach-function-to-prototype-memeory-efficient)
+  - [Attach function to prototype (memory efficient)](#attach-function-to-prototype-memory-efficient)
 - [Self cloneable objects - `instance.clone()`. 3 ways.](#self-cloneable-objects---instanceclone-3-ways)
   - [Attach method to each object instance](#attach-method-to-each-object-instance)
   - [Bind method to each object instance](#bind-method-to-each-object-instance)
@@ -57,18 +57,18 @@ assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
 ```
 So, now every object instance returns the exact stamp it was built with. Nice!
 
-### Attach function to prototype (memeory efficient)
+### Attach function to prototype (memory efficient)
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
 ```js
 const SelfAware2 = stampit.init(({ instance, stamp }) => {
-  if (instance.getStamp) {
+  if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.getStamp = () => stamp;
   }
 });
 ```
-The `ctx.stamp.fixed` property contains stamp's internal data.
-The `fixed.methods` object is used as all object instances' `.prototype`.
+The `stamp.fixed` property contains stamp's internal data.
+The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
 
 Compose this new stamp with our `User` from above:
 ```js
@@ -92,10 +92,10 @@ $ cd stampit && npm i babel -g
 $ babel-node advanced-examples/cloneable.js
 ```
 
-This is simple stamp with a single method and a single state property `prefix`.
+This is a simple stamp with a single method and a single state property `prefix`.
 ```js
 const PrependLogger = stampit.methods({
-  log: function (obj) {
+  log(obj) {
     console.log(this.prefix, obj);
   }
 }).refs({
@@ -173,13 +173,13 @@ Let's reimplement the `Cloneable` stamp so that the `clone()` function is not at
 to every object but to the prototype. This will save us a little bit of memory per object.
 ```js
 const Cloneable3 = stampit.init(({ instance, stamp }) => {
-  if (!stamp.clone) { // check if prototype is already has the clone() method
+  if (!stamp.fixed.methods.clone) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.clone = function () { return stamp(this); };
   }
 });
 ```
-The `ctx.stamp.fixed` property contains stamp's internal data.
-The `fixed.methods` object is used as all object instances' `.prototype`.
+The `stamp.fixed` property contains stamp's internal data.
+The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
 Compose this new stamp with our `PrependLogger` from above:
 ```js
 const CloneablePrependLogger3 = PrependLogger.compose(Cloneable3);
@@ -223,7 +223,7 @@ The following stamp should be composed *last*, otherwise it won't work.
 const AsyncInitializable = stampit.refs({
   db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
 }).methods({
-  getEntity: function(id) { // Gets id and return Promise which resolves into DB entity.
+  getEntity(id) { // Gets id and return Promise which resolves into DB entity.
     return Promise.resolve(this.db[this.entityName].getById(id));
   }
 }).init(function () {
@@ -282,7 +282,7 @@ For example you can prevalidate an object instance before a function call.
 First, let's assume you have this stamp:
 ```js
 const User = stampit.methods({
-  authorize: function () {
+  authorize() {
     // dummy implementation. Don't bother. :)
     return this.authorized = (this.user.name === 'john' && this.user.password === '123');
   }
@@ -376,8 +376,6 @@ user.on('name', console.log); // Does not throw exceptions, e.g. "'user' has no 
 user.emit('name', user.name); // correctly handled by the object.
 ```
 Will print `{ first: "John", last: "Doe" }`.
-
-As of stampit v2 the `convertConstructor` has limitations. It can't handle constructors with arguments. 
 
 ------------------------------
 

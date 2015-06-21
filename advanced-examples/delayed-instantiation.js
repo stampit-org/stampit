@@ -5,7 +5,7 @@ const User = stampit.refs({ entityName: 'user' });
 const AsyncInitializable = stampit.refs({
   db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
 }).methods({
-  getEntity: function(id) { // Gets id and return Promise which resolves into DB entity.
+  getEntity(id) { // Gets id and return Promise which resolves into DB entity.
     return Promise.resolve(this.db[this.entityName].getById(id));
   }
 }).init(function () {

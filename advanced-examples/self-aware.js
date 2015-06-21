@@ -15,7 +15,7 @@ console.log('No worries');
 // -----
 
 const SelfAware2 = stampit.init(({ instance, stamp }) => {
-  if (instance.getStamp) {
+  if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.getStamp = () => stamp;
   }
 });

@@ -1,7 +1,7 @@
 const stampit = require('../stampit');
 
 const PrependLogger = stampit.methods({
-  log: function (obj) {
+  log(obj) {
     console.log(this.prefix, obj);
   }
 }).state({
@@ -38,7 +38,7 @@ loggerClone2.log('hello'); // OUT: hello
 // -----
 
 const Cloneable3 = stampit.init(({ instance, stamp }) => {
-  if (!stamp.clone) { // check if prototype is already has the clone() method
+  if (!stamp.fixed.methods.clone) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.clone = function () { return stamp(this); };
   }
 });
