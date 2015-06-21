@@ -9,7 +9,7 @@
   "main": "./dist/stampit.js",
   "keywords": [
     "object",
-    "prototypy",
+    "prototype",
     "object oriented",
     "browser",
     "inheritance",
