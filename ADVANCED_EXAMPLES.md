@@ -42,18 +42,18 @@ const User = stampit();
 ### Attach function to object
 Just compose the following stamp to any other stamp.
 ```js
-const SelfAware1 = stampit.init(({ instance, stamp }) => {
+const SelfAware = stampit.init(({ instance, stamp }) => {
   instance.getStamp = () => stamp;
 });
 ```
 Let's compose it with the `User` stamp from above:
 ```js
-const SelfAwareUser1 = User.compose(SelfAware1);
+const SelfAwareUser = User.compose(SelfAware);
 ```
 Now, let's create a user and call the `.getStamp()`:
 ```js
-const user1 = SelfAwareUser1();
-assert.strictEqual(user1.getStamp(), SelfAwareUser1); // All good
+const user = SelfAwareUser();
+assert.strictEqual(user.getStamp(), SelfAwareUser); // All good
 ```
 So, now every object instance returns the exact stamp it was built with. Nice!
 
@@ -61,7 +61,7 @@ So, now every object instance returns the exact stamp it was built with. Nice!
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
 ```js
-const SelfAware2 = stampit.init(({ instance, stamp }) => {
+const SelfAware = stampit.init(({ instance, stamp }) => {
   if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.getStamp = () => stamp;
   }
@@ -72,12 +72,12 @@ The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
 
 Compose this new stamp with our `User` from above:
 ```js
-const SelfAwareUser2 = User.compose(SelfAware2);
+const SelfAwareUser = User.compose(SelfAware);
 ```
 Let's test it:
 ```js
-const user2 = SelfAwareUser2();
-assert.strictEqual(user2.getStamp(), SelfAwareUser2); // All good
+const user = SelfAwareUser();
+assert.strictEqual(user.getStamp(), SelfAwareUser); // All good
 ```
 And again, every new object instance knows which stamp it was made of. Brilliant!
 
@@ -113,7 +113,7 @@ Prints `STDOUT: hello`
 
 Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
-const Cloneable1 = stampit.init(({ instance, stamp }) => {
+const Cloneable = stampit.init(({ instance, stamp }) => {
   instance.clone = () => stamp(instance);
 });
 ```
@@ -122,14 +122,14 @@ when calling the factory - `stamp(instance)`.
 
 Compose it with our `PrependLogger` from above:
 ```js
-const CloneablePrependLogger1 = PrependLogger.compose(Cloneable1);
+const CloneablePrependlogger = PrependLogger.compose(Cloneable);
 ```
 Let's create an instance, then clone it, and see the result:
 ```js
-const logger1 = CloneablePrependLogger1({ prefix: 'OUT: ' }); // creating first object
-const loggerClone1 = logger1.clone(); // cloning the object.
-logger1.log('hello'); // OUT: hello
-loggerClone1.log('hello'); // OUT: hello
+const logger = CloneablePrependlogger({ prefix: 'OUT: ' }); // creating first object
+const loggerClone = logger.clone(); // cloning the object.
+logger.log('hello'); // OUT: hello
+loggerClone.log('hello'); // OUT: hello
 ```
 Prints
 ```
@@ -142,7 +142,7 @@ The `logger` and `loggerClone` work exactly the same. Woah!
 
 This is how you can implement self cloning different: 
 ```js
-const Cloneable2 = stampit.init(({ instance, stamp }) => {
+const Cloneable = stampit.init(({ instance, stamp }) => {
   instance.clone = stamp.bind(null, instance);
 });
 ```
@@ -151,14 +151,14 @@ All the properties of the object instance will be copied by reference to the new
 
 Composing it with our `PrependLogger` from above:
 ```js
-const CloneablePrependLogger2 = PrependLogger.compose(Cloneable2);
+const CloneablePrependlogger = PrependLogger.compose(Cloneable);
 ```
 Create an instance, then clone it, and see the result:
 ```js
-const logger2 = CloneablePrependLogger2({ prefix: 'OUT: ' }); // creating first object
-const loggerClone2 = logger2.clone(); // cloning the object.
-logger2.log('hello'); // OUT: hello
-loggerClone2.log('hello'); // OUT: hello
+const logger = CloneablePrependlogger({ prefix: 'OUT: ' }); // creating first object
+const loggerClone = logger.clone(); // cloning the object.
+logger.log('hello'); // OUT: hello
+loggerClone.log('hello'); // OUT: hello
 ```
 Prints
 ```
@@ -172,7 +172,7 @@ Objects have the same state again. Awesome!
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
 to every object but to the prototype. This will save us a little bit of memory per object.
 ```js
-const Cloneable3 = stampit.init(({ instance, stamp }) => {
+const Cloneable = stampit.init(({ instance, stamp }) => {
   if (!stamp.fixed.methods.clone) { // Avoid adding the same method to the prototype twice.
     stamp.fixed.methods.clone = function () { return stamp(this); };
   }
@@ -182,14 +182,14 @@ The `stamp.fixed` property contains stamp's internal data.
 The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
 Compose this new stamp with our `PrependLogger` from above:
 ```js
-const CloneablePrependLogger3 = PrependLogger.compose(Cloneable3);
+const CloneablePrependlogger = PrependLogger.compose(Cloneable);
 ```
 Let's see how it works:
 ```js
-const logger3 = CloneablePrependLogger3({ prefix: 'OUT: ' });  // creating first object
-const loggerClone3 = logger3.clone(); // cloning the object.
-logger3.log('hello'); // OUT: hello
-loggerClone3.log('hello'); // OUT: hello
+const logger = CloneablePrependlogger({ prefix: 'OUT: ' });  // creating first object
+const loggerClone = logger.clone(); // cloning the object.
+logger.log('hello'); // OUT: hello
+loggerClone.log('hello'); // OUT: hello
 ```
 Prints
 ```
