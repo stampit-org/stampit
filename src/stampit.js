@@ -16,7 +16,8 @@ import {
   mergeChainNonFunctions,
   mergeUnique,
   mixin,
-  mixinChainFunctions
+  mixinChainFunctions,
+  mixinFunctions
 } from 'supermixer';
 
 const create = Object.create;
@@ -43,7 +44,7 @@ function extractFunctions(...args) {
 }
 
 function addMethods(fixed, ...methods) {
-  return mixin(fixed.methods, ...methods);
+  return mixinFunctions(fixed.methods, ...methods);
 }
 function addRefs(fixed, ...refs) {
   fixed.refs = fixed.state = mixin(fixed.refs || fixed.state, ...refs);
