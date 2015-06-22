@@ -18,7 +18,6 @@ This is a set of handy **composable** stamps, as well as few tips and tricks.
 - [Mocking in the unit tests](#mocking-in-the-unit-tests)
 - [Hacking stamps](#hacking-stamps)
   - [Enforced default properties](#enforced-default-properties)
-  - [Enforced default properties as a composable behavior](#enforced-default-properties-as-a-composable-behavior)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
