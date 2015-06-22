@@ -239,7 +239,7 @@ Create object (ES6):
 ```js
 const userEntity = AsyncInitializableUser({ id: '42' }).then(console.log);
 ```
-A random stamp received the behaviour which creates objects asynchronously. OMG!
+A random stamp received the behavior which creates objects asynchronously. OMG!
 
 ------------------------------
 
@@ -248,7 +248,7 @@ A random stamp received the behaviour which creates objects asynchronously. OMG!
 Using the [node-dm](https://www.npmjs.com/package/node-dm) dependency management module you can
 receive preconfigured objects if you pass a stamp to it. It's possible because stamps are functions.
 
-Self printing behaviour. An object will log itself after being created.
+Self printing behavior. An object will log itself after being created.
 ```js
 const PrintSelf = stampit.init(({ instance }) => {
   console.log(instance);
@@ -455,8 +455,7 @@ const Commodity = stampit.methods({
     return this.find({category: fields.categories, price: {gte: fields.price.from, lte: fields.price.to}})
       .then(this.convert.bind(this));
   }
-})
-  .compose(Converter, DbToApiCommodityConverter, MongoDb); // Adding the missing behavior
+}).compose(Converter, DbToApiCommodityConverter, MongoDb); // Adding the missing behavior
 ```
 
 The usage is quite straightforward.
