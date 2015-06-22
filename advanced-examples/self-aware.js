@@ -1,5 +1,5 @@
 const assert = require('assert');
-const stampit = require('../stampit');
+const stampit = require('../src/stampit');
 const User = stampit();
 
 

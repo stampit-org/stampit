@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var joi = require('joi'); // object validation module
-var stampit = require('../stampit');
+var stampit = require('../src/stampit');
 
 
 const User = stampit.methods({

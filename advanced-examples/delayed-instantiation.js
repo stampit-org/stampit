@@ -1,4 +1,4 @@
-const stampit = require('../stampit');
+const stampit = require('../src/stampit');
 
 const User = stampit.refs({ entityName: 'user' });
 

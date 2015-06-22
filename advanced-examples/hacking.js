@@ -1,4 +1,4 @@
-const stampit = require('../stampit');
+const stampit = require('../src/stampit');
 
 
 const Stamp = stampit();
