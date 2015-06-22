@@ -1,13 +1,12 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics static
 
-test('stampit().static()', function (t) {
-  var stamp1 = stampit()
+test('stampit().static()', (t) => {
+  const stamp1 = stampit()
     .static({
-      foo: function () {
+      foo() {
         return 42;
       },
       bar: 'space'
@@ -20,8 +19,8 @@ test('stampit().static()', function (t) {
   t.end();
 });
 
-test('stampit({static})', function (t) {
-  var stamp1 = stampit({
+test('stampit({static})', (t) => {
+  const stamp1 = stampit({
     static: {
       foo: 42
     }
@@ -32,17 +31,17 @@ test('stampit({static})', function (t) {
   t.end();
 });
 
-test('stampit().static() last override', function (t) {
-  var stamp1 = stampit()
+test('stampit().static() last override', (t) => {
+  const stamp1 = stampit()
     .static({
-      foo: function () {
+      foo() {
         return 'override';
       }
     });
 
-  var stamp2 = stampit()
+  const stamp2 = stampit()
     .static({
-      foo: function () {}
+      foo() {}
     }).compose(stamp1);
 
   t.equal(stamp2.foo(), 'override', 'Should override props during composition.');
@@ -50,13 +49,13 @@ test('stampit().static() last override', function (t) {
   t.end();
 });
 
-test('stampit().static(arg1, arg2)', function (t) {
-  var stamp1 = stampit().static(
+test('stampit().static(arg1, arg2)', (t) => {
+  const stamp1 = stampit().static(
     {
-      foo1: function () {}
+      foo1() {}
     },
     {
-      foo2: function () {}
+      foo2() {}
     }
   );
 
@@ -66,13 +65,13 @@ test('stampit().static(arg1, arg2)', function (t) {
   t.end();
 });
 
-test('stampit.static(arg1, arg2)', function (t) {
-  var stamp1 = stampit.static(
+test('stampit.static(arg1, arg2)', (t) => {
+  const stamp1 = stampit.static(
     {
-      foo1: function () {}
+      foo1() {}
     },
     {
-      foo2: function () {}
+      foo2() {}
     }
   );
 
@@ -82,14 +81,14 @@ test('stampit.static(arg1, arg2)', function (t) {
   t.end();
 });
 
-test('stampit({static}).static()', function (t) {
-  var stamp1 = stampit({
+test('stampit({static}).static()', (t) => {
+  const stamp1 = stampit({
     static: {
       foo1: 'foo1 value'
     }
   })
     .static({
-      foo2: function () {
+      foo2() {
         return 'foo2 value';
       }
     });

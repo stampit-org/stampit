@@ -1,12 +1,11 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics Methods
 
-test('stampit({ methods })', function (t) {
-  var obj = stampit({ methods: {
-    foo: function () { return 'foo'; }
+test('stampit({ methods })', (t) => {
+  const obj = stampit({ methods: {
+    foo() { return 'foo'; }
   }}).create();
 
   t.ok(obj.foo() && !obj.hasOwnProperty('foo'),
@@ -15,14 +14,14 @@ test('stampit({ methods })', function (t) {
   t.end();
 });
 
-test('stampit().methods()', function (t) {
-  var obj = stampit().methods({
-    foo: function () { return 'foo'; },
-    methodOverride: function () { return false; },
+test('stampit().methods()', (t) => {
+  const obj = stampit().methods({
+    foo() { return 'foo'; },
+    methodOverride() { return false; },
     prop1: 1
   }).methods({
-    bar: function () { return 'bar'; },
-    methodOverride: function () { return true; },
+    bar() { return 'bar'; },
+    methodOverride() { return true; },
     prop2: 2
   }).create();
 
@@ -40,14 +39,14 @@ test('stampit().methods()', function (t) {
   t.end();
 });
 
-test('stampit({ methods }).methods()', function (t) {
-  var obj = stampit({ methods: {
-    foo: function () { return 'foo'; },
-    methodOverride: function () { return false; },
+test('stampit({ methods }).methods()', (t) => {
+  const obj = stampit({ methods: {
+    foo() { return 'foo'; },
+    methodOverride() { return false; },
     prop1: 1
   }}).methods({
-    bar: function () { return 'bar'; },
-    methodOverride: function () { return true; },
+    bar() { return 'bar'; },
+    methodOverride() { return true; },
     prop2: 2
   }).create();
 
@@ -65,11 +64,11 @@ test('stampit({ methods }).methods()', function (t) {
   t.end();
 });
 
-test('stampit().methods(a, b)', function (t) {
-  var obj = stampit().methods({
-    a: function () { return 'a'; }
+test('stampit().methods(a, b)', (t) => {
+  const obj = stampit().methods({
+    a() { return 'a'; }
   }, {
-    b: function () { return 'b'; }
+    b() { return 'b'; }
   }).create();
 
   t.ok(obj.a() === 'a' && obj.b() === 'b',

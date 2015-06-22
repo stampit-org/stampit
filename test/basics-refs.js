@@ -1,11 +1,10 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics refs
 
-test('stampit({ refs })', function (t) {
-  var obj = stampit({ refs: { foo: { bar: 'bar' } } }).create();
+test('stampit({ refs })', (t) => {
+  const obj = stampit({ refs: { foo: { bar: 'bar' } } }).create();
 
   t.equal(obj.foo.bar, 'bar',
     'Should set default refs.');
@@ -13,15 +12,15 @@ test('stampit({ refs })', function (t) {
   t.end();
 });
 
-test('stampit().refs()', function (t) {
-  var obj = stampit().refs({
+test('stampit().refs()', (t) => {
+  const obj = stampit().refs({
     foo: { bar: 'bar' },
     refsOverride: false,
-    func1: function(){}
+    func1() {}
   }).refs({
     bar: 'bar',
     refsOverride: true,
-    func2: function(){}
+    func2() {}
   }).create();
 
   t.equal(obj.foo.bar, 'bar',
@@ -38,15 +37,15 @@ test('stampit().refs()', function (t) {
   t.end();
 });
 
-test('stampit({ refs }).refs()', function (t) {
-  var obj = stampit({ refs: {
+test('stampit({ refs }).refs()', (t) => {
+  const obj = stampit({ refs: {
     foo: { bar: 'bar' },
     refsOverride: false,
-    func1: function(){}
+    func1() {}
   }}).refs({
     bar: 'bar',
     refsOverride: true,
-    func2: function(){}
+    func2() {}
   }).create();
 
   t.equal(obj.foo.bar, 'bar',
@@ -63,8 +62,8 @@ test('stampit({ refs }).refs()', function (t) {
   t.end();
 });
 
-test('stampit().refs(a, b)', function (t) {
-  var obj = stampit().refs({
+test('stampit().refs(a, b)', (t) => {
+  const obj = stampit().refs({
     a: 'a'
   }, {
     b: 'b'

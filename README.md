@@ -8,6 +8,9 @@ Stampit was written as an example for the book, ["Programming JavaScript Applica
 
 Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
+**React Users.** Stampit *loves* React. Check out [react-stampit](https://github.com/stampit-org/react-stampit) for composable components.
+
+
 ## Status
 
 **v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
@@ -21,13 +24,6 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful.
 See [advances examples](ADVANCED_EXAMPLES.md).
 
-
-## Contribute
-
-Press the hack button to open this project in the Nitrous.IO online IDE.
-[![Hack stampit-org/stampit on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-4b6757c3247e3c50314390ece34cdb11.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=stampit-org%2Fstampit&file_to_open=README.md)
-
-Pull requests are welcome anytime. 
 
 ## Install
 

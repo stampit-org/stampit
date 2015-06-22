@@ -1,19 +1,18 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // .state alias
 
-test('stampit().fixed.state is same as refs', function (t) {
-  var stamp = stampit({ refs: { s: 1 } });
+test('stampit().fixed.state is same as refs', (t) => {
+  const stamp = stampit({ refs: { s: 1 } });
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
 
   t.end();
 });
 
-test('stampit().state().fixed.state is same as refs().fixed.refs', function (t) {
-  var stamp = stampit({ refs: { s: 1 } }).state({ refs: { s2: 2 } });
+test('stampit().state().fixed.state is same as refs().fixed.refs', (t) => {
+  const stamp = stampit({ refs: { s: 1 } }).state({ refs: { s2: 2 } });
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
   t.equal(stamp.fixed.refs.s, stamp.fixed.state.s);
@@ -22,17 +21,17 @@ test('stampit().state().fixed.state is same as refs().fixed.refs', function (t) 
   t.end();
 });
 
-test('stampit.compose().fixed.state is same as refs', function (t) {
-  var stamp = stampit({ refs: { s: 1 } }).compose(stampit({ refs: { s2: 2 } }));
+test('stampit.compose().fixed.state is same as refs', (t) => {
+  const stamp = stampit({ refs: { s: 1 } }).compose(stampit({ refs: { s2: 2 } }));
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
 
   t.end();
 });
 
-test('stampit.convertConstructor().fixed.state is same as refs', function (t) {
-  function F(){}
-  var stamp = stampit.convertConstructor(F);
+test('stampit.convertConstructor().fixed.state is same as refs', (t) => {
+  function F() {}
+  const stamp = stampit.convertConstructor(F);
 
   t.equal(stamp.fixed.refs, stamp.fixed.state);
 

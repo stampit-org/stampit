@@ -1,12 +1,11 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics
 
-test('.create()', function (t) {
-  var stamp = stampit({ methods: {
-    foo: function () { return 'foo'; }
+test('.create()', (t) => {
+  const stamp = stampit({ methods: {
+    foo() { return 'foo'; }
   }});
 
   t.equal(stamp.create().foo(), 'foo',
@@ -15,9 +14,9 @@ test('.create()', function (t) {
   t.end();
 });
 
-test('.create(properties)', function (t) {
-  var obj = stampit({ refs: { foo: 'bar' } });
-  obj = obj.create({ foo: 'foo' });
+test('.create(properties)', (t) => {
+  let stamp = stampit({ refs: { foo: 'bar' } });
+  const obj = stamp.create({ foo: 'foo' });
 
   t.equal(obj.foo, 'foo',
     'should override defaults.');

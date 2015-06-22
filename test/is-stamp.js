@@ -1,16 +1,15 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // isStamp
 
-test('stampit.isStamp() with stamps', function (t) {
-  var emptyStamp = stampit();
-  var refsOnlyStamp = stampit().refs({ a: 'b' });
-  var methodsOnlyStamp = stampit({ methods: {
-    method: function () {}
+test('stampit.isStamp() with stamps', (t) => {
+  const emptyStamp = stampit();
+  const refsOnlyStamp = stampit().refs({ a: 'b' });
+  const methodsOnlyStamp = stampit({ methods: {
+    method() {}
   }});
-  var closureOnlyStamp = stampit().init(function () {});
+  const closureOnlyStamp = stampit().init(() => {});
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
   t.ok(stampit.isStamp(refsOnlyStamp), 'Refs only stamp should be seen as stamp.');
@@ -20,14 +19,14 @@ test('stampit.isStamp() with stamps', function (t) {
   t.end();
 });
 
-test('stampit.isStamp() with non stamps', function (t) {
-  var obj1;
-  var obj2 = { refs: {}, methods: {}, init: {}, fixed: {}, props: {} };
-  var obj3 = function () {
+test('stampit.isStamp() with non stamps', (t) => {
+  const obj1 = undefined;
+  const obj2 = { refs: {}, methods: {}, init: {}, fixed: {}, props: {} };
+  const obj3 = function() {
     this.init = this;
   };
-  var obj4 = function () {
-    this.fixed = function () { };
+  const obj4 = function() {
+    this.fixed = () => {};
   };
 
   t.ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),

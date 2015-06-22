@@ -1,13 +1,12 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape');
+import stampit from '../src/stampit';
+import test from 'tape';
 
 // Basics Enclose
 
-test('stampit({ init })', function (t) {
-  var obj = stampit({ init: function () {
-    var secret = 'foo';
-    this.getSecret = function () { return secret; };
+test('stampit({ init })', (t) => {
+  const obj = stampit({ init() {
+    const secret = 'foo';
+    this.getSecret = () => { return secret; };
   }}).create();
 
   t.equal(obj.getSecret(), 'foo',
@@ -16,16 +15,16 @@ test('stampit({ init })', function (t) {
   t.end();
 });
 
-test('stampit().init()', function (t) {
-  var obj = stampit().init(function () {
-    var secret = 'foo';
-    this.getSecret = function () { return secret; };
-  }).init(function () {
+test('stampit().init()', (t) => {
+  const obj = stampit().init(function() {
+    const secret = 'foo';
+    this.getSecret = () => { return secret; };
+  }).init(function() {
     this.a = 'a';
   }).init({
-    bar: function bar() { this.b = 'b'; }
+    bar() { this.b = 'b'; }
   }, {
-    baz: function baz() { this.c = 'c'; }
+    baz() { this.c = 'c'; }
   }).create();
 
   t.equal(obj.getSecret(), 'foo',
@@ -36,16 +35,16 @@ test('stampit().init()', function (t) {
   t.end();
 });
 
-test('stampit({ init }).init()', function (t) {
-  var obj = stampit({ init: function () {
-    var secret = 'foo';
-    this.getSecret = function () { return secret; };
-  }}).init(function () {
+test('stampit({ init }).init()', (t) => {
+  const obj = stampit({ init() {
+    const secret = 'foo';
+    this.getSecret = () => { return secret; };
+  }}).init(function() {
     this.a = 'a';
   }).init({
-    bar: function bar() { this.b = 'b'; }
+    bar() { this.b = 'b'; }
   }, {
-    baz: function baz() { this.c = 'c'; }
+    baz() { this.c = 'c'; }
   }).create();
 
   t.equal(obj.getSecret(), 'foo',

@@ -1,45 +1,31 @@
-'use strict';
-var stampit = require('../stampit'),
-  test = require('tape'),
-  isArray = require('lodash/lang/isArray');
+import stampit from '../src/stampit';
+import test from 'tape';
+import isArray from 'lodash/lang/isArray';
 
 // Closure arguments
 
-test('stamp.init() arguments are passed', function (t) {
-
-  var initStamp;
-  var stamp = stampit().init(function (opts) {
-    t.ok(opts, 'opts should be passed to init()');
-    t.ok(opts.instance, 'opts.instance should exist');
-    t.equal(typeof opts.instance, 'object', 'opts.instance should be object');
-    t.strictEqual(opts.instance, this, 'opts.instance === this');
-    t.ok(opts.stamp, 'opts.stamp should exist');
-    t.equal(typeof opts.stamp, 'function', 'opts.stamp should be function');
-    t.ok(opts.args, 'opts.args should exist');
-    t.ok(isArray(opts.args), 'opts.args should be array');
-    initStamp = opts.stamp;
+test('stamp.init() arguments are passed', (t) => {
+  let initStamp = undefined;
+  const outerStamp = stampit().init(({ instance, stamp, args }) => {
+    t.ok(instance, '{ instance } should exist');
+    t.equal(typeof instance, 'object', '{ instance } should be object');
+    t.ok(stamp, '{ stamp } should exist');
+    t.equal(typeof stamp, 'function', '{ stamp } should be function');
+    t.ok(args, '{ args } should exist');
+    t.ok(isArray(args), '{ args } should be array');
+    initStamp = stamp;
   });
 
-  stamp();
+  outerStamp();
 
-  t.strictEqual(stamp, initStamp, 'opts.stamp === stamp returned');
+  t.strictEqual(outerStamp, initStamp, '{ stamp } === stamp returned');
 
   t.end();
 });
 
-test('stamp.init() should assign `this` to `opts.instance`', function (t) {
-  var stamp = stampit().init(function (opts) {
-    t.ok(opts.instance === this, 'opts.instance should equal `this`');
-  });
-
-  stamp();
-
-  t.end();
-});
-
-test('stamp.init() should assign stamp to `opts.stamp`', function (t) {
-  var stamp = stampit().init(function (opts) {
-    t.ok(opts.stamp === stamp, 'opts.stamp should equal stamp');
+test('stamp.init() should assign `this` to `{ instance }`', (t) => {
+  const stamp = stampit().init(function({ instance }) {
+    t.ok(instance === this, '{ instance } should equal `this`');
   });
 
   stamp();
@@ -47,11 +33,21 @@ test('stamp.init() should assign stamp to `opts.stamp`', function (t) {
   t.end();
 });
 
-test('stamp.init() should assign arguments to `opts.args`', function (t) {
-  var stamp = stampit().init(function (opts) {
-    t.equal(opts.args[0], 'arg1', 'opts.args should equal arguments');
-    t.equal(opts.args[1], undefined, 'opts.args should equal arguments');
-    t.equal(opts.args[2], 'arg3', 'opts.args should equal arguments');
+test('stamp.init() should assign stamp to `{ stamp }`', (t) => {
+  const outerStamp = stampit().init(({ stamp }) => {
+    t.ok(outerStamp === stamp, '{ stamp } should equal stamp');
+  });
+
+  outerStamp();
+
+  t.end();
+});
+
+test('stamp.init() should assign arguments to `{ args }`', (t) => {
+  const stamp = stampit().init(({ args }) => {
+    t.equal(args[0], 'arg1', '{ args } should equal arguments');
+    t.equal(args[1], undefined, '{ args } should equal arguments');
+    t.equal(args[2], 'arg3', '{ args } should equal arguments');
   });
 
   stamp({}, 'arg1', undefined, 'arg3');
@@ -59,109 +55,105 @@ test('stamp.init() should assign arguments to `opts.args`', function (t) {
   t.end();
 });
 
-test('stamp.init() can handle multiple init functions', function (t) {
+test('stamp.init() can handle multiple init functions', (t) => {
+  let init1 = undefined;
+  let init2 = undefined;
+  let init3 = undefined;
 
-    var init1;
-    var init2;
-    var init3;
-
-    var stamp = stampit()
-        .init(function () {
-            init1 = true;
-        }).init(function () {
-            init2 = true;
-        }).init(function () {
-            init3 = true;
-        });
-
-    stamp();
-
-    t.ok(init1, 'init 1 fired');
-    t.ok(init2, 'init 2 fired');
-    t.ok(init3, 'init 3 fired');
-
-  t.end();
-});
-
-test('stamp.init() can handle multiple init functions assigned with array', function (t) {
-
-    var init1;
-    var init2;
-    var init3;
-
-    var stamp = stampit().init([
-        function () {
-            init1 = true;
-        },
-        function () {
-            init2 = true;
-        },
-        function () {
-            init3 = true;
-        }
-    ]);
-
-    stamp();
-
-    t.ok(init1, 'init 1 fired');
-    t.ok(init2, 'init 2 fired');
-    t.ok(init3, 'init 3 fired');
-
-  t.end();
-});
-
-test('stamp.init() can handle multiple init functions assigned with object', function (t) {
-
-    var init1;
-    var init2;
-    var init3;
-
-    var stamp = stampit().init({
-        foo: function () {
-            init1 = true;
-        },
-        bar: function () {
-            init2 = true;
-        },
-        bam: function () {
-            init3 = true;
-        }
+  const stamp = stampit()
+    .init(() => {
+      init1 = true;
+    }).init(() => {
+      init2 = true;
+    }).init(() => {
+      init3 = true;
     });
 
-    stamp();
+  stamp();
 
-    t.ok(init1, 'init 1 fired');
-    t.ok(init2, 'init 2 fired');
-    t.ok(init3, 'init 3 fired');
+  t.ok(init1, 'init 1 fired');
+  t.ok(init2, 'init 2 fired');
+  t.ok(init3, 'init 3 fired');
 
   t.end();
 });
 
-test('stamp.init() should call composed init functions in order', function (t) {
+test('stamp.init() can handle multiple init functions assigned with array', (t) => {
+  let init1 = undefined;
+  let init2 = undefined;
+  let init3 = undefined;
 
-    var result = [];
+  const stamp = stampit().init([
+    () => {
+      init1 = true;
+    },
+    () => {
+      init2 = true;
+    },
+    () => {
+      init3 = true;
+    }
+  ]);
 
-    var stamp = stampit().init(function () {
-        result.push('a');
-    }).init(function () {
-        result.push('b');
-    }).init(function () {
-        result.push('c');
-    });
+  stamp();
 
-    var stamp2 = stampit().init([
-        function(){
-            result.push('d');
-        },
-        function(){
-            result.push('e');
-        }
-    ]);
+  t.ok(init1, 'init 1 fired');
+  t.ok(init2, 'init 2 fired');
+  t.ok(init3, 'init 3 fired');
 
-    var stamp3 = stampit.compose(stamp, stamp2);
+  t.end();
+});
 
-    stamp3();
-    t.deepEqual(result, ['a', 'b', 'c', 'd', 'e'], 'init called in order');
+test('stamp.init() can handle multiple init functions assigned with object', (t) => {
+  let init1 = undefined;
+  let init2 = undefined;
+  let init3 = undefined;
+
+  const stamp = stampit().init({
+    foo() {
+      init1 = true;
+    },
+    bar() {
+      init2 = true;
+    },
+    bam() {
+      init3 = true;
+    }
+  });
+
+  stamp();
+
+  t.ok(init1, 'init 1 fired');
+  t.ok(init2, 'init 2 fired');
+  t.ok(init3, 'init 3 fired');
+
+  t.end();
+});
+
+test('stamp.init() should call composed init functions in order', (t) => {
+  const result = [];
+
+  const stamp = stampit().init(() => {
+    result.push('a');
+  }).init(() => {
+    result.push('b');
+  }).init(() => {
+    result.push('c');
+  });
+
+  const stamp2 = stampit().init([
+    () => {
+      result.push('d');
+    },
+    () => {
+      result.push('e');
+    }
+  ]);
+
+  const stamp3 = stampit.compose(stamp, stamp2);
+
+  stamp3();
+  t.deepEqual(result, ['a', 'b', 'c', 'd', 'e'], 'init called in order');
 
   t.end();
 });
