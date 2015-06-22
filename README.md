@@ -21,7 +21,8 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now receives the following object `{ instance, stamp, args }`.
 
-There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful. See [advances examples](https://github.com/stampit-org/stampit/blob/master/ADVANCED_EXAMPLES.md).
+There is a slight chance these changes affect your current codebase. If so, we would recommend you to update to v2 because it is more powerful.
+See [advances examples](ADVANCED_EXAMPLES.md).
 
 
 ## Install

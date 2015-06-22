@@ -17,7 +17,7 @@ import {
   mergeUnique,
   mixin,
   mixinChainFunctions,
-  mixinFunctions,
+  mixinFunctions
 } from 'supermixer';
 
 const create = Object.create;
