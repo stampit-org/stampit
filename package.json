@@ -48,5 +48,15 @@
     "lint": "eslint src && eslint test",
     "build": "npm run clean && babel src --out-dir dist && npm run uglify"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "npmName": "stampit",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "stampit.js",
+        "stampit.min.js"
+      ]
+    }
+  ]
 }
