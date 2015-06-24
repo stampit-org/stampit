@@ -21,6 +21,9 @@ import {
 } from 'supermixer';
 
 const create = Object.create;
+function isThenable(value) {
+  return value && isFunction(value.then);
+}
 
 function extractFunctions(...args) {
   if (isFunction(args[0])) {
@@ -120,15 +123,37 @@ const stampit = function stampit(options) {
     let instance = mixin(create(fixed.methods), fixed.refs, refs);
     mergeUnique(instance, fixed.props); // props are safely merged into refs
 
+    let nextPromise = null;
     if (fixed.init.length > 0) {
       forEach(fixed.init, fn => {
         if (isFunction(fn)) {
-          instance = fn.call(instance, { args, instance, stamp: factory }) || instance;
+          if (nextPromise) {
+            nextPromise = nextPromise.then(function() {
+              const callResult = fn.call(instance, { args, instance, stamp: factory });
+              if (callResult) {
+                if (isThenable(callResult)) {
+                  return callResult; // This is becoming our next Promise
+                }
+
+                instance = callResult;
+                return instance;
+              }
+            });
+          } else {
+            const callResult = fn.call(instance, { args, instance, stamp: factory });
+            if (callResult) {
+              if (isThenable(callResult)) {
+                nextPromise = callResult;
+              } else {
+                instance = callResult;
+              }
+            }
+          }
         }
       });
     }
 
-    return instance;
+    return nextPromise ? nextPromise.then(() => instance) : instance;
   };
 
   const refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
