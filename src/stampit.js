@@ -128,24 +128,28 @@ const stampit = function stampit(options) {
       forEach(fixed.init, fn => {
         if (isFunction(fn)) {
           if (nextPromise) {
-            nextPromise = nextPromise.then(function() {
+            // As long as one of the init() functions returned a promise, now our stamp will 100% return promise too.
+            nextPromise = nextPromise.then((newInstance) => {
+              instance = newInstance || instance; // previous promise result.
               const callResult = fn.call(instance, { args, instance, stamp: factory });
               if (callResult) {
                 if (isThenable(callResult)) {
-                  return callResult; // This is becoming our next Promise
+                  return callResult; // The init() returned another promise. It is becoming our nextPromise.
                 }
 
                 instance = callResult;
-                return instance;
               }
+
+              return instance; // Resolve when the initialization chain ends.
             });
           } else {
             const callResult = fn.call(instance, { args, instance, stamp: factory });
             if (callResult) {
               if (isThenable(callResult)) {
+                // this is the sync->async conversion point. Since now our stamp will return a promise, not an object.
                 nextPromise = callResult;
               } else {
-                instance = callResult;
+                instance = callResult; // stamp is synchronous so far.
               }
             }
           }
@@ -153,7 +157,7 @@ const stampit = function stampit(options) {
       });
     }
 
-    return nextPromise ? nextPromise.then(() => instance) : instance;
+    return nextPromise ? nextPromise.then((newInstance) => newInstance || instance) : instance;
   };
 
   const refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
