@@ -126,37 +126,53 @@ const stampit = function stampit(options) {
     let nextPromise = null;
     if (fixed.init.length > 0) {
       forEach(fixed.init, fn => {
-        if (isFunction(fn)) {
-          if (nextPromise) {
-            // As long as one of the init() functions returned a promise, now our stamp will 100% return promise too.
-            nextPromise = nextPromise.then((newInstance) => {
-              instance = newInstance || instance; // previous promise result.
-              const callResult = fn.call(instance, { args, instance, stamp: factory });
-              if (callResult) {
-                if (isThenable(callResult)) {
-                  return callResult; // The init() returned another promise. It is becoming our nextPromise.
-                }
+        if (!isFunction(fn)) {
+          return; // not a function, do nothing.
+        }
 
-                instance = callResult;
-              }
-
-              return instance; // Resolve when the initialization chain ends.
-            });
-          } else {
-            const callResult = fn.call(instance, { args, instance, stamp: factory });
-            if (callResult) {
-              if (isThenable(callResult)) {
-                // this is the sync->async conversion point. Since now our stamp will return a promise, not an object.
-                nextPromise = callResult;
-              } else {
-                instance = callResult; // stamp is synchronous so far.
-              }
-            }
+        // Check if we are in the async mode.
+        if (!nextPromise) {
+          // Call the init().
+          const callResult = fn.call(instance, {args, instance, stamp: factory});
+          if (callResult) {
+            return; // nothing got returned. Proceed.
           }
+
+          // Returned value is meaningful. It will replace the stampit-created object.
+          if (!isThenable(callResult)) {
+            instance = callResult; // stamp is synchronous so far.
+          } else {
+            // This is the sync->async conversion point. Since now our factory will return a promise, not an object.
+            nextPromise = callResult;
+          }
+        } else {
+          // As long as one of the init() functions returned a promise, now our factory will 100% return promise too.
+          // Linking the init() functions into the promise chain.
+          nextPromise = nextPromise.then((newInstance) => {
+            // The previous promise might want to return a value, which we should take as a new object instance.
+            instance = newInstance || instance;
+            // Calling the following init(). NOTE, than `fn` is wrapped to a closure within the forEach loop.
+            const callResult = fn.call(instance, {args, instance, stamp: factory});
+            // Check if call result is truthy.
+            if (!callResult) {
+              // The init() returned nothing. Thus using the previous object instance.
+              return instance;
+            }
+
+            if (isThenable(callResult)) {
+              return callResult; // The init() returned another promise. It is becoming our nextPromise.
+            }
+
+            // This init() was synchronous and returned a meaningful value.
+            instance = callResult;
+            // Resolve the instance for the next `then()`.
+            return instance;
+          });
         }
       });
     }
 
+    // At the end we should resolve the last promise and return the resolved value (as a promise too).
     return nextPromise ? nextPromise.then((newInstance) => newInstance || instance) : instance;
   };
 

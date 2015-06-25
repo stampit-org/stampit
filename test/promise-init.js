@@ -4,7 +4,7 @@ import test from 'blue-tape';
 // Promises in init
 
 test('init-as-promised - resolves to the stamped object', (t) => {
-  const promisedStamp = stampit.init(function () {
+  const promisedStamp = stampit.init(function() {
     return new Promise((resolve) => resolve());
   });
 
@@ -17,10 +17,10 @@ test('init-as-promised - resolves to the stamped object', (t) => {
 
 test('init-as-promised - sync-first init propagated to the following promise `this`', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       this.newObject = true;
     })
-    .init(function () {
+    .init(function() {
       t.ok(this.newObject, 'previous sync should apply before promises take over');
       return new Promise((resolve) => resolve());
     });
@@ -30,13 +30,13 @@ test('init-as-promised - sync-first init propagated to the following promise `th
 
 test('init-as-promised - promise-first should receive `this` bound to stamped instance', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         this.newObject = true;
         resolve();
       });
     })
-    .init(function () {
+    .init(function() {
       t.ok(this.newObject, 'previous sync should apply before promises take over');
     });
 
@@ -45,10 +45,10 @@ test('init-as-promised - promise-first should receive `this` bound to stamped in
 
 test('init-as-promised - sync-first init returned object resolved at the end', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       this.newObject = true;
     })
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => resolve());
     });
 
@@ -61,13 +61,13 @@ test('init-as-promised - sync-first init returned object resolved at the end', (
 
 test('init-as-promised - promise-first returned object resolved at the end', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         this.newObject = true;
         resolve();
       });
     })
-    .init(function () {});
+    .init(function() {});
 
   return promisedStamp()
     .then(instance => {
@@ -78,18 +78,18 @@ test('init-as-promised - promise-first returned object resolved at the end', (t)
 
 test('init-as-promised - sync-async-sync `this` is propagated across', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       t.ok(this.mainRef, '`this` should be propagated');
       this.firstSyncInit = true;
     })
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.ok(this.mainRef, '`this` should be propagated');
         this.asyncInit = true;
         resolve();
       });
     })
-    .init(function () {
+    .init(function() {
       t.ok(this.mainRef, '`this` should be propagated');
       this.secondSyncInit = true;
     });
@@ -104,18 +104,18 @@ test('init-as-promised - sync-async-sync `this` is propagated across', (t) => {
 
 test('init-as-promised - async-sync-async `this` is propagated across', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.ok(this.mainRef, '`this` should be propagated');
         this.firstAsyncInit = true;
         resolve();
       });
     })
-    .init(function () {
+    .init(function() {
       t.ok(this.mainRef, '`this` should be propagated');
       this.syncInit = true;
     })
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.ok(this.mainRef, '`this` should be propagated');
         this.secondAsyncInit = true;
@@ -133,18 +133,18 @@ test('init-as-promised - async-sync-async `this` is propagated across', (t) => {
 
 test('init-as-promised - sync-async-sync returned objects are propagated as `this`', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       t.ok(this.startRef, '`this` should be propagated');
       return { firstRef: true };
     })
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.notOk(this.startRef, '`this` should be replaced');
         t.ok(this.firstRef, 'previous returned instance should be propagated as `this`');
         resolve({ secondRef: true });
       });
     })
-    .init(function () {
+    .init(function() {
       t.notOk(this.startRef, '`this` should be replaced');
       t.notOk(this.firstRef, '`this` should be replaced');
       t.ok(this.secondRef, 'previous returned instance should be propagated as `this`');
@@ -162,18 +162,18 @@ test('init-as-promised - sync-async-sync returned objects are propagated as `thi
 
 test('init-as-promised - async-sync-async returned objects are propagated as `this`', (t) => {
   const promisedStamp = stampit
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.ok(this.startRef, '`this` should be propagated');
         resolve({ firstRef: true });
       });
     })
-    .init(function () {
+    .init(function() {
       t.notOk(this.startRef, '`this` should be replaced');
       t.ok(this.firstRef, 'previous returned instance should be propagated as `this`');
       return { secondRef: true };
     })
-    .init(function () {
+    .init(function() {
       return new Promise((resolve) => {
         t.notOk(this.startRef, '`this` should be replaced');
         t.notOk(this.firstRef, '`this` should be replaced');
