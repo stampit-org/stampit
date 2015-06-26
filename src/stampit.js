@@ -230,7 +230,7 @@ const stampit = function stampit(options) {
      * Take n objects and add all props to the factory object. Creates new stamp.
      * @return {Function} A new stamp (factory object).
      */
-      static(...statics) {
+    static(...statics) {
       const newStamp = cloneAndExtend(factory.fixed, addStatic, ...statics);
       return mixin(newStamp, newStamp.fixed.static);
     },
@@ -252,7 +252,7 @@ function isStamp(obj) {
   return (
     isFunction(obj) &&
     isFunction(obj.methods) &&
-      // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
+    // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
     (isFunction(obj.refs) || isFunction(obj.state)) &&
     (isFunction(obj.init) || isFunction(obj.enclose)) &&
     isFunction(obj.props) &&
@@ -310,7 +310,7 @@ export default mixin(stampit, {
    * Take n objects and add all props to the factory object. Creates new stamp.
    * @return {Function} A new stamp (factory object).
    */
-    static(...statics) {
+  static(...statics) {
     const newStamp = shortcutMethod(addStatic, ...statics);
     return mixin(newStamp, newStamp.fixed.static);
   },
