@@ -7,10 +7,8 @@
  * http://opensource.org/licenses/MIT
  **/
 import forEach from 'lodash/collection/forEach';
-import forOwn from 'lodash/object/forOwn';
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
-import map from 'lodash/collection/map';
 import {
   merge,
   mergeChainNonFunctions,
@@ -26,36 +24,35 @@ function isThenable(value) {
 }
 
 function extractFunctions(...args) {
+  const result = [];
   if (isFunction(args[0])) {
-    return map(args, fn => {
+    forEach(args, fn => { // assuming all the arguments are functions
       if (isFunction(fn)) {
-        return fn;
+        result.push(fn);
       }
     });
   } else if (isObject(args[0])) {
-    const arr = [];
     forEach(args, obj => {
-      forOwn(obj, fn => {
+      forEach(obj, fn => {
         if (isFunction(fn)) {
-          arr.push(fn);
+          result.push(fn);
         }
       });
     });
-    return arr;
   }
-  return [];
+  return result;
 }
 
 function addMethods(fixed, ...methods) {
   return mixinFunctions(fixed.methods, ...methods);
 }
 function addRefs(fixed, ...refs) {
-  fixed.refs = fixed.state = mixin(fixed.refs || fixed.state, ...refs);
+  fixed.refs = fixed.state = mixin(fixed.refs, ...refs);
   return fixed.refs;
 }
 function addInit(fixed, ...inits) {
   const extractedInits = extractFunctions(...inits);
-  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(extractedInits);
+  fixed.init = fixed.enclose = fixed.init.concat(extractedInits);
   return fixed.init;
 }
 function addProps(fixed, ...propses) {
