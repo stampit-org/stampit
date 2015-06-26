@@ -78,3 +78,13 @@ test('stamp.init() with legacy stamps', (t) => {
   }
   t.end();
 });
+
+test('stampit.convertConstructor() produces compatible stamps', (t) => {
+  function F() {}
+
+  const stamp = stampit.convertConstructor(F);
+
+  t.ok(stamp.fixed.state, 'fixed.state present');
+  t.ok(stamp.fixed.enclose, 'fixed.enclose present');
+  t.end();
+});
