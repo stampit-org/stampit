@@ -68,7 +68,11 @@ or by [downloading the latest release](https://github.com/stampit-org/stampit/re
 
 ## What is a Stamp?
 
-A stamp is a composable factory function. Stamps allow you to inherit easily from multiple ancestors by composing multiple source stamps. You can combine properties, methods, and initializers (with closures) from any number of stamps to produce a new stamp. Stamps are more flexible than traditional factory functions or classical multiple inheritance. Traditional factory functions can't be composed together to produce new factory functions. Class inheritance does not provide a standardized mechanism for class composition.
+A stamp is a composable factory function. Stamps allow you to inherit easily from multiple ancestors by composing multiple source stamps. 
+You can combine properties, methods, and initializers (with closures) from any number of stamps to produce a new stamp. 
+Stamps are more flexible than traditional factory functions or classical multiple inheritance. 
+Traditional factory functions can't be composed together to produce new factory functions. 
+Class inheritance does not provide a standardized mechanism for class composition.
 
 Stamp composition takes advantage of three different kinds of prototypal inheritance:
 
@@ -99,7 +103,8 @@ All of these stampit methods may be called multiple times to add more elements t
 
 Prototypal OO is great, and JavaScript's capabilities give us some really powerful tools to explore it, but it could be easier to use.
 
-Basic questions like "how do I inherit privileged methods and private data?" and "what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
+Basic questions like "how do I inherit privileged methods and private data?" and 
+"what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
 
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
@@ -121,7 +126,8 @@ a(); // Object -- so far so good.
 a().getA(); // "a"
 ```
 
-Yes. Got it. In both of these instances, we actually created a brand new object, and then immediately threw it away, because we didn't assign it to anything. Don't worry about that.
+Yes. Got it. In both of these instances, we actually created a brand new object, and then immediately threw it away, 
+because we didn't assign it to anything. Don't worry about that.
 
 Here's another:
 
@@ -207,7 +213,8 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 
 ## Statics
 
-Stamps have a `static` method. This method applies passed object properties to the calling stamp's object. `static` is a convenience method. The old school way to apply statics to a stamp is by using stampit's `mixIn/extend` method.
+Stamps have a `static` method. This method applies passed object properties to the calling stamp's object. 
+`static` is a convenience method. The old school way to apply statics to a stamp is by using stampit's `mixIn/extend` method.
 
 ```js
 stampit.extend(stamp, {
@@ -317,7 +324,8 @@ var newStamp = baseStamp.compose(myStamp);
 
 Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the stamp methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` of the stamp. 
-The properties from later arguments in the list will override the same named properties of previously passed in objects. `refs` will be copied by reference. `props` will be deeply merged.
+The properties from later arguments in the list will override the same named properties of previously passed in objects. 
+`refs` will be copied by reference. `props` will be deeply merged.
 
 ```js
   var obj = stampit().methods({
@@ -421,6 +429,9 @@ It has an alias - `stamp.state()`. Deprecated.
 Take n functions, an array of functions, or n objects and add
 the functions to the initializers list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
+
+If any of the init() functions return a promise then the stamp will always be creating promises 
+which resolve to the expected object instance.
 
 It has an alias - `stamp.enclose()`. Deprecated.
 
