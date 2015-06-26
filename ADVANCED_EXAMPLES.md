@@ -217,7 +217,8 @@ First, let's assume you have this stamp:
 const User = stampit.refs({ entityName: 'user' });
 ```
 
-The following stamp should be composed *last*, otherwise it won't work.
+When combined the following stamp will make any existing stamp to return promise instead of an object instance.
+The promise will always resolve to an object instance.
 ```js
 const AsyncInitializable = stampit.refs({
   db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
@@ -232,7 +233,7 @@ const AsyncInitializable = stampit.refs({
 ```
 Let's compose it with our `User` stamp:
 ```js
-const AsyncInitializableUser = User.compose(AsyncInitializable); // The stamp produces promises now.
+const AsyncInitializableUser = AsyncInitializable.compose(User); // The stamp produces promises now.
 ```
 Create object (ES6):
 ```js
