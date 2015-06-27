@@ -217,7 +217,7 @@ First, let's assume you have this stamp:
 const User = stampit.refs({ entityName: 'user' });
 ```
 
-When combined the following stamp will make any existing stamp to return promise instead of an object instance.
+When combined the following stamp will make any existing stamp return a promise instead of an object instance.
 The promise will always resolve to an object instance.
 ```js
 const AsyncInitializable = stampit.refs({
