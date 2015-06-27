@@ -23,13 +23,12 @@
     "url": "git@github.com:stampit-org/stampit.git"
   },
   "dependencies": {
-    "babel-eslint": "^3.1.19",
     "lodash": "^3.9.1",
     "supermixer": "^1.0.2"
   },
   "devDependencies": {
     "babel": "^5.5.8",
-    "babel-eslint": "^3.1.17",
+    "babel-eslint": "^3.1.19",
     "browserify": "^10.2.1",
     "dependency-check": "^2.5.0",
     "eslint": "^0.23.0",
