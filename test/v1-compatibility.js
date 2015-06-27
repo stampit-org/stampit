@@ -32,14 +32,26 @@ test('stampit().compose(stamp) is v1 compatible', (t) => {
 test('stampit.isStamp() with legacy stamps', (t) => {
   const emptyStamp = stampit();
   delete emptyStamp.fixed.refs;
+  delete emptyStamp.refs;
+  delete emptyStamp.fixed.init;
+  delete emptyStamp.init;
   const refsOnlyStamp = stampit().refs({a: 'b'});
   delete refsOnlyStamp.fixed.refs;
+  delete refsOnlyStamp.refs;
+  delete refsOnlyStamp.fixed.init;
+  delete refsOnlyStamp.init;
   const methodsOnlyStamp = stampit({
     method() {}
   });
   delete methodsOnlyStamp.fixed.refs;
+  delete methodsOnlyStamp.refs;
+  delete methodsOnlyStamp.fixed.init;
+  delete methodsOnlyStamp.init;
   const closureOnlyStamp = stampit().enclose(() => {});
   delete closureOnlyStamp.fixed.refs;
+  delete closureOnlyStamp.refs;
+  delete closureOnlyStamp.fixed.init;
+  delete closureOnlyStamp.init;
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty legacy stamp should be seen as stamp.');
   t.ok(stampit.isStamp(refsOnlyStamp), 'Refs only legacy stamp should be seen as stamp.');
@@ -64,5 +76,15 @@ test('stamp.init() with legacy stamps', (t) => {
   } catch (e) {
     t.fail(e.stack);
   }
+  t.end();
+});
+
+test('stampit.convertConstructor() produces compatible stamps', (t) => {
+  function F() {}
+
+  const stamp = stampit.convertConstructor(F);
+
+  t.ok(stamp.fixed.state, 'fixed.state present');
+  t.ok(stamp.fixed.enclose, 'fixed.enclose present');
   t.end();
 });
