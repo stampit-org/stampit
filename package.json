@@ -28,9 +28,10 @@
   },
   "devDependencies": {
     "babel": "^5.5.8",
-    "babel-eslint": "^3.1.17",
+    "babel-eslint": "^3.1.19",
     "blue-tape": "^0.1.9",
     "browserify": "^10.2.1",
+    "dependency-check": "^2.5.0",
     "eslint": "^0.23.0",
     "isparta": "^3.0.3",
     "require-all": "^1.1.0",
@@ -42,12 +43,26 @@
     "cov": "npm run cov:clean && npm run cov:generate",
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node node_modules/.bin/isparta cover --report text --report html test/index.js",
-    "prepublish": "npm run build && npm test",
+    "prepublish": "npm run build && npm run check && npm test",
     "test": "npm run lint && babel-node test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
     "lint": "eslint src && eslint test",
-    "build": "npm run clean && babel src --out-dir dist && npm run uglify"
+    "build": "npm run clean && babel src --out-dir dist && npm run uglify",
+    "deps": "npm run deps:missing && npm run deps:extra",
+    "deps:missing": "dependency-check package.json",
+    "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
+    "check": "npm run deps && npm outdated --depth 0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "npmName": "stampit",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "stampit.js",
+        "stampit.min.js"
+      ]
+    }
+  ]
 }

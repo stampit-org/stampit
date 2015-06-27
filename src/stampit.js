@@ -273,6 +273,7 @@ function isStamp(obj) {
 function convertConstructor(Constructor) {
   const stamp = stampit();
   stamp.fixed.refs = stamp.fixed.state = mergeChainNonFunctions(stamp.fixed.refs, Constructor.prototype);
+  mixin(stamp, mixin(stamp.fixed.static, Constructor));
 
   mixinChainFunctions(stamp.fixed.methods, Constructor.prototype);
   addInit(stamp.fixed, ({ instance, args }) => Constructor.apply(instance, args));

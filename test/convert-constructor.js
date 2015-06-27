@@ -19,11 +19,11 @@ test('stampit.convertConstructor()', (t) => {
   t.equal(obj.thing, 'initialized',
     'Constructor should execute.');
 
-  t.equal(obj.staticFunc, undefined,
-    'Non prototype functions should not be mixed in.');
+  t.equal(oldskool.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
 
-  t.equal(obj.staticProp, undefined,
-    'Non prototype properties should not be mixed in.');
+  t.equal(oldskool.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
 
   t.equal(obj.foo && obj.foo(), 'foo',
     'Constructor prototype should be mixed in.');
@@ -51,6 +51,8 @@ test('stampit.convertConstructor() composed', (t) => {
   };
   Constructor.prototype = new Base();
   Constructor.prototype.foo = () => { return 'foo'; };
+  Constructor.staticFunc = () => {};
+  Constructor.staticProp = 'static';
 
   // The conversion
   const oldskool = stampit.convertConstructor(Constructor);
@@ -121,6 +123,18 @@ test('stampit.convertConstructor() composed', (t) => {
 
   t.equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype chain function should be mixed in.');
+
+  t.equal(myThing.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
+
+  t.equal(myThing.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
+
+  t.equal(myThing2.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
+
+  t.equal(myThing2.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
 
   t.end();
 });
