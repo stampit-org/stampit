@@ -29,6 +29,7 @@
   "devDependencies": {
     "babel": "^5.5.8",
     "babel-eslint": "^3.1.17",
+    "blue-tape": "^0.1.9",
     "browserify": "^10.2.1",
     "eslint": "^0.23.0",
     "isparta": "^3.0.3",

@@ -7,10 +7,8 @@
  * http://opensource.org/licenses/MIT
  **/
 import forEach from 'lodash/collection/forEach';
-import forOwn from 'lodash/object/forOwn';
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
-import map from 'lodash/collection/map';
 import {
   merge,
   mergeChainNonFunctions,
@@ -21,38 +19,40 @@ import {
 } from 'supermixer';
 
 const create = Object.create;
+function isThenable(value) {
+  return value && isFunction(value.then);
+}
 
 function extractFunctions(...args) {
+  const result = [];
   if (isFunction(args[0])) {
-    return map(args, fn => {
+    forEach(args, fn => { // assuming all the arguments are functions
       if (isFunction(fn)) {
-        return fn;
+        result.push(fn);
       }
     });
   } else if (isObject(args[0])) {
-    const arr = [];
     forEach(args, obj => {
-      forOwn(obj, fn => {
+      forEach(obj, fn => {
         if (isFunction(fn)) {
-          arr.push(fn);
+          result.push(fn);
         }
       });
     });
-    return arr;
   }
-  return [];
+  return result;
 }
 
 function addMethods(fixed, ...methods) {
   return mixinFunctions(fixed.methods, ...methods);
 }
 function addRefs(fixed, ...refs) {
-  fixed.refs = fixed.state = mixin(fixed.refs || fixed.state, ...refs);
+  fixed.refs = fixed.state = mixin(fixed.refs, ...refs);
   return fixed.refs;
 }
 function addInit(fixed, ...inits) {
   const extractedInits = extractFunctions(...inits);
-  fixed.init = fixed.enclose = (fixed.init || fixed.enclose).concat(extractedInits);
+  fixed.init = fixed.enclose = fixed.init.concat(extractedInits);
   return fixed.init;
 }
 function addProps(fixed, ...propses) {
@@ -75,8 +75,10 @@ function compose(...factories) {
       addMethods(result.fixed, source.fixed.methods);
       // We might end up having two different stampit modules loaded and used in conjunction.
       // These || operators ensure that old stamps could be combined with the current version stamps.
-      addRefs(result.fixed, source.fixed.refs || source.fixed.state); // 'state' is the old name for 'refs'
-      addInit(result.fixed, source.fixed.init || source.fixed.enclose); // 'enclose' is the old name for 'init'
+      // 'state' is the old name for 'refs'
+      addRefs(result.fixed, source.fixed.refs || source.fixed.state);
+      // 'enclose' is the old name for 'init'
+      addInit(result.fixed, source.fixed.init || source.fixed.enclose);
       addProps(result.fixed, source.fixed.props);
       addStatic(result.fixed, source.fixed.static);
     }
@@ -120,15 +122,66 @@ const stampit = function stampit(options) {
     let instance = mixin(create(fixed.methods), fixed.refs, refs);
     mergeUnique(instance, fixed.props); // props are safely merged into refs
 
+    let nextPromise = null;
     if (fixed.init.length > 0) {
       forEach(fixed.init, fn => {
-        if (isFunction(fn)) {
-          instance = fn.call(instance, { args, instance, stamp: factory }) || instance;
+        if (!isFunction(fn)) {
+          return; // not a function, do nothing.
+        }
+
+        // Check if we are in the async mode.
+        if (!nextPromise) {
+          // Call the init().
+          const callResult = fn.call(instance, {args, instance, stamp: factory});
+          if (!callResult) {
+            return; // The init() returned nothing. Proceed to the next init().
+          }
+
+          // Returned value is meaningful.
+          // It will replace the stampit-created object.
+          if (!isThenable(callResult)) {
+            instance = callResult; // stamp is synchronous so far.
+            return;
+          }
+
+          // This is the sync->async conversion point.
+          // Since now our factory will return a promise, not an object.
+          nextPromise = callResult;
+        } else {
+          // As long as one of the init() functions returned a promise,
+          // now our factory will 100% return promise too.
+          // Linking the init() functions into the promise chain.
+          nextPromise = nextPromise.then(newInstance => {
+            // The previous promise might want to return a value,
+            // which we should take as a new object instance.
+            instance = newInstance || instance;
+
+            // Calling the following init().
+            // NOTE, than `fn` is wrapped to a closure within the forEach loop.
+            const callResult = fn.call(instance, {args, instance, stamp: factory});
+            // Check if call result is truthy.
+            if (!callResult) {
+              // The init() returned nothing. Thus using the previous object instance.
+              return instance;
+            }
+
+            if (!isThenable(callResult)) {
+              // This init() was synchronous and returned a meaningful value.
+              instance = callResult;
+              // Resolve the instance for the next `then()`.
+              return instance;
+            }
+
+            // The init() returned another promise. It is becoming our nextPromise.
+            return callResult;
+          });
         }
       });
     }
 
-    return instance;
+    // At the end we should resolve the last promise and
+    // return the resolved value (as a promise too).
+    return nextPromise ? nextPromise.then(newInstance => newInstance || instance) : instance;
   };
 
   const refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
@@ -207,7 +260,8 @@ function isStamp(obj) {
   return (
     isFunction(obj) &&
     isFunction(obj.methods) &&
-    // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
+    // isStamp can be called for old stampit factory object.
+    // We should check old names (state and enclose) too.
     (isFunction(obj.refs) || isFunction(obj.state)) &&
     (isFunction(obj.init) || isFunction(obj.enclose)) &&
     isFunction(obj.props) &&
