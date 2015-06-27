@@ -75,8 +75,10 @@ function compose(...factories) {
       addMethods(result.fixed, source.fixed.methods);
       // We might end up having two different stampit modules loaded and used in conjunction.
       // These || operators ensure that old stamps could be combined with the current version stamps.
-      addRefs(result.fixed, source.fixed.refs || source.fixed.state); // 'state' is the old name for 'refs'
-      addInit(result.fixed, source.fixed.init || source.fixed.enclose); // 'enclose' is the old name for 'init'
+      // 'state' is the old name for 'refs'
+      addRefs(result.fixed, source.fixed.refs || source.fixed.state);
+      // 'enclose' is the old name for 'init'
+      addInit(result.fixed, source.fixed.init || source.fixed.enclose);
       addProps(result.fixed, source.fixed.props);
       addStatic(result.fixed, source.fixed.static);
     }
@@ -132,25 +134,30 @@ const stampit = function stampit(options) {
           // Call the init().
           const callResult = fn.call(instance, {args, instance, stamp: factory});
           if (!callResult) {
-            return; // nothing got returned. Proceed.
+            return; // The init() returned nothing. Proceed to the next init().
           }
 
-          // Returned value is meaningful. It will replace the stampit-created object.
+          // Returned value is meaningful.
+          // It will replace the stampit-created object.
           if (!isThenable(callResult)) {
             instance = callResult; // stamp is synchronous so far.
             return;
           }
 
-          // This is the sync->async conversion point. Since now our factory will return a promise, not an object.
+          // This is the sync->async conversion point.
+          // Since now our factory will return a promise, not an object.
           nextPromise = callResult;
         } else {
-          // As long as one of the init() functions returned a promise, now our factory will 100% return promise too.
+          // As long as one of the init() functions returned a promise,
+          // now our factory will 100% return promise too.
           // Linking the init() functions into the promise chain.
-          nextPromise = nextPromise.then((newInstance) => {
-            // The previous promise might want to return a value, which we should take as a new object instance.
+          nextPromise = nextPromise.then(newInstance => {
+            // The previous promise might want to return a value,
+            // which we should take as a new object instance.
             instance = newInstance || instance;
 
-            // Calling the following init(). NOTE, than `fn` is wrapped to a closure within the forEach loop.
+            // Calling the following init().
+            // NOTE, than `fn` is wrapped to a closure within the forEach loop.
             const callResult = fn.call(instance, {args, instance, stamp: factory});
             // Check if call result is truthy.
             if (!callResult) {
@@ -172,8 +179,9 @@ const stampit = function stampit(options) {
       });
     }
 
-    // At the end we should resolve the last promise and return the resolved value (as a promise too).
-    return nextPromise ? nextPromise.then((newInstance) => newInstance || instance) : instance;
+    // At the end we should resolve the last promise and
+    // return the resolved value (as a promise too).
+    return nextPromise ? nextPromise.then(newInstance => newInstance || instance) : instance;
   };
 
   const refsMethod = cloneAndExtend.bind(null, fixed, addRefs);
@@ -252,7 +260,8 @@ function isStamp(obj) {
   return (
     isFunction(obj) &&
     isFunction(obj.methods) &&
-    // isStamp can be called for old stampit factory object. We should check old names (state and enclose) too.
+    // isStamp can be called for old stampit factory object.
+    // We should check old names (state and enclose) too.
     (isFunction(obj.refs) || isFunction(obj.state)) &&
     (isFunction(obj.init) || isFunction(obj.enclose)) &&
     isFunction(obj.props) &&
