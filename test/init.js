@@ -157,3 +157,31 @@ test('stamp.init() should call composed init functions in order', (t) => {
 
   t.end();
 });
+
+test('explicit push wrong object to stamp.fixed.init[]', (t) => {
+  const stamp = stampit({ init() {
+    const secret = 'foo';
+    this.getSecret = () => { return secret; };
+  }});
+
+  stamp.fixed.init.push(42); // breaking the stamp.
+  const obj = stamp();
+
+  t.equal(obj.getSecret(), 'foo', 'Should omit malformed fixed.init[] elements.');
+
+  t.end();
+});
+
+test('stamp.fixed.init malformed object', (t) => {
+  const stamp = stampit.refs({ref: 42}).init(function() {
+    const secret = 'foo';
+    this.getSecret = () => { return secret; };
+  });
+
+  stamp.fixed.init = 42; // breaking the stamp badly
+  const obj = stamp();
+
+  t.ok(obj.ref, 42, 'Should be okay with malformed fixed.init.');
+
+  t.end();
+});

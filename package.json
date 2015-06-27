@@ -29,6 +29,7 @@
   "devDependencies": {
     "babel": "^5.5.8",
     "babel-eslint": "^3.1.19",
+    "blue-tape": "^0.1.9",
     "browserify": "^10.2.1",
     "dependency-check": "^2.5.0",
     "eslint": "^0.23.0",
