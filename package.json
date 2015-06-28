@@ -32,8 +32,9 @@
     "blue-tape": "^0.1.9",
     "browserify": "^10.2.1",
     "dependency-check": "^2.5.0",
-    "eslint": "^0.23.0",
+    "eslint": "^0.24.0",
     "isparta": "^3.0.3",
+    "nsp": "^1.0.3",
     "require-all": "^1.1.0",
     "rimraf": "^2.3.4",
     "tape": "^4.0.0",
@@ -52,7 +53,9 @@
     "deps": "npm run deps:missing && npm run deps:extra",
     "deps:missing": "dependency-check package.json",
     "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
-    "check": "npm run deps && npm outdated --depth 0"
+    "audit": "nsp package",
+    "precheck": "npm run lint && npm run build && npm test",
+    "check": "npm run audit && npm run deps && npm outdated --depth 0"
   },
   "license": "MIT",
   "npmName": "stampit",
