@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "stampit": {
+      "version": "2.1.0",
+      "dependencies": {
+        "lodash": {
+          "version": "3.9.3"
+        },
+        "supermixer": {
+          "version": "1.0.2"
+        }
+      }
+    }
+  }
+}

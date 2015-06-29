@@ -1,0 +1,1 @@
+stampit = require('stampit');

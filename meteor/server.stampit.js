@@ -1,0 +1,1 @@
+stampit = Npm.require('stampit');
