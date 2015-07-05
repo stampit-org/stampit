@@ -595,3 +595,17 @@ will probably clash with each other, producing very unexpected results.
 
   t.bar(); // 'bar'
 ```
+
+### stampit.tracePropertyOverwrites() ###
+
+Useful for debugging purposes. Will print logs when stampit overwrites any 
+property while creating an object instance:
+```
+Overwritten property "myPropName", old: "this is a previous value", new: "new value for the property"
+```
+
+The above will be printed by the following:
+```js
+stampit.refs({something: {myPropName: "this is a previous value"}})
+  .create({{something: {myPropName: "new value for the property" }});
+```
