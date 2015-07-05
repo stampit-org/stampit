@@ -159,26 +159,23 @@ But that's boring. Let's see what else is on tap:
 
 ```js
 // Some more privileged methods, with some private data.
-// Use stampit.mixin() to make this feel declarative:
 var availability = stampit().init(function () {
   var isOpen = false; // private
 
-  return stampit.mixin(this, {
-    open: function open() {
-      isOpen = true;
-      return this;
-    },
-    close: function close() {
-      isOpen = false;
-      return this;
-    },
-    isOpen: function isOpenMethod() {
-      return isOpen;
-    }
-  });
+  this.open = function open() {
+    isOpen = true;
+    return this;
+  };
+  this.close = function close() {
+    isOpen = false;
+    return this;
+  };
+  this.isOpen = function isOpenMethod() {
+    return isOpen;
+  }
 });
 
-// Here's a mixin with public methods, and some state:
+// Here's a stamp with public methods, and some state:
 var membership = stampit({
   methods: {
     add: function (member) {
@@ -196,9 +193,9 @@ var membership = stampit({
 
 // Let's set some defaults:
 var defaults = stampit().refs({
-      name: 'The Saloon',
-      specials: 'Whisky, Gin, Tequila'
-    });
+  name: 'The Saloon',
+  specials: 'Whisky, Gin, Tequila'
+});
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
@@ -214,16 +211,18 @@ myBar.add({name: 'Homer' }).open().getMember('Homer');
 ## Statics
 
 Stamps have a `static` method. This method applies passed object properties to the calling stamp's object. 
-`static` is a convenience method. The old school way to apply statics to a stamp is by using stampit's `mixIn/extend` method.
+`static` is a convenience method.
 
+It used to be like that:
 ```js
-stampit.extend(stamp, {
+Object.assign(stamp, {
   foo: 'foo'
 });
+```
 
-This can now be written as:
-
-stamp.static({
+But can be short written as:
+```js
+stamp = stamp.static({
   foo: 'foo'
 });
 ```
@@ -322,7 +321,7 @@ var newStamp = baseStamp.compose(myStamp);
 
 ## Pass multiple objects into .methods(), .refs(), .init(), props(), .static(), or .compose().
 
-Stampit mimics the behavior of `_.extend()`, `$.extend()` when you pass multiple objects into one of the stamp methods. 
+Stampit mimics the behavior of `Object.assign` when you pass multiple objects into one of the stamp methods. 
 In other words, it will copy all of the properties from those objects to the `.methods`, `.refs`, `.init` or `.props` of the stamp. 
 The properties from later arguments in the list will override the same named properties of previously passed in objects. 
 `refs` will be copied by reference. `props` will be deeply merged.
@@ -485,9 +484,9 @@ Combining overrides properties with last-in priority.
  * @return {Function} A new stampit factory composed from arguments.
 
 
-### stamp.create([properties] [,arg2] [,arg3...]) ###
+### stamp.create([properties] [,arg1] [,arg2...]) ###
 
-Alias to `stamp([properties] [,arg2] [,arg3...])`.
+Alias to `stamp([properties] [,arg1] [,arg2...])`.
 
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. The first argument is an object
@@ -505,8 +504,8 @@ anti-pattern that should be avoided, when possible.
 
 ### stamp.static() ###
 
-Take n objects and add all props to the factory object.
-* @return {Object} stamp The factory in question (`this`).
+Take n objects and add all its properties to the stamp (aka factory object).
+* @return {Object} stamp A new stamp.
 
 
 ## Utility methods ##
@@ -537,21 +536,9 @@ properties with last-in priority.
 * `@return {Function}` A new stamp composed from arguments.
 
 
-### stampit.mixin(destObj, source1 [, sourc2] [, source3]...) ###
+### stampit.mixin(), .extend(), .mixIn(), .assign() ###
 
-Same as `Object.assign()`.
-Take a destination object followed by one or more source objects,
-and copy the source object properties to the destination object,
-with last in priority overrides.
-
-* `@param {Object} destination` An object to copy properties to.
-* `@param {...Object} source` An object to copy properties from.
-* `@returns {Object}`
-
-
-### stampit.extend(), .mixIn(), .assign() ###
-
-Aliases for `stampit.mixin()`.
+Aliases to `Object.assign()`. Deprecated.
 
 
 ### stampit.isStamp(obj) ###

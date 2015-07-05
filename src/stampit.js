@@ -210,7 +210,8 @@ const stampit = function stampit(options) {
     refs: refsMethod,
 
     /**
-     * Alias to refs(). Deprecated.
+     * @deprecated since v2.0. Use refs() instead.
+     * Alias to refs().
      * @return {Function} A new stamp (factory object).
      */
     state: refsMethod,
@@ -223,7 +224,8 @@ const stampit = function stampit(options) {
     init: initMethod,
 
     /**
-     * Alias to init(). Deprecated.
+     * @deprecated since v2.0. User init() instead.
+     * Alias to init().
      * @return {Function} A new stamp (factory object).
      */
     enclose: initMethod,
@@ -289,6 +291,13 @@ function shortcutMethod(extensionFunction, ...args) {
   return stamp;
 }
 
+function mixinWithConsoleWarning() {
+  console.log(
+    'stampit.mixin(), .mixIn(), .extend(), and .assign() are deprecated.',
+    'Use Object.assign or _.assign instead');
+  return mixin.apply(this, arguments);
+}
+
 export default mixin(stampit, {
 
   /**
@@ -335,17 +344,13 @@ export default mixin(stampit, {
   compose: compose,
 
   /**
-   * Take a destination object followed by one or more source objects,
-   * and copy the source object properties to the destination object,
-   * with last in priority overrides.
-   * @param {Object} destination An object to copy properties to.
-   * @param {...Object} source An object to copy properties from.
-   * @returns {Object}
+   * @deprecated Since v2.2. Use Object.assign or _.assign instead.
+   * Alias to Object.assign.
    */
-  mixin,
-  extend: mixin,
-  mixIn: mixin,
-  assign: mixin,
+  mixin: mixinWithConsoleWarning,
+  extend: mixinWithConsoleWarning,
+  mixIn: mixinWithConsoleWarning,
+  assign: mixinWithConsoleWarning,
 
   /**
    * Check if an object is a stamp.
