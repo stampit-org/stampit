@@ -2,6 +2,10 @@
   "name": "stampit",
   "description": "Create objects from reusable, composable behaviors.",
   "main": "dist/stampit.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stampit-org/stampit.git"
+  },
   "ignore": [
     "**/.*",
     "advanced-examples",
