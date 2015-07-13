@@ -1,5 +1,16 @@
 {
   "name": "stampit",
   "description": "Create objects from reusable, composable behaviors.",
-  "main": "dist/stampit.js"
+  "main": "dist/stampit.js",
+  "ignore": [
+    "**/.*",
+    "advanced-examples",
+    "ADVANCED_EXAMPLES.md",
+    "buildconfig.env.example",
+    "dist",
+    "node_modules",
+    "package.json",
+    "src",
+    "test"
+  ]
 }
