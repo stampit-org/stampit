@@ -1,4 +1,5 @@
 .editorconfig
+.gitattributes
 .idea/
 /*.tgz
 /.travis.yml
