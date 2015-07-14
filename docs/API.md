@@ -1,5 +1,45 @@
 # Stampit API
 
+## Example
+
+```js
+var Logger = stampit({
+  methods: {
+    log: console.log
+  }
+});
+
+var DefaultConnectionConfig = stampit().props({
+  connectionConfig: require('./config.json').db.connection;
+});
+
+var DbConnection = stampit().refs({
+  dbConnection: mongoose.connection
+})
+.init(function () {
+  if (!this.dbConnection.readyState) {
+    this.connection.open(this.connectionConfig);
+    this.log('Opening a DB connection');
+  }
+})
+.methods({
+  close() {
+    if (this.dbConnection.readyState) {
+      this.dbConnection.close();
+      this.log('Closing the DB connection');
+    }
+  }
+})
+.compose(Logger, DefaultConnectionConfig);
+
+var conn = DbConnection(); // Opens a DB connection
+var conn2 = DbConnection({ connection: conn.dbConnection }); // reusing existing
+conn.close(); // Closes the conneciton.
+
+// Connect to a different DB.
+var localConn = DbConnection({ connectionConfig: 'mongodb://localhost' });
+```
+
 **Source: stampit.js**
 
 ### stampit()
@@ -45,7 +85,7 @@ Take n functions, an array of functions, or n objects and add
 the functions to the initializers list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
-If any of the init() functions return a promise then the stamp will always be creating promises 
+If any of the init() functions return a Promise then the stamp will always be creating Promises 
 which resolve to the expected object instance.
 
 It has an alias - `stamp.enclose()`. Deprecated.
