@@ -171,16 +171,15 @@ MyStamp.create().clone().clone().clone().x === 42; // true
 
 Delayed initialization via returning a Promise.
 ```js
+import fs from 'fs';
 import denodeify from 'denodeify';
+const readFilePromise = denodeify(fs.readFile);
+
 let FileContents = stampit().init(({instance}) =>
-  return denodeify(fs.readFile)(instance.fileName);
-})
-.methods({
-  getDependencies() { return Object.merge({}, this.dependencies, this.devDependencies); }
+  return readFilePromise(instance.fileName);
 });
 
-var package = FileContents({ fileName: './package.json');
-console.log(package.getDependencies());
+FileContents({fileName: './package.json'}).then((package) => console.log(package.dependencies));
 ```
 
 ### stamp.props()
