@@ -83,6 +83,8 @@ const stamp = stampit({
     this.factor = this.factor >= 0 ? this.factor : this.defaultFactor;
   }
 });
+
+var objectInstance = stamp({factor: 1.1});
 ```
 
 ## The stamp object
