@@ -166,7 +166,7 @@ let Cloneable = stampit().init(({instance, stamp, args}) =>
 });
 
 let MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
-MyStamp.create().clone().clone().clone().x === 42; // true
+MyStamp().clone().clone().clone().x === 42; // true
 ```
 
 Delayed initialization via returning a Promise.
@@ -199,7 +199,7 @@ const stamp = stampit().props({
 
 console.log(stamp().effects.cutoff.min); // 0
 
-const effectMashup = stamp({effect: {cutoff: {min: 42}}});
+const effectMashup = stamp({effects: {cutoff: {min: 42}}});
 console.log(effectMashup.effects.cutoff.min); // 42
 console.log(effectMashup.effects.cutoff.max); // 255
 ```
@@ -484,7 +484,9 @@ myStamp = myStamp.init(function () {
   }
 });
 
-var obj = myStamp.create();
+myStamp.staticOverride; // true
+
+var obj = myStamp();
 obj.methodOverride; // true
 obj.stateOverride; // true
 obj.name.first && obj.name.last; // true
