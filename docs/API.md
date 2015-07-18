@@ -3,7 +3,7 @@
 ## Example
 
 ```js
-// Adds .log() method to the object.
+// Adds .log() method to factory instantiated objects.
 const Logger = stampit({
   methods: {
     log: console.log
@@ -20,7 +20,7 @@ const DbConnection =
   stampit().refs({ // Assigns the mongoose connection object.
     dbConnection: mongoose.connection
   })
-  .init(function () { // Connecting to the DB when creating the object.
+  .init(function () { // Connecting to the DB upon creating an object.
     if (!this.dbConnection.readyState) {
       this.connection.open(this.connectionConfig);
       this.log('Opening a DB connection');
@@ -47,7 +47,6 @@ conn.close(); // Close the conneciton.
 const localConn = DbConnection({ connectionConfig: 'mongodb://localhost' });
 ```
 
-**Source: stampit.js**
 
 ### stampit()
 
@@ -84,7 +83,7 @@ const stamp = stampit({
   }
 });
 
-var objectInstance = stamp({factor: 1.1});
+const objectInstance = stamp({factor: 1.1});
 ```
 
 ## The stamp object

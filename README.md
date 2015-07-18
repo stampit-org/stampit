@@ -212,4 +212,4 @@ var myBar = bar({name: 'Moe\'s'});
 myBar.add({name: 'Homer' }).open().getMember('Homer');
 ```
 
-For more examples see [API](docs/API.md) and [advances examples](docs/advanced_examples.md).
+For more examples see the [API](docs/API.md) and the [advances examples](docs/advanced_examples.md).
