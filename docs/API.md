@@ -150,7 +150,7 @@ Each function receives the following object as the first argument:
 Private state.
 ```js
 const stamp = stampit().init(({instance, args}) => {
-  let factor = args[0] || 1;
+  const factor = args[0] || 1;
   instance.getFactor = () => factor;
 });
 
@@ -160,11 +160,11 @@ console.log(stamp(null, 2.5).getFactor()); // 2.5
 
 Make any stamp cloneable.
 ```js
-let Cloneable = stampit().init(({instance, stamp, args}) =>
+const Cloneable = stampit().init(({instance, stamp, args}) =>
   instance.clone = () => stamp(instance);
 });
 
-let MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
+const MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
 MyStamp().clone().clone().clone().x === 42; // true
 ```
 
@@ -174,11 +174,11 @@ import fs from 'fs';
 import denodeify from 'denodeify';
 const readFilePromise = denodeify(fs.readFile);
 
-let FileContents = stampit().init(({instance}) =>
-  return readFilePromise(instance.fileName);
+const PackageDependencies = stampit().init(({instance}) =>
+  return readFilePromise(instance.fileName).then((contents) => JSON.parse(contents).dependencies);
 });
 
-FileContents({fileName: './package.json'}).then((package) => console.log(package.dependencies));
+PackageDependencies({fileName: './package.json'}).then((dependencies) => console.log(dependencies));
 ```
 
 ### stamp.props()
