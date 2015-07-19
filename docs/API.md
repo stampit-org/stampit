@@ -3,44 +3,50 @@
 ## Example
 
 ```js
-var Logger = stampit({
+// Adds .log() method to factory instantiated objects.
+const Logger = stampit({
   methods: {
     log: console.log
   }
 });
 
-var DefaultConnectionConfig = stampit().props({
+// Assings the default connection string.
+const DefaultConnectionConfig = stampit().props({
   connectionConfig: require('./config.json').db.connection;
 });
 
-var DbConnection = stampit().refs({
-  dbConnection: mongoose.connection
-})
-.init(function () {
-  if (!this.dbConnection.readyState) {
-    this.connection.open(this.connectionConfig);
-    this.log('Opening a DB connection');
-  }
-})
-.methods({
-  close() {
-    if (this.dbConnection.readyState) {
-      this.dbConnection.close();
-      this.log('Closing the DB connection');
+// The connection object.
+const DbConnection = 
+  stampit().refs({ // Assigns the mongoose connection object.
+    dbConnection: mongoose.connection
+  })
+  .init(function () { // Connecting to the DB upon creating an object.
+    if (!this.dbConnection.readyState) {
+      this.connection.open(this.connectionConfig);
+      this.log('Opening a DB connection');
     }
-  }
-})
-.compose(Logger, DefaultConnectionConfig);
+  })
+  .methods({ // A method to close the connection.
+    close() {
+      if (this.dbConnection.readyState) {
+        this.dbConnection.close();
+        this.log('Closing the DB connection');
+      }
+    }
+  })
+  .compose(
+    Logger, // add logging capability via this.log() 
+    DefaultConnectionConfig // add the default this.connectionConfig value
+  );
 
-var conn = DbConnection(); // Opens a DB connection
-var conn2 = DbConnection({ connection: conn.dbConnection }); // reusing existing
-conn.close(); // Closes the conneciton.
+const conn = DbConnection(); // Open a DB connection
+const conn2 = DbConnection({ connection: conn.dbConnection }); // reusing existing
+conn.close(); // Close the conneciton.
 
 // Connect to a different DB.
-var localConn = DbConnection({ connectionConfig: 'mongodb://localhost' });
+const localConn = DbConnection({ connectionConfig: 'mongodb://localhost' });
 ```
 
-**Source: stampit.js**
 
 ### stampit()
 
@@ -62,6 +68,23 @@ components that are passed in or composed.
  * @return {Function} factory.compose Add stamp to stamp. Chainable.
  * @return {Function} factory.static Add properties to the factory object. Chainable.
 
+```js
+const stamp = stampit({
+  methods: {
+    aplify(value) {
+      return this.factor * value;
+    }
+  },
+  refs: {
+    defaultFactor: 1
+  },
+  init() {
+    this.factor = this.factor >= 0 ? this.factor : this.defaultFactor;
+  }
+});
+
+const objectInstance = stamp({factor: 1.1});
+```
 
 ## The stamp object
 
@@ -70,6 +93,17 @@ components that are passed in or composed.
 Take n objects and add them to the methods list of a new stamp. Creates new stamp.
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
+```js
+const stamp = stampit().methods({
+  error: console.error,
+  aplify(value) {
+    if (!isFinite(value) || value < 0) { console.error(`value ${value} is incorrect`); }
+    return this.factor * value;
+  }
+});
+
+stamp().aplify('BADF00D'); // value BADF00D is incorrect
+```
 
 ### stamp.refs()
 
@@ -78,6 +112,14 @@ Take n objects and add them to the references list of a new stamp. Creates new s
 
 It has an alias - `stamp.state()`. Deprecated.
 
+```js
+const stamp = stampit().refs({
+  factor: 1
+});
+
+console.log(stamp().factor); // 1
+console.log(stamp({factor: 5}).factor); // 5
+```
 
 ### stamp.init([arg1] [,arg2] [,arg3...])
 
@@ -103,26 +145,40 @@ Each function receives the following object as the first argument:
 }
 ```
 
-Examples (ES6).
+#### Examples
+
+Private state.
+```js
+const stamp = stampit().init(({instance, args}) => {
+  const factor = args[0] || 1;
+  instance.getFactor = () => factor;
+});
+
+console.log(stamp().getFactor()); // 1
+console.log(stamp(null, 2.5).getFactor()); // 2.5
+```
 
 Make any stamp cloneable.
 ```js
-let Cloneable = stampit().init(({instance, stamp, args}) =>
+const Cloneable = stampit().init(({instance, stamp, args}) =>
   instance.clone = () => stamp(instance);
 });
 
-let MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
-MyStamp.create().clone().clone().clone().x === 42; // true
+const MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
+MyStamp().clone().clone().clone().x === 42; // true
 ```
 
-Teach any object to return original stamp:
+Delayed initialization via returning a Promise.
 ```js
-let SelfKnowlegeable = stampit().init(({instance, stamp, args}) =>
-  this.originalStamp = stamp;
+import fs from 'fs';
+import denodeify from 'denodeify';
+const readFilePromise = denodeify(fs.readFile);
+
+const PackageDependencies = stampit().init(({instance}) =>
+  return readFilePromise(instance.fileName).then((contents) => JSON.parse(contents).dependencies);
 });
 
-let MyStamp = stampit().refs({x: 42}).compose(SelfKnowlegeable); // composing with the "SelfKnowlegeable" behavior
-MyStamp.create().originalStamp === MyStamp; // true
+PackageDependencies({fileName: './package.json'}).then((dependencies) => console.log(dependencies));
 ```
 
 ### stamp.props()
@@ -132,6 +188,22 @@ Note: the merge algorithm will not change any existing `refs` data of a resultin
 * @return {Object} stamp  The new stamp based on the original `this` stamp.
 
 
+```js
+const stamp = stampit().props({
+  effects: {
+    amplification: 1,
+    cutoff: {mix: 0, max:255}
+  }
+});
+
+console.log(stamp().effects.cutoff.min); // 0
+
+const effectMashup = stamp({effects: {cutoff: {min: 42}}});
+console.log(effectMashup.effects.cutoff.min); // 42
+console.log(effectMashup.effects.cutoff.max); // 255
+```
+
+
 ### stamp.compose([arg1] [,arg2] [,arg3...])
 
 Take one or more factories produced from stampit() and
@@ -139,6 +211,12 @@ combine them with `this` to produce and return a new factory object.
 Combining overrides properties with last-in priority.
  * @return {Function} A new stampit factory composed from arguments.
 
+```js
+const stamp1 = stampit({ methods: { log: console.log } });
+const stamp2 = stampit({ refs: { theAnswer: 42 } });
+
+const composedStamp = stamp1.compose(stamp2);
+```
 
 ### stamp.create([properties] [,arg1] [,arg2...])
 
@@ -157,12 +235,40 @@ compose with other `.init()` functions that also take
 arguments. Taking arguments with an `.init()` function is an
 anti-pattern that should be avoided, when possible.
 
+```js
+const stamp = stampit().init(({args}) => { console.log(args); });
+stamp.create(null, 42); // 42
+stamp(null, 42); // 42
+```
 
 ### stamp.static()
 
 Take n objects and add all its properties to the stamp (aka factory object).
 * @return {Object} stamp A new stamp.
 
+```js
+const stamp = stampit().static({
+  printMe() { console.log(this); }
+});
+
+stamp.printMe();
+```
+
+It used to be like that:
+```js
+Object.assign(stamp, {
+  foo: 'foo'
+});
+```
+
+But can be short written as:
+```js
+stamp = stamp.static({
+  foo: 'foo'
+});
+```
+
+See more useful tips in the [advanced examples](advanced_examples.md#validate-before-a-function-call).
 
 ## Utility methods
 
@@ -184,13 +290,7 @@ Shortcut for `stampit().props()`
 
 ### stampit.compose()
 
-Take two or more stamps produced from stampit() and
-combine them to produce a new stamp. Combining overrides
-properties with last-in priority.
-
-* `@param {...Function|Function[]} stamp` any number of stamps.
-* `@return {Function}` A new stamp composed from arguments.
-
+Shortcut for `stampit().compose()`
 
 ### stampit.mixin(), .extend(), .mixIn(), .assign()
 
@@ -208,7 +308,7 @@ Take an old-fashioned JS constructor and return a stamp  that
 you can freely compose with other stamps. It is possible to
 use constructors that take arguments. Simply pass the arguments
 into the returned stamp after the properties object:
-`var myInstance = myStamp(props, arg1, arg2);`
+`const myInstance = myStamp(props, arg1, arg2);`
 
 Note that if you use this feature, it is **not safe** to compose
 the resulting stamp with other stamps willy-nilly, because if two
@@ -220,30 +320,30 @@ will probably clash with each other, producing very unexpected results.
 
 ```js
   // The old constructor / class thing...
-  var Constructor = function Constructor() {
+  const Constructor = function Constructor() {
     this.thing = 'initialized';
   };
   Constructor.prototype.foo = function foo() { return 'foo'; };
 
   // The conversion
-  var oldskool = stampit.convertConstructor(Constructor);
+  const oldskool = stampit.convertConstructor(Constructor);
 
   // A new stamp to compose with...
-  var newskool = stampit({
+  const newskool = stampit({
     methods: {
-      bar: function bar() { return 'bar'; }
+      bar() { return 'bar'; }
      // your methods here...
     },
-    init: function () {
+    init() {
       this.baz = 'baz';
     }
   });
 
   // Now you can compose those old constructors just like you could
   // with any other stamp...
-  var myThing = stampit.compose(oldskool, newskool);
+  const myThing = stampit.compose(oldskool, newskool);
 
-  var t = myThing();
+  const t = myThing();
 
   t.thing; // 'initialized',
 
@@ -252,25 +352,25 @@ will probably clash with each other, producing very unexpected results.
   t.bar(); // 'bar'
 ```
 
-# Examples
+## Examples
 
-## Pass multiple objects into .methods(), .refs(), .init(), props(), .static(), or .compose().
+### Pass multiple objects into .methods(), .refs(), .init(), props(), .static(), or .compose().
 
 Every fluent method of stampit can receive multiple arguments.
 The properties from later arguments in the list will override the same named properties of previously passed in objects. 
 
 ```js
-  var obj = stampit().methods({
-    a: function () { return 'a'; }
+  const obj = stampit().methods({
+    a() { return 'a'; }
   }, {
-    b: function () { return 'b'; }
+    b() { return 'b'; }
   }).create();
 ```
 
 Or `.refs()` ...
 
 ```js
-  var obj = stampit().refs({
+  const obj = stampit().refs({
     a: 'a'
   }, {
     b: 'b'
@@ -281,7 +381,7 @@ Or `.refs()` ...
 Or `.init()` ...
 
 ```js
-  var obj = stampit().init(function () {
+  const obj = stampit().init(function () {
     console.log(this);
   }, function () {
     console.log(this); // same as above
@@ -292,7 +392,7 @@ Or `.init()` ...
 Or `.props()` ...
 
 ```js
-  var obj = stampit().props({
+  const obj = stampit().props({
     name: { first: 'John' }
   }, {
     name: { last: 'Doe' }
@@ -302,7 +402,7 @@ Or `.props()` ...
 Or `.static()` ...
 
 ```js
-  var obj = stampit().static({
+  const obj = stampit().static({
     foo: 'foo'
   }, {
     bar: 'bar'
@@ -312,5 +412,88 @@ Or `.static()` ...
 Or even `.compose()` ...
 
 ```js
-  var obj = abstractStamp.compose(concreteStamp, additionalStamp, utilityStamp).create();
+  const obj = abstractStamp.compose(concreteStamp, additionalStamp, utilityStamp).create();
+```
+
+
+## Chaining methods
+
+Chaining stamps *always* creates new stamps.
+
+Chain `.methods()` ...
+
+```js
+const myStamp = stampit().methods({
+  methodOverride() {
+    return false;
+  }
+}).methods({
+  methodOverride() {
+    return true;
+  }
+});
+```
+
+And `.refs()` ...
+
+```js
+myStamp = myStamp.refs({
+  stateOverride: false
+}).refs({
+  stateOverride: true
+});
+```
+
+And `.props()` ...
+
+```js
+myStamp = myStamp.props({
+  name: { first: 'John' }
+}).props({
+  name: { last: 'Doe' }
+});
+```
+
+And `.static()` ...
+
+```js
+myStamp.static({
+  staticOverride: false
+}).static({
+  staticOverride: true
+});
+```
+
+And `.init()` ...
+
+```js
+myStamp = myStamp.init(function () {
+  const secret = 'foo';
+
+  this.getSecret = function () {
+    return secret;
+  };
+}).init({
+  foo: function bar() {
+    this.a = true;
+  }
+}, {
+  bar: function baz() {
+    this.b = true;
+  }
+});
+
+myStamp.staticOverride; // true
+
+const obj = myStamp();
+obj.methodOverride; // true
+obj.stateOverride; // true
+obj.name.first && obj.name.last; // true
+obj.getSecret && obj.a && obj.b; // true
+```
+
+And `.compose()`.
+
+```js
+const newStamp = baseStamp.compose(myStamp);
 ```
