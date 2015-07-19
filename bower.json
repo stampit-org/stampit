@@ -11,10 +11,12 @@
     "advanced-examples",
     "ADVANCED_EXAMPLES.md",
     "buildconfig.env.example",
-    "dist",
+    "dist/stampit.js",
+    "dist/stampit.min.js",
     "node_modules",
     "package.json",
     "src",
-    "test"
+    "test",
+    "webpack.config.js"
   ]
 }

@@ -5,4 +5,5 @@
 /.travis.yml
 /.jshintrc
 /buildconfig.env.example
+/dist/
 /test/
