@@ -331,10 +331,10 @@ will probably clash with each other, producing very unexpected results.
   // A new stamp to compose with...
   const newskool = stampit({
     methods: {
-      bar: function bar() { return 'bar'; }
+      bar() { return 'bar'; }
      // your methods here...
     },
-    init: function () {
+    init() {
       this.baz = 'baz';
     }
   });
@@ -423,12 +423,12 @@ Chaining stamps *always* creates new stamps.
 Chain `.methods()` ...
 
 ```js
-var myStamp = stampit().methods({
-  methodOverride: function () {
+const myStamp = stampit().methods({
+  methodOverride() {
     return false;
   }
 }).methods({
-  methodOverride: function () {
+  methodOverride() {
     return true;
   }
 });
@@ -468,7 +468,7 @@ And `.init()` ...
 
 ```js
 myStamp = myStamp.init(function () {
-  var secret = 'foo';
+  const secret = 'foo';
 
   this.getSecret = function () {
     return secret;
@@ -485,7 +485,7 @@ myStamp = myStamp.init(function () {
 
 myStamp.staticOverride; // true
 
-var obj = myStamp();
+const obj = myStamp();
 obj.methodOverride; // true
 obj.stateOverride; // true
 obj.name.first && obj.name.last; // true
@@ -495,5 +495,5 @@ obj.getSecret && obj.a && obj.b; // true
 And `.compose()`.
 
 ```js
-var newStamp = baseStamp.compose(myStamp);
+const newStamp = baseStamp.compose(myStamp);
 ```
