@@ -101,7 +101,6 @@ When invoked the stamp factory function creates and returns object instances ass
 * Stamps are factory functions, so they don't need to be invoked with `new` (which couples callers to the implementation of object instantiation)
 * Stamps don't create parent-child class hierarchies. Class hierarchies create "is-a" relationships between classes. Stamp composition creates "has-a" or "uses-a" relationships, instead. For that reason, stamp inheritance is less brittle than class inheritance.
 
-All of these stampit methods may be called multiple times to add more elements to the factory.
 
 ## What's the Point?
 
