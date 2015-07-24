@@ -71,7 +71,7 @@ components that are passed in or composed.
 ```js
 const stamp = stampit({
   methods: {
-    aplify(value) {
+    amplify(value) {
       return this.factor * value;
     }
   },
@@ -96,13 +96,13 @@ Take n objects and add them to the methods list of a new stamp. Creates new stam
 ```js
 const stamp = stampit().methods({
   error: console.error,
-  aplify(value) {
+  amplify(value) {
     if (!isFinite(value) || value < 0) { console.error(`value ${value} is incorrect`); }
     return this.factor * value;
   }
 });
 
-stamp().aplify('BADF00D'); // value BADF00D is incorrect
+stamp().amplify('BADF00D'); // value BADF00D is incorrect
 ```
 
 ### stamp.refs()
