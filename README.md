@@ -33,7 +33,7 @@ Stampit can be [installed via npm](https://www.npmjs.com/package/stampit)
 npm install stampit
 ```
 
-or [bower](https://github.com/stampit-org/stampit-bower) (UMD)
+or [Bower](https://github.com/stampit-org/stampit-bower) (UMD)
 ```shell
 bower install stampit
 ```
