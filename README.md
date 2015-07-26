@@ -33,12 +33,18 @@ Stampit can be [installed via npm](https://www.npmjs.com/package/stampit)
 npm install stampit
 ```
 
+or [bower](https://github.com/stampit-org/stampit-bower) (UMD)
+```shell
+bower install stampit
+```
 
 or the *unofficial* [gem](https://github.com/brettimus/stampitjs-rails)
 
 ```shell
 gem install stampitjs-rails
 ```
+
+or referenced via [CDNJS](https://cdnjs.com/libraries/stampit)
 
 or by [downloading the latest release](https://github.com/stampit-org/stampit/releases).
 
