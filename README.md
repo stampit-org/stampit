@@ -85,13 +85,13 @@ Stamp composition takes advantage of three different kinds of prototypal inherit
 
 When invoked the stamp factory function creates and returns object instances assigning:
  ```js
- var DbAuthStamp = stampit().
+ const DbAuthStamp = stampit().
    methods({ authorize: function(){} }). // methods each new object instance will have
    refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
    init(function(context){ }). // init function(s) to be called when an object instance is created
    props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
 
- var dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
+ const dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
  ```
 
 ### How are Stamps Different from Classes?
@@ -111,9 +111,9 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```js
-var a = stampit().init(function () {
-  var priv = 'a';
-  this.getA = function () {
+const a = stampit().init(function () {
+  const priv = 'a';
+  this.getA = () => {
     return priv;
   };
 });
@@ -134,9 +134,9 @@ because we didn't assign it to anything. Don't worry about that.
 Here's another:
 
 ```js
-var b = stampit().init(function () {
-  var priv = 'b';
-  this.getB = function () {
+const b = stampit().init(function () {
+  const priv = 'b';
+  this.getB = () => {
     return priv;
   };
 });
@@ -147,9 +147,9 @@ Those `priv`'s are not a typo. The point is to demonstrate that `a` and `b`'s pr
 But here's the real treat:
 
 ```js
-var c = stampit.compose(a, b);
+const c = stampit.compose(a, b);
 
-var foo = c(); // we won't throw this one away...
+const foo = c(); // we won't throw this one away...
 
 foo.getA(); // "a"
 foo.getB(); // "b"
@@ -157,57 +157,51 @@ foo.getB(); // "b"
 
 WAT? Yeah. You just inherited privileged methods and private data from two sources at the same time.
 
-But that's boring. Let's see what else is on tap:
+But that's boring. Let's see a real life example:
 
 ```js
-// Some more privileged methods, with some private data.
-var availability = stampit().init(function () {
-  var isOpen = false; // private
+// A public method with access to private data.
+const TokenArgument = stampit().init(({ instance, args }) => {
+  // Using an argument passed to a factory function.
+  const token = args[0]; // private state
 
-  this.open = function open() {
-    isOpen = true;
-    return this;
+  instace.getToken = () => {
+    return token;
   };
-  this.close = function close() {
-    isOpen = false;
-    return this;
-  };
-  this.isOpen = function isOpenMethod() {
-    return isOpen;
-  }
 });
 
 // Here's a stamp with public methods, and some state:
-var membership = stampit({
+var AuthorizeAnAction = stampit({
   methods: {
-    add: function (member) {
-      this.members[member.name] = member;
-      return this;
-    },
-    getMember: function (name) {
-      return this.members[name];
+    authorize(action) {
+      return requestjsOnPromises({
+        url: `${this.server}?action=${action}`,
+        headers: { Authorization: 'Bearer ' + this.getToken() }
+      });
     }
   },
   refs: {
-    members: {}
+    server: 'https://my-staging-server.com/api'
   }
 });
 
 // Let's set some defaults:
-var defaults = stampit().refs({
-  name: 'The Saloon',
-  specials: 'Whisky, Gin, Tequila'
+var DefaultServer = stampit().refs({
+  server: 'https://my-production-server.com/api/v2/',
+  name: 'guest'
 });
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
-var bar = stampit.compose(defaults, availability, membership);
+var ApiAuthorization = stampit.compose(DefaultServer, TokenArgument, AuthorizeAnAction);
+var guestAuthorizer = ApiAuthorizion();
 
-// Note that you can override references on instantiation:
-var myBar = bar({name: 'Moe\'s'});
+// Note that you can override references on instantiation and pass variables to init() functions:
+var userAuthorizer = ApiAuthorization({name: 'Moses'}, '0E46A279');
 
 // Silly, but proves that everything is as it should be.
-myBar.add({name: 'Homer' }).open().getMember('Homer');
+guestAuthorizer.authorize('can-sync-data').then(console.log).catch(...); // prints "true"
+userAuthorizer.authorize('can-sync-data').then(console.log).catch(...); // prints "false"
 ```
 
 For more examples see the [API](docs/API.md) and the [advances examples](docs/advanced_examples.md).
