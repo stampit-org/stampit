@@ -200,8 +200,8 @@ var guestAuthorizer = ApiAuthorizion();
 var userAuthorizer = ApiAuthorization({name: 'Moses'}, '0E46A279');
 
 // Silly, but proves that everything is as it should be.
-guestAuthorizer.authorize('can-sync-data').then(console.log).catch(...); // prints "true"
-userAuthorizer.authorize('can-sync-data').then(console.log).catch(...); // prints "false"
+guestAuthorizer.authorize('can-sync-data').then(console.log); // prints "true"
+userAuthorizer.authorize('can-sync-data').then(console.log); // prints "false"
 ```
 
 For more examples see the [API](docs/API.md) and the [advances examples](docs/advanced_examples.md).
