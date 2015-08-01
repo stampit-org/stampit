@@ -84,15 +84,15 @@ Stamp composition takes advantage of three different kinds of prototypal inherit
 * Functional / closure inheritance (for initialization or privacy/encapsulation)
 
 When invoked the stamp factory function creates and returns object instances assigning:
- ```js
- const DbAuthStamp = stampit().
-   methods({ authorize: function(){} }). // methods each new object instance will have
-   refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
-   init(function(context){ }). // init function(s) to be called when an object instance is created
-   props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
+```js
+const DbAuthStamp = stampit().
+  methods({ authorize: function(){} }). // methods each new object instance will have
+  refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
+  init(function(context){ }). // init function(s) to be called when an object instance is created
+  props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
 
- const dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
- ```
+const dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
+```
 
 ### How are Stamps Different from Classes?
 
@@ -157,51 +157,57 @@ foo.getB(); // "b"
 
 WAT? Yeah. You just inherited privileged methods and private data from two sources at the same time.
 
-But that's boring. Let's see a real life example:
+But that's boring. Let's see what else is on tap:
 
 ```js
-// A public method with access to private data.
-const TokenArgument = stampit().init(({ instance, args }) => {
-  // Using an argument passed to a factory function.
-  const token = args[0]; // private state
+// Some more privileged methods, with some private data.
+const availability = stampit().init(() => {
+  var isOpen = false; // private
 
-  instace.getToken = () => {
-    return token;
+  instance.open = function open() {
+    isOpen = true;
+    return this;
   };
+  instance.close = function close() {
+    isOpen = false;
+    return this;
+  };
+  instance.isOpen = function isOpenMethod() {
+    return isOpen;
+  }
 });
 
 // Here's a stamp with public methods, and some state:
-var AuthorizeAnAction = stampit({
+const membership = stampit({
   methods: {
-    authorize(action) {
-      return requestjsOnPromises({
-        url: `${this.server}?action=${action}`,
-        headers: { Authorization: 'Bearer ' + this.getToken() }
-      });
+    add(member) {
+      this.members[member.name] = member;
+      return this;
+    },
+    getMember(name) {
+      return this.members[name];
     }
   },
   refs: {
-    server: 'https://my-staging-server.com/api'
+    members: {}
   }
 });
 
 // Let's set some defaults:
-var DefaultServer = stampit().refs({
-  server: 'https://my-production-server.com/api/v2/',
-  name: 'guest'
+const defaults = stampit().refs({
+  name: 'The Saloon',
+  specials: 'Whisky, Gin, Tequila'
 });
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
-var ApiAuthorization = stampit.compose(DefaultServer, TokenArgument, AuthorizeAnAction);
-var guestAuthorizer = ApiAuthorizion();
+const bar = stampit.compose(defaults, availability, membership);
 
-// Note that you can override references on instantiation and pass variables to init() functions:
-var userAuthorizer = ApiAuthorization({name: 'Moses'}, '0E46A279');
+// Note that you can override references on instantiation:
+const myBar = bar({name: 'Moe\'s'});
 
 // Silly, but proves that everything is as it should be.
-guestAuthorizer.authorize('can-sync-data').then(console.log); // prints "true"
-userAuthorizer.authorize('can-sync-data').then(console.log); // prints "false"
+myBar.add({name: 'Homer'}).open().getMember('Homer');
 ```
 
 For more examples see the [API](docs/API.md) and the [advances examples](docs/advanced_examples.md).
