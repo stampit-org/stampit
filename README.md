@@ -84,15 +84,15 @@ Stamp composition takes advantage of three different kinds of prototypal inherit
 * Functional / closure inheritance (for initialization or privacy/encapsulation)
 
 When invoked the stamp factory function creates and returns object instances assigning:
- ```js
- var DbAuthStamp = stampit().
-   methods({ authorize: function(){} }). // methods each new object instance will have
-   refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
-   init(function(context){ }). // init function(s) to be called when an object instance is created
-   props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
+```js
+const DbAuthStamp = stampit().
+  methods({ authorize: function(){} }). // methods each new object instance will have
+  refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
+  init(function(context){ }). // init function(s) to be called when an object instance is created
+  props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
 
- var dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
- ```
+const dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
+```
 
 ### How are Stamps Different from Classes?
 
@@ -111,9 +111,9 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```js
-var a = stampit().init(function () {
-  var priv = 'a';
-  this.getA = function () {
+const a = stampit().init(function () {
+  const priv = 'a';
+  this.getA = () => {
     return priv;
   };
 });
@@ -134,9 +134,9 @@ because we didn't assign it to anything. Don't worry about that.
 Here's another:
 
 ```js
-var b = stampit().init(function () {
-  var priv = 'b';
-  this.getB = function () {
+const b = stampit().init(function () {
+  const priv = 'b';
+  this.getB = () => {
     return priv;
   };
 });
@@ -147,9 +147,9 @@ Those `priv`'s are not a typo. The point is to demonstrate that `a` and `b`'s pr
 But here's the real treat:
 
 ```js
-var c = stampit.compose(a, b);
+const c = stampit.compose(a, b);
 
-var foo = c(); // we won't throw this one away...
+const foo = c(); // we won't throw this one away...
 
 foo.getA(); // "a"
 foo.getB(); // "b"
@@ -161,30 +161,30 @@ But that's boring. Let's see what else is on tap:
 
 ```js
 // Some more privileged methods, with some private data.
-var availability = stampit().init(function () {
+const availability = stampit().init(() => {
   var isOpen = false; // private
 
-  this.open = function open() {
+  instance.open = function open() {
     isOpen = true;
     return this;
   };
-  this.close = function close() {
+  instance.close = function close() {
     isOpen = false;
     return this;
   };
-  this.isOpen = function isOpenMethod() {
+  instance.isOpen = function isOpenMethod() {
     return isOpen;
   }
 });
 
 // Here's a stamp with public methods, and some state:
-var membership = stampit({
+const membership = stampit({
   methods: {
-    add: function (member) {
+    add(member) {
       this.members[member.name] = member;
       return this;
     },
-    getMember: function (name) {
+    getMember(name) {
       return this.members[name];
     }
   },
@@ -194,20 +194,20 @@ var membership = stampit({
 });
 
 // Let's set some defaults:
-var defaults = stampit().refs({
+const defaults = stampit().refs({
   name: 'The Saloon',
   specials: 'Whisky, Gin, Tequila'
 });
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
-var bar = stampit.compose(defaults, availability, membership);
+const bar = stampit.compose(defaults, availability, membership);
 
 // Note that you can override references on instantiation:
-var myBar = bar({name: 'Moe\'s'});
+const myBar = bar({name: 'Moe\'s'});
 
 // Silly, but proves that everything is as it should be.
-myBar.add({name: 'Homer' }).open().getMember('Homer');
+myBar.add({name: 'Homer'}).open().getMember('Homer');
 ```
 
 For more examples see the [API](docs/API.md) and the [advanced examples](docs/advanced_examples.md).
