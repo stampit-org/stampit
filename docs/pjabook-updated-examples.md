@@ -208,7 +208,7 @@ var c = stampit.compose(a, b),
   foo = c();
 
 foo.getA(); // 'a'
-foo.getB(); // 'b”
+foo.getB(); // 'b'
 
 test ('Closures', function () {
   equal(a().getA(), 'a', "Private getA() gets a.");
