@@ -22,7 +22,7 @@ const DbConnection =
   })
   .init(function () { // Connecting to the DB upon creating an object.
     if (!this.dbConnection.readyState) {
-      this.connection.open(this.connectionConfig);
+      this.dbConnection.open(this.connectionConfig);
       this.log('Opening a DB connection');
     }
   })
@@ -40,7 +40,7 @@ const DbConnection =
   );
 
 const conn = DbConnection(); // Open a DB connection
-const conn2 = DbConnection({ connection: conn.dbConnection }); // reusing existing
+const conn2 = DbConnection({ dbConnection: conn.dbConnection }); // reusing existing
 conn.close(); // Close the conneciton.
 
 // Connect to a different DB.
