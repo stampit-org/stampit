@@ -97,7 +97,7 @@ Take n objects and add them to the methods list of a new stamp. Creates new stam
 const stamp = stampit().methods({
   error: console.error,
   amplify(value) {
-    if (!isFinite(value) || value < 0) { console.error(`value ${value} is incorrect`); }
+    if (!isFinite(value) || value < 0) { this.error(`value ${value} is incorrect`); }
     return this.factor * value;
   }
 });
