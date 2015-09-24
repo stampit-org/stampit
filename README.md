@@ -89,7 +89,8 @@ const DbAuthStamp = stampit().
   methods({ authorize: function(){} }). // methods each new object instance will have
   refs({user: {name: 'guest', pwd: ''}}). // properties to be set by reference to object instances
   init(function(context){ }). // init function(s) to be called when an object instance is created
-  props({db: {host: 'localhost'}}); // properties to be deeply merged to object instances
+  props({db: {host: 'localhost'}}). // properties to be deeply merged to object instances
+  compose(AnyOtherStamps); // mixes the stamp prototypes (methods, refs, init, etc.) together
 
 const dbAuthorizer = DbAuthStamp({ user: adminUserCredentials });
 ```
