@@ -112,7 +112,7 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```js
-const a = stampit().init(() => {
+const a = stampit().init(function() {
   const priv = 'a';
   this.getA = () => {
     return priv;
@@ -135,7 +135,7 @@ because we didn't assign it to anything. Don't worry about that.
 Here's another:
 
 ```js
-const b = stampit().init(() => {
+const b = stampit().init(function() {
   const priv = 'b';
   this.getB = () => {
     return priv;
@@ -162,18 +162,18 @@ But that's boring. Let's see what else is on tap:
 
 ```js
 // Some more privileged methods, with some private data.
-const availability = stampit().init(({instance}) => {
+const availability = stampit().init(function() {
   var isOpen = false; // private
 
-  instance.open = function open() {
+  this.open = function open() {
     isOpen = true;
     return this;
   };
-  instance.close = function close() {
+  this.close = function close() {
     isOpen = false;
     return this;
   };
-  instance.isOpen = function isOpenMethod() {
+  this.isOpen = function isOpenMethod() {
     return isOpen;
   }
 });
