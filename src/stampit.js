@@ -188,7 +188,7 @@ const stampit = function stampit(options) {
   const initMethod = cloneAndExtend.bind(null, fixed, addInit);
   return mixin(factory, {
     /**
-     * Creates a new object instance form the stamp.
+     * Creates a new object instance from the stamp.
      */
     create: factory,
 
