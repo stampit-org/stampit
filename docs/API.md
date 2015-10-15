@@ -192,7 +192,7 @@ Note: the merge algorithm will not change any existing `refs` data of a resultin
 const stamp = stampit().props({
   effects: {
     amplification: 1,
-    cutoff: {mix: 0, max:255}
+    cutoff: {min: 0, max:255}
   }
 });
 
