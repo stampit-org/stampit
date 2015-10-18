@@ -8,7 +8,7 @@ Stampit was written as an example for the book, ["Programming JavaScript Applica
 
 Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
-**React Users.** Stampit *loves* React. Check out [react-stampit](https://github.com/stampit-org/react-stampit) for composable components.
+**React Users.** Stampit *loves* React. Check out [react-stampit](https://github.com/stampit-org/react-stamp) for composable components.
 
 
 ## Status
