@@ -1,39 +1,30 @@
 import stampit from '../src/stampit';
 import test from 'tape';
 
-// .state alias
+// .properties alias
 
-test('stampit().fixed.state is same as refs', (t) => {
+test('stampit().compose.properties is same as refs', (t) => {
   const stamp = stampit({ refs: { s: 1 } });
 
-  t.equal(stamp.fixed.refs, stamp.fixed.state);
+  t.equal(stamp.compose.properties, stamp.compose.properties);
 
   t.end();
 });
 
-test('stampit().state().fixed.state is same as refs().fixed.refs', (t) => {
-  const stamp = stampit({ refs: { s: 1 } }).state({ refs: { s2: 2 } });
+test('stampit().properties().compose.properties is same as refs().compose.properties', (t) => {
+  const stamp = stampit({ refs: { s: 1 } }).properties({ refs: { s2: 2 } });
 
-  t.equal(stamp.fixed.refs, stamp.fixed.state);
-  t.equal(stamp.fixed.refs.s, stamp.fixed.state.s);
-  t.equal(stamp.fixed.refs.s2, stamp.fixed.state.s2);
+  t.equal(stamp.compose.properties, stamp.compose.properties);
+  t.equal(stamp.compose.properties.s, stamp.compose.properties.s);
+  t.equal(stamp.compose.properties.s2, stamp.compose.properties.s2);
 
   t.end();
 });
 
-test('stampit.compose().fixed.state is same as refs', (t) => {
+test('stampit.compose().compose.properties is same as refs', (t) => {
   const stamp = stampit({ refs: { s: 1 } }).compose(stampit({ refs: { s2: 2 } }));
 
-  t.equal(stamp.fixed.refs, stamp.fixed.state);
-
-  t.end();
-});
-
-test('stampit.convertConstructor().fixed.state is same as refs', (t) => {
-  function F() {}
-  const stamp = stampit.convertConstructor(F);
-
-  t.equal(stamp.fixed.refs, stamp.fixed.state);
+  t.equal(stamp.compose.properties, stamp.compose.properties);
 
   t.end();
 });

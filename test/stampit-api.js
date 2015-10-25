@@ -16,39 +16,33 @@ test('stampit({})', (t) => {
 });
 
 test('incorrect stampit({ methods }) args', (t) => {
-  t.same(stampit({ methods: 42 }).fixed.methods, {});
-  t.same(stampit({ methods: null }).fixed.methods, {});
-  t.same(stampit({ methods: new RegExp() }).fixed.methods, {});
-  t.same(stampit({ methods: [42] }).fixed.methods, {});
-  t.same(stampit({ methods: 'a string' }).fixed.methods, {});
+  t.same(stampit({ methods: 42 }).compose.methods, undefined);
+  t.same(stampit({ methods: null }).compose.methods, undefined);
+  t.same(stampit({ methods: 'a string' }).compose.methods, undefined);
 
   t.end();
 });
 
 test('incorrect stampit({ refs }) args', (t) => {
-  t.same(stampit({ refs: 42 }).fixed.refs, {});
-  t.same(stampit({ refs: null }).fixed.refs, {});
-  t.same(stampit({ refs: new RegExp() }).fixed.refs, {});
-  t.same(stampit({ refs: [42] }).fixed.refs, { 0: 42 });
+  t.same(stampit({ refs: 42 }).compose.properties, undefined);
+  t.same(stampit({ refs: null }).compose.properties, undefined);
 
   t.end();
 });
 
 test('incorrect stampit({ init }) args', (t) => {
-  t.same(stampit({ init: 42 }).fixed.init, []);
-  t.same(stampit({ init: null }).fixed.init, []);
-  t.same(stampit({ init: new RegExp() }).fixed.init, []);
-  t.same(stampit({ init: [42] }).fixed.init, []);
-  t.same(stampit({ init: 'a string' }).fixed.init, []);
+  t.same(stampit({ init: 42 }).compose.initializers.length, 1);
+  t.same(stampit({ init: null }).compose.initializers.length, 1);
+  t.same(stampit({ init: new RegExp() }).compose.initializers.length, 1);
+  t.same(stampit({ init: [42] }).compose.initializers.length, 1);
+  t.same(stampit({ init: 'a string' }).compose.initializers.length, 1);
 
   t.end();
 });
 
 test('incorrect stampit({ props }) args', (t) => {
-  t.same(stampit({ props: 42 }).fixed.props, {});
-  t.same(stampit({ props: null }).fixed.props, {});
-  t.same(stampit({ props: new RegExp() }).fixed.props, {});
-  t.same(stampit({ props: [42] }).fixed.props, { 0: 42 });
+  t.same(stampit({ props: 42 }).compose.deepProperties, undefined);
+  t.same(stampit({ props: null }).compose.deepProperties, undefined);
 
   t.end();
 });

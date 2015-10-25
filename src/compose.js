@@ -1,17 +1,14 @@
 import assign from 'lodash/object/assign';
 import merge from 'lodash/object/merge';
-import isFunction from 'lodash/lang/isFunction';
 import isArray from 'lodash/lang/isArray';
 import isObject from 'lodash/lang/isObject';
 import forEach from 'lodash/collection/forEach';
 
+import isComposable from './is-composable';
+import extractFunctions from './extract-functions';
 import stamp from './stamp';
 
 const isDescriptor = isObject;
-
-function isComposable(obj) {
-  return isFunction(obj) && isFunction(obj.compose);
-}
 
 function safeMutateProp(dst, src, propName, mutator) {
   const srcObj = src[propName];
@@ -31,7 +28,7 @@ function appendDescriptor(dst, src) {
     return;
   }
   if (isArray(src.initializers)) {
-    dst.initializers = (isArray(dst.initializers) ? dst.initializers : []).concat(src.initializers);
+    dst.initializers = extractFunctions(dst.initializers, src.initializers);
   }
   safeMutateProp(dst, src, 'methods', assign);
   safeMutateProp(dst, src, 'properties', assign);

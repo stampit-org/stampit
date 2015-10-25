@@ -22,7 +22,7 @@ export default function stamp(...args) {
     const options = args[0];
     forEach(descriptor.initializers, (initializer) => {
       if (isFunction(initializer)) {
-        var result = initializer.call(instance, options, {instance, stamp: this.stamp, args});
+        const result = initializer.call(instance, options, {instance, stamp: this.stamp, args});
         if (!isUndefined(result)) {
           instance = result;
         }
@@ -30,4 +30,4 @@ export default function stamp(...args) {
     });
   }
   return instance;
-};
+}

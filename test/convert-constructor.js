@@ -3,7 +3,7 @@ import test from 'tape';
 
 // Oldskool
 
-test('stampit.convertConstructor()', (t) => {
+test.skip('stampit.convertConstructor()', (t) => {
   const Base = function() { this.base = 'base'; };
   Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
@@ -37,7 +37,7 @@ test('stampit.convertConstructor()', (t) => {
   t.end();
 });
 
-test('stampit.convertConstructor() composed', (t) => {
+test.skip('stampit.convertConstructor() composed', (t) => {
   // The old constructor / class thing...
   const BaseOfBase = function() { this.baseOfBase = 'baseOfBase'; };
   BaseOfBase.prototype.baseOfBaseFunc = () => { return 'baseOfBaseFunc'; };

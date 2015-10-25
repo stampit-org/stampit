@@ -1,112 +1,101 @@
 import assign from 'lodash/object/assign';
 import merge from 'lodash/object/merge';
-import isFunction from 'lodash/lang/isFunction';
-import isArray from 'lodash/lang/isArray';
 import isObject from 'lodash/lang/isObject';
-import isUndefined from 'lodash/lang/isUndefined';
-import forEach from 'lodash/collection/forEach';
 
+import isComposable from './is-composable';
 import compose from './compose';
+import extractFunctions from './extract-functions';
 
-function extractFunctions(...args) {
-  const result = [];
-  if (isFunction(args[0])) {
-    forEach(args, fn => { // assuming all the arguments are functions
-      if (isFunction(fn)) {
-        result.push(fn);
-      }
-    });
-  } else if (isObject(args[0])) {
-    forEach(args, obj => {
-      forEach(obj, fn => {
-        if (isFunction(fn)) {
-          result.push(fn);
-        }
-      });
-    });
+const rawUtilities = {
+  methods(...methodsObject) {
+    return (this.compose || compose)({methods: assign({}, ...methodsObject)});
+  },
+  properties(...propertiesObject) {
+    return (this.compose || compose)({properties: assign({}, ...propertiesObject)});
+  },
+  initializers(...args) {
+    return (this.compose || compose)({initializers: extractFunctions(...args)});
+  },
+  deepProperties(...propertiesObject) {
+    return (this.compose || compose)({deepProperties: merge({}, ...propertiesObject)});
+  },
+  staticProperties(...propertiesObject) {
+    return (this.compose || compose)({staticProperties: assign({}, ...propertiesObject)});
+  },
+  deepStaticProperties(...propertiesObject) {
+    return (this.compose || compose)({staticDeepProperties: merge({}, ...propertiesObject)});
   }
-  return result;
-}
+};
 
-function baseStampitProperties(...properties) {
-  return this.compose({ properties: assign({}, ...properties) });
-}
-function baseStampitDeepProperties(...properties) {
-  return this.compose({ properties: assign({}, ...properties) });
-}
-function baseStampitInitializers(...args) {
-  return this.compose({ initializers: extractFunctions(...args) });
-}
-const baseStampitFactory = compose({ staticProperties: {
-  properties: baseStampitProperties,
-  refs: baseStampitFactory,
-  state: baseStampitFactory,
+const baseStampit = compose({
+  initializers: [function(options) {
+    assign(this, options);
+  }],
+  staticProperties: assign({
+    refs: rawUtilities.properties,
+    props: rawUtilities.properties,
+    init: rawUtilities.initializers,
+    deepProps: rawUtilities.deepProperties,
+    statics: rawUtilities.staticProperties,
 
-  initializers: baseStampitInitializers,
-  init: baseStampitInitializers,
-  enclose: baseStampitInitializers,
-
-  deepProperties: baseStampitDeepProperties,
-  props: baseStampitDeepProperties,
-}});
+    create(...args) {
+      return this(...args);
+    }
+  }, rawUtilities)
+});
 
 function stampit({
   methods,
 
   properties,
+  props,
   refs,
-  state,
 
   initializers,
   init,
-  enclose,
 
   deepProperties,
-  props,
+  deepProps,
 
   propertyDescriptors,
 
   staticProperties,
-  static,
+  statics,
 
   deepStaticProperties,
 
   staticPropertyDescriptors,
 
   configuration
-  }, ...args) {
-  return compose({
-    methods,
-    properties: assign({}, state, refs, properties),
-    initializers: [].concat(initializers, init, enclose),
-    deepProperties: merge({}, props, deepProperties),
-    staticProperties: assign({}, static, staticProperties),
-    propertyDescriptors,
+  } = {}, ...args) {
+  const p = isObject(props) || isObject(refs) || isObject(properties) ?
+    assign({}, props, refs, properties) : undefined;
+  const dp = isObject(deepProps) || isObject(deepProperties) ?
+    merge({}, deepProps, deepProperties) : undefined;
+  const sp = isObject(statics) || isObject(staticProperties) ?
+    assign({}, statics, staticProperties) : undefined;
+  return baseStampit.compose({
+    methods: methods,
+    properties: p,
+    initializers: extractFunctions(init, initializers),
+    deepProperties: dp,
+    staticProperties: sp,
     deepStaticProperties,
+    propertyDescriptors,
     staticPropertyDescriptors,
     configuration
   }, ...args);
 }
 
-export default assign(stampit, {
-  compose,
-
-  methods,
-
-  properties,
-  refs,
-  state,
-
-  enclose,
-  init,
-
-  deepProperties,
-  props,
-  deepProps,
-
-  staticProperties,
-  static,
-
-  deepStaticProperties
-
-});
+export default assign(stampit,
+  {
+    isStamp: isComposable,
+    isComposable: isComposable,
+    compose: baseStampit.compose,
+    refs: rawUtilities.properties,
+    props: rawUtilities.properties,
+    init: rawUtilities.initializers,
+    deepProps: rawUtilities.deepProperties,
+    statics: rawUtilities.staticProperties
+  },
+  rawUtilities);

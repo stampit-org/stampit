@@ -21,12 +21,12 @@ test('stampit.isStamp() with stamps', (t) => {
 
 test('stampit.isStamp() with non stamps', (t) => {
   const obj1 = undefined;
-  const obj2 = { refs: {}, methods: {}, init: {}, fixed: {}, props: {} };
+  const obj2 = { refs: {}, methods: {}, init: {}, compose: {}, props: {} };
   const obj3 = function() {
     this.init = this;
   };
   const obj4 = function() {
-    this.fixed = () => {};
+    this.compose = () => {};
   };
 
   t.ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
