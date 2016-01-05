@@ -10,7 +10,7 @@ const Logger = stampit({
   }
 });
 
-// Assings the default connection string.
+// Assigns the default connection string.
 const DefaultConnectionConfig = stampit().props({
   connectionConfig: require('./config.json').db.connection;
 });
