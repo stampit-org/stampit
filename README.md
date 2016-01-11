@@ -2,13 +2,13 @@
 -----
 [![Travis-CI](https://travis-ci.org/stampit-org/stampit.svg)](https://travis-ci.org/stampit-org/stampit)[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
+Create objects from reusable, composable behaviors. Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
 Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com).
 
 Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
-**React Users.** Stampit *loves* React. Check out [react-stampit](https://github.com/stampit-org/react-stampit) for composable components.
+**React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
 
 
 ## Status
@@ -64,7 +64,7 @@ See [API](docs/API.md).
 
  * Initializers are called for each new instance. Provides wide extensibility to stamp behavior.
 
- * For the curious - it's great for [learning about prototypal OO](http://ericleads.com/2013/02/fluent-javascript-three-different-kinds-of-prototypal-oo/). It mixes three major types of prototypes:
+ * For the curious - it's great for [learning about prototypal OO](https://vimeo.com/69255635). It mixes three major types of prototypes:
    1. differential inheritance, aka delegation (for methods),
    2. cloning, aka concatenation/exemplar prototypes (for state),
    3. functional / closure inheritance (for privacy / encapsulation)
@@ -112,7 +112,7 @@ Basic questions like "how do I inherit privileged methods and private data?" and
 Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
 
 ```js
-const a = stampit().init(function () {
+const a = stampit().init(function() {
   const priv = 'a';
   this.getA = () => {
     return priv;
@@ -135,7 +135,7 @@ because we didn't assign it to anything. Don't worry about that.
 Here's another:
 
 ```js
-const b = stampit().init(function () {
+const b = stampit().init(function() {
   const priv = 'b';
   this.getB = () => {
     return priv;
@@ -162,18 +162,18 @@ But that's boring. Let's see what else is on tap:
 
 ```js
 // Some more privileged methods, with some private data.
-const availability = stampit().init(() => {
+const availability = stampit().init(function() {
   var isOpen = false; // private
 
-  instance.open = function open() {
+  this.open = function open() {
     isOpen = true;
     return this;
   };
-  instance.close = function close() {
+  this.close = function close() {
     isOpen = false;
     return this;
   };
-  instance.isOpen = function isOpenMethod() {
+  this.isOpen = function isOpenMethod() {
     return isOpen;
   }
 });
