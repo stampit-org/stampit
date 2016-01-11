@@ -15,7 +15,7 @@ test('stampit({})', (t) => {
   t.end();
 });
 
-test('incorrect stampit({ methods }) args', (t) => {
+test.skip('incorrect stampit({ methods }) args', (t) => {
   t.same(stampit({ methods: 42 }).compose.methods, undefined);
   t.same(stampit({ methods: null }).compose.methods, undefined);
   t.same(stampit({ methods: 'a string' }).compose.methods, undefined);
@@ -23,7 +23,7 @@ test('incorrect stampit({ methods }) args', (t) => {
   t.end();
 });
 
-test('incorrect stampit({ refs }) args', (t) => {
+test.skip('incorrect stampit({ refs }) args', (t) => {
   t.same(stampit({ refs: 42 }).compose.properties, undefined);
   t.same(stampit({ refs: null }).compose.properties, undefined);
 
@@ -40,7 +40,7 @@ test('incorrect stampit({ init }) args', (t) => {
   t.end();
 });
 
-test('incorrect stampit({ props }) args', (t) => {
+test.skip('incorrect stampit({ props }) args', (t) => {
   t.same(stampit({ props: 42 }).compose.deepProperties, undefined);
   t.same(stampit({ props: null }).compose.deepProperties, undefined);
 

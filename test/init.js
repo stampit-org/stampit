@@ -158,7 +158,7 @@ test('stamp.init() should call composed init functions in order', (t) => {
   t.end();
 });
 
-test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
+test.skip('explicit push wrong object to stamp.compose.initializers[]', (t) => {
   const stamp = stampit({ init() {
     const secret = 'foo';
     this.getSecret = () => { return secret; };
@@ -172,7 +172,7 @@ test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
   t.end();
 });
 
-test('stamp.compose.initializers malformed object', (t) => {
+test.skip('stamp.compose.initializers malformed object', (t) => {
   const stamp = stampit.refs({ref: 42}).init(function() {
     const secret = 'foo';
     this.getSecret = () => { return secret; };

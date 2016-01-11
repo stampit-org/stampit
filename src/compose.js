@@ -1,73 +1,74 @@
-import assign from 'lodash/object/assign';
 import merge from 'lodash/object/merge';
-import isArray from 'lodash/lang/isArray';
-import isObject from 'lodash/lang/isObject';
-import forEach from 'lodash/collection/forEach';
+const isFunction = (obj) => typeof obj === 'function';
+const assign = Object.assign;
 
-import isComposable from './is-composable';
-import extractFunctions from './extract-functions';
-import stamp from './stamp';
+const getDescriptorProps = (descriptorName, composables) => {
+  return !composables ? undefined : composables.map(composable => {
+    const descriptor = composable.compose || composable;
+    return descriptor[descriptorName];
+  });
+};
 
-const isDescriptor = isObject;
+const createStamp = (composeMethod) => {
+  const {
+    methods, properties, deepProperties, propertyDescriptors, initializers,
+    staticProperties, deepStaticProperties, staticPropertyDescriptors
+    } = composeMethod;
 
-function safeMutateProp(dst, src, propName, mutator) {
-  const srcObj = src[propName];
-  if (!isObject(srcObj)) {
-    return;
-  }
-  const dstObj = dst[propName];
-  if (!isObject(dstObj)) {
-    dst[propName] = mutator({}, srcObj);
-    return;
-  }
-  mutator(dstObj, srcObj);
-}
+  const Stamp = function Stamp(options, ...args) {
+    let obj = Object.create(methods);
 
-function appendDescriptor(dst, src) {
-  if (!isDescriptor(src)) {
-    return;
-  }
-  if (isArray(src.initializers)) {
-    dst.initializers = extractFunctions(dst.initializers, src.initializers);
-  }
-  safeMutateProp(dst, src, 'methods', assign);
-  safeMutateProp(dst, src, 'properties', assign);
-  safeMutateProp(dst, src, 'deepProperties', merge);
-  safeMutateProp(dst, src, 'staticProperties', assign);
-  safeMutateProp(dst, src, 'deepStaticProperties', merge);
-  safeMutateProp(dst, src, 'propertyDescriptors', assign);
-  safeMutateProp(dst, src, 'staticPropertyDescriptors', assign);
-  safeMutateProp(dst, src, 'configuration', merge);
-}
+    merge(obj, deepProperties);
+    assign(obj, properties);
 
-function compose(...args) {
-  // creating stamp
-  const factoryContext = {};
-  const factory = stamp.bind(factoryContext); // makes a copy of the 'stamp' function object.
-  const descriptor = compose.bind(factory); // makes a copy of the 'compose' function object.
-  factory.compose = factoryContext.compose = descriptor;
-  factoryContext.stamp = factory;
+    Object.defineProperties(obj, propertyDescriptors);
 
-  // composing
-  if (isComposable(this)) {
-    appendDescriptor(descriptor, this.compose);
-  }
-  forEach(args, function(arg) {
-    appendDescriptor(descriptor, isComposable(arg) ? arg.compose : arg);
+    initializers.forEach(initializer => {
+      const returnValue = initializer.call(obj, options,
+        { instance: obj, stamp: Stamp, args: [options].concat(args) });
+      if (returnValue !== undefined) {
+        obj = returnValue;
+      }
+    });
+
+    return obj;
+  };
+
+  merge(Stamp, deepStaticProperties);
+  assign(Stamp, staticProperties);
+  Object.defineProperties(Stamp, staticPropertyDescriptors);
+  Stamp.compose = composeMethod;
+
+  return Stamp;
+};
+
+function compose(...composables) {
+  const composeMethod = function(...args) {
+    return compose(composeMethod, ...args);
+  };
+
+  const configuration = merge({},
+    ...getDescriptorProps('configuration', composables));
+
+  assign(composeMethod, {
+    methods: assign({}, ...getDescriptorProps('methods', composables)),
+    deepProperties: merge({},
+      ...getDescriptorProps('deepProperties', composables)),
+    properties: assign({}, ...getDescriptorProps('properties', composables)),
+    deepStaticProperties: merge({},
+      ...getDescriptorProps('deepStaticProperties', composables)),
+    staticProperties: assign({},
+      ...getDescriptorProps('staticProperties', composables)),
+    propertyDescriptors: assign({},
+      ...getDescriptorProps('propertyDescriptors', composables)),
+    staticPropertyDescriptors: assign({},
+      ...getDescriptorProps('staticPropertyDescriptors', composables)),
+    initializers: [].concat(...getDescriptorProps('initializers', composables))
+      .filter(initializer => isFunction(initializer)),
+    configuration
   });
 
-  // static properties
-  if (isObject(descriptor.deepStaticProperties)) {
-    merge(factory, descriptor.deepStaticProperties);
-  }
-  if (isObject(descriptor.staticProperties)) {
-    assign(factory, descriptor.staticProperties);
-  }
-  if (isObject(descriptor.staticPropertyDescriptors)) {
-    Object.defineProperties(factory, descriptor.staticPropertyDescriptors);
-  }
-
-  return factory;
+  return createStamp(composeMethod);
 }
 
 export default compose;
