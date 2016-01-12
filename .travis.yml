@@ -4,6 +4,8 @@ node_js:
   - "0.10"
   - "iojs-2.0"
   - "4.0"
+before_install:
+ - "npm install -g npm@latest-2"
 install:
   - npm install
 script:
