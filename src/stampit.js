@@ -9,6 +9,9 @@
 import forEach from 'lodash/collection/forEach';
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
+import isArray from 'lodash/lang/isArray';
+import objectValues from 'lodash/object/values';
+import sortBy from 'lodash/collection/sortBy';
 import {
   merge,
   mergeChainNonFunctions,
@@ -68,23 +71,112 @@ function cloneAndExtend(fixed, extensionFunction, ...args) {
   return stamp;
 }
 
+function splitComposers(array) {
+  let anon = [];
+  let named = {};
+
+  forEach(array, comp => {
+    if (comp.name) {
+      named[comp.name] = comp;
+    } else {
+      anon.push(comp);
+    }
+  });
+
+  return {
+    anon: anon,
+    named: named
+  };
+}
+
+function addComposers(fixed, newComposers) {
+  let composers = newComposers;
+  if (!isArray(composers)) {
+    if (isObject(composers)) {
+      composers = [composers];
+    } else {
+      return fixed.composers;
+    }
+  }
+
+  if (!composers) {
+    return fixed.composers;
+  }
+
+  const current = splitComposers(fixed.composers);
+  const added = splitComposers(composers);
+
+  // replace current.named with added.named where names are the same
+  const named = Object.assign({}, current.named, added.named);
+
+  let finalComps = objectValues(named);
+
+  finalComps = finalComps.concat(added.anon, current.anon);
+
+  finalComps = sortBy(finalComps, (comp) => {
+    return comp.sort;
+  });
+
+  fixed.composers = finalComps;
+
+  return fixed.composers;
+}
+
+function callComposers(fixed, sourceFixed) {
+  if (!fixed.composers) {
+    return fixed;
+  }
+
+  let fixedResult = fixed;
+
+  forEach(fixed.composers, composer => {
+    if (!isFunction(composer.compose)) {
+      return; // not a function, do nothing.
+    }
+
+    fixedResult = composer.compose.call(null, fixed, sourceFixed) || fixed;
+  });
+
+  return fixedResult;
+}
+
 function compose(...factories) {
-  const result = stampit();
+  let result = stampit();
   forEach(factories, source => {
+    let sourceFixed;
+
     if (source && source.fixed) {
-      addMethods(result.fixed, source.fixed.methods);
+      addComposers(result.fixed, source.fixed.composers);
+      sourceFixed = source.fixed;
+    }
+
+    result.fixed = callComposers(result.fixed, sourceFixed) || result.fixed;
+  });
+
+  result = mixin(result, result.fixed.static);
+
+  return result;
+}
+
+const baseComposer = {
+  name: 'base',
+  sort: 0,
+  compose(fixed, sourceFixed) {
+    if (sourceFixed) {
+      addMethods(fixed, sourceFixed.methods);
       // We might end up having two different stampit modules loaded and used in conjunction.
       // These || operators ensure that old stamps could be combined with the current version stamps.
       // 'state' is the old name for 'refs'
-      addRefs(result.fixed, source.fixed.refs || source.fixed.state);
+      addRefs(fixed, sourceFixed.refs || sourceFixed.state);
       // 'enclose' is the old name for 'init'
-      addInit(result.fixed, source.fixed.init || source.fixed.enclose);
-      addProps(result.fixed, source.fixed.props);
-      addStatic(result.fixed, source.fixed.static);
+      addInit(fixed, sourceFixed.init || sourceFixed.enclose);
+      addProps(fixed, sourceFixed.props);
+      addStatic(fixed, sourceFixed.static);
     }
-  });
-  return mixin(result, result.fixed.static);
-}
+    return fixed;
+  }
+};
+
 
 /**
  * Return a factory function that will produce new objects using the
@@ -107,16 +199,14 @@ function compose(...factories) {
  * @return {Function(statics)} factory.static Add properties to the stamp (not objects!). Chainable.
  */
 const stampit = function stampit(options) {
-  const fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}};
+  let fixed = {methods: {}, refs: {}, init: [], props: {}, static: {}, composers: [baseComposer]};
   fixed.state = fixed.refs; // Backward compatibility. 'state' is the old name for 'refs'.
   fixed.enclose = fixed.init; // Backward compatibility. 'enclose' is the old name for 'init'.
-  if (options) {
-    addMethods(fixed, options.methods);
-    addRefs(fixed, options.refs);
-    addInit(fixed, options.init);
-    addProps(fixed, options.props);
-    addStatic(fixed, options.static);
+  if (options && options.composers) {
+    addComposers(fixed, options.composers);
   }
+  // allow new instance or mutate existing
+  fixed = callComposers(fixed, options) || fixed;
 
   const factory = function Factory(refs, ...args) {
     let instance = mixin(create(fixed.methods), fixed.refs, refs);
@@ -365,5 +455,24 @@ export default mixin(stampit, {
    * @param  {Function} Constructor
    * @return {Function} A composable stampit factory (aka stamp).
    */
-  convertConstructor
+  convertConstructor,
+
+  /**
+   * Base composer object.
+   * @type {Object}
+   */
+  baseComposer: baseComposer,
+
+  /**
+   * Expose interal composer utilities
+   * @type {Object}
+   */
+  composerUtil: {
+    addMethods: addMethods,
+    addRefs: addRefs,
+    addInit: addInit,
+    addProps: addProps,
+    addStatic: addStatic
+  }
+
 });
