@@ -1,13 +1,8 @@
-import merge from 'lodash/object/merge';
-const isFunction = (obj) => typeof obj === 'function';
+import merge from 'lodash/merge';
 const assign = Object.assign;
-
-const getDescriptorProps = (descriptorName, composables) => {
-  return !composables ? undefined : composables.map(composable => {
-    const descriptor = composable.compose || composable;
-    return descriptor[descriptorName];
-  });
-};
+const isFunction = obj => typeof obj === 'function';
+const isObject = obj => !!obj && (typeof obj === 'function' || typeof obj === 'object');
+const isDescriptor = obj => isObject(obj);
 
 const createStamp = (composeMethod) => {
   const {
@@ -16,57 +11,63 @@ const createStamp = (composeMethod) => {
     } = composeMethod;
 
   const Stamp = function Stamp(options, ...args) {
-    let obj = Object.create(methods);
+    let obj = Object.create(methods || {});
 
     merge(obj, deepProperties);
     assign(obj, properties);
 
-    Object.defineProperties(obj, propertyDescriptors);
+    if (propertyDescriptors) Object.defineProperties(obj, propertyDescriptors);
 
-    initializers.forEach(initializer => {
-      const returnValue = initializer.call(obj, options,
-        { instance: obj, stamp: Stamp, args: [options].concat(args) });
-      if (returnValue !== undefined) {
-        obj = returnValue;
-      }
-    });
+    if (Array.isArray(initializers)) {
+      initializers.forEach(initializer => {
+        const returnValue = initializer.call(obj, options,
+          {instance: obj, stamp: Stamp, args: [options].concat(args)});
+        if (returnValue !== undefined) {
+          obj = returnValue;
+        }
+      });
+    }
 
     return obj;
   };
 
   merge(Stamp, deepStaticProperties);
   assign(Stamp, staticProperties);
-  Object.defineProperties(Stamp, staticPropertyDescriptors);
+  if (staticPropertyDescriptors) Object.defineProperties(Stamp, staticPropertyDescriptors);
   Stamp.compose = composeMethod;
 
   return Stamp;
 };
 
+function mergeInComposable(dstDescriptor, src) {
+  const srcDescriptor = (src && src.compose) || src;
+  if (!isDescriptor(srcDescriptor)) return dstDescriptor;
+
+  const combineDescriptorProperty = (propName, action) => {
+    if (!isObject(srcDescriptor[propName])) return;
+    if (!isObject(dstDescriptor[propName])) dstDescriptor[propName] = {};
+    action(dstDescriptor[propName], srcDescriptor[propName]);
+  };
+
+  combineDescriptorProperty('methods', assign);
+  combineDescriptorProperty('properties', assign);
+  combineDescriptorProperty('deepProperties', merge);
+  combineDescriptorProperty('staticProperties', assign);
+  combineDescriptorProperty('deepStaticProperties', merge);
+  combineDescriptorProperty('propertyDescriptors', assign);
+  combineDescriptorProperty('staticPropertyDescriptors', assign);
+  combineDescriptorProperty('configuration', merge);
+  dstDescriptor.initializers = [].concat(dstDescriptor.initializers, srcDescriptor.initializers).filter(isFunction);
+
+  return dstDescriptor;
+}
+
 function compose(...composables) {
-  const composeMethod = function(...args) {
+  let composeMethod = function composeMethod(...args) {
     return compose(composeMethod, ...args);
   };
 
-  const configuration = merge({},
-    ...getDescriptorProps('configuration', composables));
-
-  assign(composeMethod, {
-    methods: assign({}, ...getDescriptorProps('methods', composables)),
-    deepProperties: merge({},
-      ...getDescriptorProps('deepProperties', composables)),
-    properties: assign({}, ...getDescriptorProps('properties', composables)),
-    deepStaticProperties: merge({},
-      ...getDescriptorProps('deepStaticProperties', composables)),
-    staticProperties: assign({},
-      ...getDescriptorProps('staticProperties', composables)),
-    propertyDescriptors: assign({},
-      ...getDescriptorProps('propertyDescriptors', composables)),
-    staticPropertyDescriptors: assign({},
-      ...getDescriptorProps('staticPropertyDescriptors', composables)),
-    initializers: [].concat(...getDescriptorProps('initializers', composables))
-      .filter(initializer => isFunction(initializer)),
-    configuration
-  });
+  composeMethod = composables.reduce(mergeInComposable, composeMethod);
 
   return createStamp(composeMethod);
 }

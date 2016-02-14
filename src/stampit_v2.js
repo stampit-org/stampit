@@ -1,6 +1,6 @@
-import forEach from 'lodash/collection/forEach';
-import isFunction from 'lodash/lang/isFunction';
-import isObject from 'lodash/lang/isObject';
+import forEach from 'lodash/forEach';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
 import {
   merge,
   mergeChainNonFunctions,

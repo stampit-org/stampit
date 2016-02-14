@@ -1,5 +1,5 @@
-import isFunction from 'lodash/lang/isFunction';
-import forEach from 'lodash/collection/forEach';
+import isFunction from 'lodash/isFunction';
+import forEach from 'lodash/forEach';
 
 export default function(...args) {
   const result = [];

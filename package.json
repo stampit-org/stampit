@@ -23,7 +23,7 @@
     "url": "git@github.com:stampit-org/stampit.git"
   },
   "dependencies": {
-    "lodash": "^3.9.1"
+    "lodash": "^4.3.0"
   },
   "devDependencies": {
     "babel": "^5.5.8",
@@ -44,7 +44,7 @@
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node node_modules/.bin/isparta cover --report text --report html test/index.js",
     "prepublish": "npm run check",
-    "test": "babel-node test/index.js",
+    "test": "tape -r babel/register test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "uglify": "uglifyjs dist/stampit.js -m -c warnings=false -o dist/stampit.min.js",
     "lint": "eslint src && eslint test",

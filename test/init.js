@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
 import test from 'tape';
-import isArray from 'lodash/lang/isArray';
 
 // Closure arguments
 
@@ -12,7 +11,7 @@ test('stamp.init() arguments are passed', (t) => {
     t.ok(stamp, '{ stamp } should exist');
     t.equal(typeof stamp, 'function', '{ stamp } should be function');
     t.ok(args, '{ args } should exist');
-    t.ok(isArray(args), '{ args } should be array');
+    t.ok(Array.isArray(args), '{ args } should be array');
     initStamp = stamp;
   });
 

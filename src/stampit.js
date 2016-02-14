@@ -1,6 +1,6 @@
-import assign from 'lodash/object/assign';
-import merge from 'lodash/object/merge';
-import isObject from 'lodash/lang/isObject';
+import assign from 'lodash/assign';
+import merge from 'lodash/merge';
+import isObject from 'lodash/isObject';
 
 import isComposable from './is-composable';
 import compose from './compose';
