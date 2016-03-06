@@ -57,14 +57,14 @@ components that are passed in or composed.
  * @param  {Object} [options.methods] A map of method names and bodies for delegation.
  * @param  {Object} [options.refs] A map of property names and values to be mixed into each new object.
  * @param  {Object} [options.init] A closure (function) used to create private data and privileged methods.
- * @param  {Object} [options.props] An object to be deeply cloned into each newly stamped object.
+ * @param  {Object} [options.props] An object to be deeply merged into each newly stamped object.
  * @return {Function} factory A factory to produce objects.
  * @return {Function} factory.create Just like calling the factory function.
  * @return {Object} factory.fixed An object map containing the stamp metadata.
  * @return {Function} factory.methods Add methods to the stamp. Chainable.
  * @return {Function} factory.refs Add references to the stamp. Chainable.
  * @return {Function} factory.init Add a closure which called on object instantiation. Chainable.
- * @return {Function} factory.props Add deeply cloned properties to the produced objects. Chainable.
+ * @return {Function} factory.props Add deeply merged properties to the produced objects. Chainable.
  * @return {Function} factory.compose Add stamp to stamp. Chainable.
  * @return {Function} factory.static Add properties to the factory object. Chainable.
 
