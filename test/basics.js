@@ -13,13 +13,3 @@ test('.create()', (t) => {
 
   t.end();
 });
-
-test('.create(properties)', (t) => {
-  let stamp = stampit({ refs: { foo: 'bar' } });
-  const obj = stamp.create({ foo: 'foo' });
-
-  t.equal(obj.foo, 'foo',
-    'should override defaults.');
-
-  t.end();
-});

@@ -31,18 +31,18 @@ test.skip('incorrect stampit({ refs }) args', (t) => {
 });
 
 test('incorrect stampit({ init }) args', (t) => {
-  t.same(stampit({ init: 42 }).compose.initializers.length, 1);
-  t.same(stampit({ init: null }).compose.initializers.length, 1);
-  t.same(stampit({ init: new RegExp() }).compose.initializers.length, 1);
-  t.same(stampit({ init: [42] }).compose.initializers.length, 1);
-  t.same(stampit({ init: 'a string' }).compose.initializers.length, 1);
+  t.same(stampit({ init: 42 }).compose.initializers, undefined);
+  t.same(stampit({ init: null }).compose.initializers, undefined);
+  t.same(stampit({ init: new RegExp() }).compose.initializers, undefined);
+  t.same(stampit({ init: [42] }).compose.initializers, undefined);
+  t.same(stampit({ init: 'a string' }).compose.initializers, undefined);
 
   t.end();
 });
 
 test.skip('incorrect stampit({ props }) args', (t) => {
-  t.same(stampit({ props: 42 }).compose.deepProperties, undefined);
-  t.same(stampit({ props: null }).compose.deepProperties, undefined);
+  t.same(stampit({ deepProps: 42 }).compose.deepProperties, undefined);
+  t.same(stampit({ deepProps: null }).compose.deepProperties, undefined);
 
   t.end();
 });

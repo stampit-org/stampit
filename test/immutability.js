@@ -7,12 +7,13 @@ test('Basic stamp immutability', (t) => {
   const methods = { f() {} };
   const refs = { s: { deep: 1 } };
   const props = { p: { deep: 1 } };
-  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props });
+  const init = () => {};
+  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props, init });
 
   methods.f = () => {};
   refs.s.deep = 2;
   props.p.deep = 2;
-  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props });
+  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props, init });
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.methods.f, stamp2.compose.methods.f);
@@ -31,8 +32,9 @@ test('Stamp immutability made of same source', (t) => {
   const methods = { f() {} };
   const refs = { s: { deep: 1 } };
   const props = { p: { deep: 1 } };
-  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props });
-  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props });
+  const init = () => {};
+  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props, init });
+  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props, init });
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.properties, stamp2.compose.properties);

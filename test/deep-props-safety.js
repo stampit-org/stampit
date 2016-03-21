@@ -25,26 +25,6 @@ test('Stamp deepProps deep cloned for object created', (t) => {
   t.end();
 });
 
-test('stamp(refs) does not deep merges deepProps into refs', (t) => {
-  const deepInProps = { deepProp1: 'should not be merged', deepProp2: 'do not merge me!' };
-  const stamp1 = stampit().deepProps({ deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' });
-  const stamp2 = stampit({ deepProps: { deep: deepInProps, shallow1: 'should not be merged', shallow2: 'merge me!' } });
-
-  const o1 = stamp1({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
-  const o2 = stamp2({ deep: { deepProp1: 'leave me as is' }, shallow1: 'leave me as is' });
-
-  t.equal(o1.shallow1, 'leave me as is', 'A conflicting shallow reference must not be touched by deepProps');
-  t.equal(o1.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged from deepProps');
-  t.equal(o2.shallow1, 'leave me as is', 'A conflicting shallow reference must not be touched by deepProps');
-  t.equal(o2.shallow2, 'merge me!', 'A non conflicting shallow reference must be merged from deepProps');
-  t.equal(o1.deep.deepProp1, 'leave me as is', 'A conflicting deep property in refs must not be touched by deepProps');
-  t.equal(o1.deep.deepProp2, undefined, 'A non conflicting deep property must be merged from deepProps');
-  t.equal(o2.deep.deepProp1, 'leave me as is', 'A conflicting deep property in refs must not be touched by deepProps');
-  t.equal(o2.deep.deepProp2, undefined, 'A non conflicting deep property must be merged from deepProps');
-
-  t.end();
-});
-
 test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
   const stamp = stampit()
     .deepProps({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })

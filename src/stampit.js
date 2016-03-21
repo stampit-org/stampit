@@ -8,29 +8,26 @@ import extractFunctions from './extract-functions';
 
 const rawUtilities = {
   methods(...methodsObject) {
-    return (this.compose || compose)({methods: assign({}, ...methodsObject)});
+    return (this.compose || compose).call(this, {methods: assign({}, ...methodsObject)});
   },
   properties(...propertiesObject) {
-    return (this.compose || compose)({properties: assign({}, ...propertiesObject)});
+    return (this.compose || compose).call(this, {properties: assign({}, ...propertiesObject)});
   },
   initializers(...args) {
-    return (this.compose || compose)({initializers: extractFunctions(...args)});
+    return (this.compose || compose).call(this, {initializers: extractFunctions(...args)});
   },
   deepProperties(...propertiesObject) {
-    return (this.compose || compose)({deepProperties: merge({}, ...propertiesObject)});
+    return (this.compose || compose).call(this, {deepProperties: merge({}, ...propertiesObject)});
   },
   staticProperties(...propertiesObject) {
-    return (this.compose || compose)({staticProperties: assign({}, ...propertiesObject)});
+    return (this.compose || compose).call(this, {staticProperties: assign({}, ...propertiesObject)});
   },
-  deepStaticProperties(...propertiesObject) {
-    return (this.compose || compose)({staticDeepProperties: merge({}, ...propertiesObject)});
+  staticDeepProperties(...propertiesObject) {
+    return (this.compose || compose).call(this, {staticDeepProperties: merge({}, ...propertiesObject)});
   }
 };
 
 const baseStampit = compose({
-  initializers: [function(options) {
-    assign(this, options);
-  }],
   staticProperties: assign({
     refs: rawUtilities.properties,
     props: rawUtilities.properties,
@@ -62,11 +59,13 @@ function stampit({
   staticProperties,
   statics,
 
-  deepStaticProperties,
+  staticDeepProperties,
 
   staticPropertyDescriptors,
 
-  configuration
+  configuration,
+
+  deepConfiguration
   } = {}, ...args) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;
@@ -80,10 +79,11 @@ function stampit({
     initializers: extractFunctions(init, initializers),
     deepProperties: dp,
     staticProperties: sp,
-    deepStaticProperties,
+    staticDeepProperties,
     propertyDescriptors,
     staticPropertyDescriptors,
-    configuration
+    configuration,
+    deepConfiguration
   }, ...args);
 }
 
