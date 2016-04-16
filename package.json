@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "2.1.1",
+  "version": "3.0.0-alpha1",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -13,17 +13,19 @@
     "object oriented",
     "browser",
     "inheritance",
-    "oo",
+    "oop",
     "node",
     "factory",
-    "class"
+    "class",
+    "stamp"
   ],
   "repository": {
     "type": "git",
     "url": "git@github.com:stampit-org/stampit.git"
   },
   "dependencies": {
-    "lodash": "^4.3.0"
+    "lodash": "^4.11.1",
+    "stamp-specification": "^1.0.6"
   },
   "devDependencies": {
     "babel": "^5.5.8",
