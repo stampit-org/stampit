@@ -15,7 +15,7 @@ test('stampit({})', (t) => {
   t.end();
 });
 
-test.skip('incorrect stampit({ methods }) args', (t) => {
+test('incorrect stampit({ methods }) args', (t) => {
   t.same(stampit({ methods: 42 }).compose.methods, undefined);
   t.same(stampit({ methods: null }).compose.methods, undefined);
   t.same(stampit({ methods: 'a string' }).compose.methods, undefined);
@@ -23,7 +23,7 @@ test.skip('incorrect stampit({ methods }) args', (t) => {
   t.end();
 });
 
-test.skip('incorrect stampit({ refs }) args', (t) => {
+test('incorrect stampit({ refs }) args', (t) => {
   t.same(stampit({ refs: 42 }).compose.properties, undefined);
   t.same(stampit({ refs: null }).compose.properties, undefined);
 
@@ -33,6 +33,7 @@ test.skip('incorrect stampit({ refs }) args', (t) => {
 test('incorrect stampit({ init }) args', (t) => {
   t.same(stampit({ init: 42 }).compose.initializers, undefined);
   t.same(stampit({ init: null }).compose.initializers, undefined);
+  t.same(stampit({ init: [undefined] }).compose.initializers, undefined);
   t.same(stampit({ init: new RegExp() }).compose.initializers, undefined);
   t.same(stampit({ init: [42] }).compose.initializers, undefined);
   t.same(stampit({ init: 'a string' }).compose.initializers, undefined);
@@ -40,7 +41,7 @@ test('incorrect stampit({ init }) args', (t) => {
   t.end();
 });
 
-test.skip('incorrect stampit({ props }) args', (t) => {
+test('incorrect stampit({ deepProps }) args', (t) => {
   t.same(stampit({ deepProps: 42 }).compose.deepProperties, undefined);
   t.same(stampit({ deepProps: null }).compose.deepProperties, undefined);
 

@@ -171,7 +171,7 @@ test.skip('explicit push wrong object to stamp.compose.initializers[]', (t) => {
   t.end();
 });
 
-test.skip('stamp.compose.initializers malformed object', (t) => {
+test('stamp.compose.initializers malformed object', (t) => {
   const stamp = stampit.refs({ref: 42}).init(function() {
     const secret = 'foo';
     this.getSecret = () => { return secret; };
