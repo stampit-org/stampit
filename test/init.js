@@ -157,7 +157,7 @@ test('stamp.init() should call composed init functions in order', (t) => {
   t.end();
 });
 
-test.skip('explicit push wrong object to stamp.compose.initializers[]', (t) => {
+test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
   const stamp = stampit({ init() {
     const secret = 'foo';
     this.getSecret = () => { return secret; };

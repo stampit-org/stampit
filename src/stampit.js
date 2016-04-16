@@ -4,14 +4,11 @@ import isFunction from 'lodash/isFunction';
 import compose, {merge} from 'stamp-specification';
 
 const isComposable = isObject;
-
-function isStamp(obj) {
-  return isFunction(obj) && isFunction(obj.compose);
-}
+const isStamp = obj => isFunction(obj) && isFunction(obj.compose);
 
 function extractFunctions(...args) {
   const functions = args.reduce((result, arg) => {
-    if (isFunction(arg)) { result.push(arg); return result; }
+    if (isFunction(arg)) { return result.concat(arg); }
     if (Array.isArray(arg)) { return result.concat(extractFunctions(...arg) || []); }
     if (isObject(arg)) { return result.concat(extractFunctions(...Object.values(arg)) || []); }
     return result;
@@ -79,7 +76,7 @@ function stampit({
   configuration,
 
   deepConfiguration
-  } = {}, ...args) {
+} = {}, ...args) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;
   const dp = isObject(deepProps) || isObject(deepProperties) ?
@@ -111,4 +108,5 @@ export default assign(stampit,
     deepProps: rawUtilities.deepProperties,
     statics: rawUtilities.staticProperties
   },
-  rawUtilities);
+  rawUtilities
+);
