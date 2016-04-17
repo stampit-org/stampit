@@ -3,8 +3,8 @@ import isObject from 'lodash/isObject';
 import isFunction from 'lodash/isFunction';
 import compose, {merge} from 'stamp-specification';
 
-const isComposable = isObject;
-const isStamp = obj => isFunction(obj) && isFunction(obj.compose);
+export const isComposable = isObject;
+export const isStamp = obj => isFunction(obj) && isFunction(obj.compose);
 
 function extractFunctions(...args) {
   const functions = args.reduce((result, arg) => {
