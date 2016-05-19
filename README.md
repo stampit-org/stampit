@@ -10,7 +10,7 @@ Our slogan: **Create objects from reusable, composable behaviors**
 ## Simplest Example
 
 ```js
-const MyStamp = stampit
+const MyStamp = stampit()       // create new empty stamp
 .props({                        // add properties to your future objects
   myProp: 'default value'
 })

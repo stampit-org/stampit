@@ -4,22 +4,36 @@
 
 ```js
 // Adds .log() method to factory instantiated objects.
-const Logger = stampit({
-  methods: {
+const Logger = stampit()
+  .methods({
     log: console.log
-  }
-});
+  });
 
 // Assigns the default connection string.
-const DefaultConnectionConfig = stampit().props({
-  connectionConfig: require('./config.json').db.connection;
-});
+const DefaultConnectionConfig = stampit()
+  .init(function ({connectionConfig}) { // can pass the string as factory argument
+    this.connectionConfig = connectionConfig;
+  })
+  .props({ // if nothing was passed this value will be used
+    connectionConfig: require('./config.json').db.connection
+  });
+  
+// Allow dbConnection to be passed from outside.
+const AcceptsDbConnection = stampit()
+  .init(function ({dbConnection}) {
+    this.dbConnection = dbConnection;
+  });
 
 // The connection object.
-const DbConnection = 
-  stampit().refs({ // Assigns the mongoose connection object.
+const DbConnection = stampit()
+  .refs({ // Assigns the mongoose connection object.
     dbConnection: mongoose.connection
   })
+  .compose(
+    Logger, // add logging capability via this.log() 
+    DefaultConnectionConfig, // add the default this.connectionConfig value
+    AcceptsDbConnection // allow passing dbConnection as argument
+  )
   .init(function () { // Connecting to the DB upon creating an object.
     if (!this.dbConnection.readyState) {
       this.dbConnection.open(this.connectionConfig);
@@ -33,13 +47,9 @@ const DbConnection =
         this.log('Closing the DB connection');
       }
     }
-  })
-  .compose(
-    Logger, // add logging capability via this.log() 
-    DefaultConnectionConfig // add the default this.connectionConfig value
-  );
+  });
 
-const conn = DbConnection(); // Open a DB connection
+const conn = DbConnection(); // Open a default DB connection
 const conn2 = DbConnection({ dbConnection: conn.dbConnection }); // reusing existing
 conn.close(); // Close the conneciton.
 

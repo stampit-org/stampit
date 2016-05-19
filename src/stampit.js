@@ -51,7 +51,7 @@ const baseStampit = compose({
   }, rawUtilities)
 });
 
-function stampit({
+function convertStampitToComposeArgument({
   methods,
 
   properties,
@@ -76,14 +76,14 @@ function stampit({
   configuration,
 
   deepConfiguration
-} = {}, ...args) {
+} = {}) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;
   const dp = isObject(deepProps) || isObject(deepProperties) ?
     merge({}, deepProps, deepProperties) : undefined;
   const sp = isObject(statics) || isObject(staticProperties) ?
     assign({}, statics, staticProperties) : undefined;
-  return baseStampit.compose({
+  return {
     methods: methods,
     properties: p,
     initializers: extractFunctions(init, initializers),
@@ -94,7 +94,12 @@ function stampit({
     staticPropertyDescriptors,
     configuration,
     deepConfiguration
-  }, ...args);
+  };
+}
+
+function stampit(...args) {
+  const convertedArgs = args.filter(isComposable).map(convertStampitToComposeArgument);
+  return baseStampit.compose(...convertedArgs);
 }
 
 export default assign(stampit,

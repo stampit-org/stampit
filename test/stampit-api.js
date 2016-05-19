@@ -47,3 +47,18 @@ test('incorrect stampit({ deepProps }) args', (t) => {
 
   t.end();
 });
+
+test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
+  t.equal(stampit(null, { init: () => {} }).compose.initializers.length, 1,
+    'must recognize intializers from second argument');
+  t.equal(stampit(null, { props: { x: 2 }}).compose.properties.x, 2,
+    'must recognize properties from second argument');
+  t.equal(stampit(null, { refs: { x: 2 }}).compose.properties.x, 2,
+    'must recognize properties from second argument');
+  t.equal(stampit(null, { deepProps: { x: 2 }}).compose.deepProperties.x, 2,
+    'must recognize deep properties from second argument');
+  t.equal(stampit(null, { statics: { x: 2 }}).compose.staticProperties.x, 2,
+    'must recognize static properties from second argument');
+
+  t.end();
+});
