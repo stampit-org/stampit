@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "lodash": "^4.11.1",
-    "stamp-specification": "^1.0.7"
+    "stamp-specification": "^1.1.1"
   },
   "devDependencies": {
     "babel": "^5.5.8",
