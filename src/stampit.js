@@ -17,23 +17,29 @@ function extractFunctions(...args) {
 }
 
 const rawUtilities = {
-  methods(...methodsObject) {
-    return (this.compose || compose).call(this, {methods: assign({}, ...methodsObject)});
+  methods(...args) {
+    return (this.compose || compose).call(this, {methods: assign({}, ...args)});
   },
-  properties(...propertiesObject) {
-    return (this.compose || compose).call(this, {properties: assign({}, ...propertiesObject)});
+  properties(...args) {
+    return (this.compose || compose).call(this, {properties: assign({}, ...args)});
   },
   initializers(...args) {
     return (this.compose || compose).call(this, {initializers: extractFunctions(...args)});
   },
-  deepProperties(...propertiesObject) {
-    return (this.compose || compose).call(this, {deepProperties: merge({}, ...propertiesObject)});
+  deepProperties(...args) {
+    return (this.compose || compose).call(this, {deepProperties: merge({}, ...args)});
   },
-  staticProperties(...propertiesObject) {
-    return (this.compose || compose).call(this, {staticProperties: assign({}, ...propertiesObject)});
+  staticProperties(...args) {
+    return (this.compose || compose).call(this, {staticProperties: assign({}, ...args)});
   },
-  staticDeepProperties(...propertiesObject) {
-    return (this.compose || compose).call(this, {staticDeepProperties: merge({}, ...propertiesObject)});
+  staticDeepProperties(...args) {
+    return (this.compose || compose).call(this, {staticDeepProperties: merge({}, ...args)});
+  },
+  configuration(...args) {
+    return (this.compose || compose).call(this, {configuration: assign({}, ...args)});
+  },
+  deepConfiguration(...args) {
+    return (this.compose || compose).call(this, {deepConfiguration: merge({}, ...args)});
   }
 };
 
@@ -44,6 +50,8 @@ const baseStampit = compose({
     init: rawUtilities.initializers,
     deepProps: rawUtilities.deepProperties,
     statics: rawUtilities.staticProperties,
+    conf: rawUtilities.configuration,
+    deepConf: rawUtilities.deepConfiguration,
 
     create(...args) {
       return this(...args);
@@ -51,7 +59,7 @@ const baseStampit = compose({
   }, rawUtilities)
 });
 
-function convertStampitToComposeArgument({
+function convertStampitToCompose({
   methods,
 
   properties,
@@ -74,8 +82,10 @@ function convertStampitToComposeArgument({
   staticPropertyDescriptors,
 
   configuration,
+  conf,
 
-  deepConfiguration
+  deepConfiguration,
+  deepConf
 } = {}) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;
@@ -83,6 +93,10 @@ function convertStampitToComposeArgument({
     merge({}, deepProps, deepProperties) : undefined;
   const sp = isObject(statics) || isObject(staticProperties) ?
     assign({}, statics, staticProperties) : undefined;
+  const c = isObject(conf) || isObject(configuration) ?
+    assign({}, conf, configuration) : undefined;
+  const dc = isObject(deepConf) || isObject(deepConfiguration) ?
+    merge({}, deepConf, deepConfiguration) : undefined;
   return {
     methods: methods,
     properties: p,
@@ -92,13 +106,13 @@ function convertStampitToComposeArgument({
     staticDeepProperties,
     propertyDescriptors,
     staticPropertyDescriptors,
-    configuration,
-    deepConfiguration
+    configuration: c,
+    deepConfiguration: dc
   };
 }
 
 function stampit(...args) {
-  const convertedArgs = args.filter(isComposable).map(convertStampitToComposeArgument);
+  const convertedArgs = args.filter(isComposable).map(convertStampitToCompose);
   return baseStampit.compose(...convertedArgs);
 }
 
@@ -111,7 +125,9 @@ export default assign(stampit,
     props: rawUtilities.properties,
     init: rawUtilities.initializers,
     deepProps: rawUtilities.deepProperties,
-    statics: rawUtilities.staticProperties
+    statics: rawUtilities.staticProperties,
+    conf: rawUtilities.configuration,
+    deepConf: rawUtilities.deepConfiguration
   },
   rawUtilities
 );
