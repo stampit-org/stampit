@@ -43,23 +43,7 @@ const rawUtilities = {
   }
 };
 
-const baseStampit = compose({
-  staticProperties: assign({
-    refs: rawUtilities.properties,
-    props: rawUtilities.properties,
-    init: rawUtilities.initializers,
-    deepProps: rawUtilities.deepProperties,
-    statics: rawUtilities.staticProperties,
-    conf: rawUtilities.configuration,
-    deepConf: rawUtilities.deepConfiguration,
-
-    create(...args) {
-      return this(...args);
-    }
-  }, rawUtilities)
-});
-
-function convertStampitToCompose({
+function standardiseDescriptor({
   methods,
 
   properties,
@@ -78,6 +62,7 @@ function convertStampitToCompose({
   statics,
 
   staticDeepProperties,
+  deepStatics,
 
   staticPropertyDescriptors,
 
@@ -89,21 +74,23 @@ function convertStampitToCompose({
 } = {}) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;
-  const dp = isObject(deepProps) || isObject(deepProperties) ?
-    merge({}, deepProps, deepProperties) : undefined;
+  let dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
+  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
   const sp = isObject(statics) || isObject(staticProperties) ?
     assign({}, statics, staticProperties) : undefined;
+  let dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
+  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
   const c = isObject(conf) || isObject(configuration) ?
     assign({}, conf, configuration) : undefined;
-  const dc = isObject(deepConf) || isObject(deepConfiguration) ?
-    merge({}, deepConf, deepConfiguration) : undefined;
+  let dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
+  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
   return {
     methods: methods,
     properties: p,
     initializers: extractFunctions(init, initializers),
     deepProperties: dp,
     staticProperties: sp,
-    staticDeepProperties,
+    staticDeepProperties: dsp,
     propertyDescriptors,
     staticPropertyDescriptors,
     configuration: c,
@@ -111,9 +98,30 @@ function convertStampitToCompose({
   };
 }
 
+const baseStampit = compose({
+  staticProperties: assign({
+    refs: rawUtilities.properties,
+    props: rawUtilities.properties,
+    init: rawUtilities.initializers,
+    deepProps: rawUtilities.deepProperties,
+    statics: rawUtilities.staticProperties,
+    deepStatics: rawUtilities.staticDeepProperties,
+    conf: rawUtilities.configuration,
+    deepConf: rawUtilities.deepConfiguration,
+
+    create(...args) {
+      return this(...args);
+    },
+
+    compose(...args) {
+      return compose(this, ...args.filter(isComposable)
+        .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg)));
+    }
+  }, rawUtilities)
+});
+
 function stampit(...args) {
-  const convertedArgs = args.filter(isComposable).map(convertStampitToCompose);
-  return baseStampit.compose(...convertedArgs);
+  return baseStampit.compose(...args);
 }
 
 export default assign(stampit,
@@ -126,6 +134,7 @@ export default assign(stampit,
     init: rawUtilities.initializers,
     deepProps: rawUtilities.deepProperties,
     statics: rawUtilities.staticProperties,
+    deepStatics: rawUtilities.staticDeepProperties,
     conf: rawUtilities.configuration,
     deepConf: rawUtilities.deepConfiguration
   },
