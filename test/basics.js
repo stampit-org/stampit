@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Basics
 
 test('.create()', (t) => {
@@ -8,8 +7,6 @@ test('.create()', (t) => {
     foo() { return 'foo'; }
   }});
 
-  t.equal(stamp.create().foo(), 'foo',
+  t.is(stamp.create().foo(), 'foo',
     'Should produce an object from specified prototypes.');
-
-  t.end();
 });

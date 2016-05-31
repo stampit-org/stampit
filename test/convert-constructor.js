@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Oldskool
 
 test.skip('stampit.convertConstructor()', (t) => {
@@ -16,25 +15,23 @@ test.skip('stampit.convertConstructor()', (t) => {
   const oldskool = stampit.convertConstructor(Constructor);
   const obj = oldskool();
 
-  t.equal(obj.thing, 'initialized',
+  t.is(obj.thing, 'initialized',
     'Constructor should execute.');
 
-  t.equal(oldskool.staticFunc, Constructor.staticFunc,
+  t.is(oldskool.staticFunc, Constructor.staticFunc,
     'Non prototype functions should be mixed to stamp.');
 
-  t.equal(oldskool.staticProp, 'static',
+  t.is(oldskool.staticProp, 'static',
     'Non prototype properties should be mixed to stamp.');
 
-  t.equal(obj.foo && obj.foo(), 'foo',
+  t.is(obj.foo && obj.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
-  t.equal(obj.base, 'base',
+  t.is(obj.base, 'base',
     'Prototype property should be mixed in.');
 
-  t.equal(obj.baseFunc && obj.baseFunc(), 'baseFunc',
+  t.is(obj.baseFunc && obj.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
-
-  t.end();
 });
 
 test.skip('stampit.convertConstructor() composed', (t) => {
@@ -73,68 +70,66 @@ test.skip('stampit.convertConstructor() composed', (t) => {
   const thing = myThing();
   const u = myThing2();
 
-  t.equal(thing.thing, 'initialized',
+  t.is(thing.thing, 'initialized',
     'Constructor should execute.');
 
-  t.equal(thing.foo && thing.foo(), 'foo',
+  t.is(thing.foo && thing.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
-  t.equal(thing.base, 'base',
+  t.is(thing.base, 'base',
     'Prototype property should be mixed in.');
 
-  t.equal(thing.baseFunc && thing.baseFunc(), 'baseFunc',
+  t.is(thing.baseFunc && thing.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 
-  t.equal(thing.baseOfBase, 'baseOfBase',
+  t.is(thing.baseOfBase, 'baseOfBase',
     'Prototype property chain should be mixed in.');
 
-  t.equal(thing.baseOfBaseFunc && thing.baseOfBaseFunc(), 'baseOfBaseFunc',
+  t.is(thing.baseOfBaseFunc && thing.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype function chain should be mixed in.');
 
-  t.equal(thing.bar && thing.bar(), 'bar',
+  t.is(thing.bar && thing.bar(), 'bar',
     'Should be able to add new methods with .compose()');
 
-  t.equal(thing.baz, 'baz',
+  t.is(thing.baz, 'baz',
     'Should be able to add new methods with .compose()');
 
-  t.equal(u.thing, 'initialized',
+  t.is(u.thing, 'initialized',
     'Constructor should execute.');
 
-  t.equal(u.foo && u.foo(), 'foo',
+  t.is(u.foo && u.foo(), 'foo',
     'Constructor prototype should be mixed in.');
 
-  t.equal(u.base, 'base',
+  t.is(u.base, 'base',
     'Prototype property should be mixed in.');
 
-  t.equal(u.baseFunc && u.baseFunc(), 'baseFunc',
+  t.is(u.baseFunc && u.baseFunc(), 'baseFunc',
     'Prototype function should be mixed in.');
 
-  t.equal(u.baseOfBase, 'baseOfBase',
+  t.is(u.baseOfBase, 'baseOfBase',
     'Prototype property chain should be mixed in.');
 
-  t.equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
+  t.is(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype function chain should be mixed in.');
 
-  t.equal(u.bar && u.bar(), 'bar',
+  t.is(u.bar && u.bar(), 'bar',
     'Should be able to add new methods with .compose()');
 
-  t.equal(u.baz, 'baz',
+  t.is(u.baz, 'baz',
     'Should be able to add new methods with .compose()');
 
-  t.equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
+  t.is(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
     'Prototype chain function should be mixed in.');
 
-  t.equal(myThing.staticFunc, Constructor.staticFunc,
+  t.is(myThing.staticFunc, Constructor.staticFunc,
     'Non prototype functions should be mixed to stamp.');
 
-  t.equal(myThing.staticProp, 'static',
+  t.is(myThing.staticProp, 'static',
     'Non prototype properties should be mixed to stamp.');
 
-  t.equal(myThing2.staticFunc, Constructor.staticFunc,
+  t.is(myThing2.staticFunc, Constructor.staticFunc,
     'Non prototype functions should be mixed to stamp.');
 
-  t.equal(myThing2.staticProp, 'static',
+  t.is(myThing2.staticProp, 'static',
     'Non prototype properties should be mixed to stamp.');
-
-  t.end();
 });

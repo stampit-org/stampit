@@ -1,15 +1,12 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Basics Props
 
 test('stampit({ props })', (t) => {
   const obj = stampit({ props: { foo: { bar: 'bar' } } }).create();
 
-  t.equal(obj.foo.bar, 'bar',
+  t.is(obj.foo.bar, 'bar',
     'Should set default props.');
-
-  t.end();
 });
 
 test('stampit().props()', (t) => {
@@ -23,18 +20,16 @@ test('stampit().props()', (t) => {
     func2() {}
   }).create();
 
-  t.equal(obj.foo.bar, 'bar',
+  t.is(obj.foo.bar, 'bar',
     'Should set default props.');
-  t.equal(obj.bar, 'bar',
+  t.is(obj.bar, 'bar',
     'Should set let you add by chaining .props().');
-  t.ok(obj.propsOverride,
+  t.truthy(obj.propsOverride,
     'Should set let you override by chaining .props().');
-  t.ok(obj.func1,
+  t.truthy(obj.func1,
     'Should mix functions.');
-  t.ok(obj.func2,
+  t.truthy(obj.func2,
     'Should mix functions.');
-
-  t.end();
 });
 
 test('stampit({ props }).props()', (t) => {
@@ -48,18 +43,16 @@ test('stampit({ props }).props()', (t) => {
     func2() {}
   }).create();
 
-  t.equal(obj.foo.bar, 'bar',
+  t.is(obj.foo.bar, 'bar',
     'Should set default props.');
-  t.equal(obj.bar, 'bar',
+  t.is(obj.bar, 'bar',
     'Should set let you add by chaining .props().');
-  t.ok(obj.propsOverride,
+  t.truthy(obj.propsOverride,
     'Should set let you override by chaining .props().');
-  t.ok(obj.func1,
+  t.truthy(obj.func1,
     'Should mix functions.');
-  t.ok(obj.func2,
+  t.truthy(obj.func2,
     'Should mix functions.');
-
-  t.end();
 });
 
 test('stampit().props(a, b)', (t) => {
@@ -69,8 +62,6 @@ test('stampit().props(a, b)', (t) => {
     b: 'b'
   }).create();
 
-  t.ok(obj.a && obj.b,
+  t.truthy(obj.a && obj.b,
     'Should mixIn objects when multiple objects are passed.');
-
-  t.end();
 });

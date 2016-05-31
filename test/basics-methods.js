@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Basics Methods
 
 test('stampit({ methods })', (t) => {
@@ -8,10 +7,8 @@ test('stampit({ methods })', (t) => {
     foo() { return 'foo'; }
   }}).create();
 
-  t.ok(obj.foo() && !obj.hasOwnProperty('foo'),
+  t.truthy(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
-
-  t.end();
 });
 
 test('stampit().methods()', (t) => {
@@ -25,18 +22,16 @@ test('stampit().methods()', (t) => {
     prop2: 2
   }).create();
 
-  t.ok(obj.foo() && !obj.hasOwnProperty('foo'),
+  t.truthy(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
-  t.ok(obj.bar() && !obj.hasOwnProperty('bar'),
+  t.truthy(obj.bar() && !obj.hasOwnProperty('bar'),
     'Should let you chain .methods() to add more.');
-  t.ok(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
+  t.truthy(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
     'Should let you override by chaining .methods().');
-  t.ok(obj.prop1 && !obj.hasOwnProperty('prop1'),
+  t.truthy(obj.prop1 && !obj.hasOwnProperty('prop1'),
     'Should mix properties.');
-  t.ok(obj.prop2 && !obj.hasOwnProperty('prop1'),
+  t.truthy(obj.prop2 && !obj.hasOwnProperty('prop1'),
     'Should mix properties.');
-
-  t.end();
 });
 
 test('stampit({ methods }).methods()', (t) => {
@@ -50,18 +45,16 @@ test('stampit({ methods }).methods()', (t) => {
     prop2: 2
   }).create();
 
-  t.ok(obj.foo() && !obj.hasOwnProperty('foo'),
+  t.truthy(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
-  t.ok(obj.bar() && !obj.hasOwnProperty('bar'),
+  t.truthy(obj.bar() && !obj.hasOwnProperty('bar'),
     'Should let you chain .methods() to add more.');
-  t.ok(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
+  t.truthy(obj.methodOverride() && !obj.hasOwnProperty('methodOverride'),
     'Should let you override by chaining .methods().');
-  t.ok(obj.prop1 && !obj.hasOwnProperty('prop1'),
+  t.truthy(obj.prop1 && !obj.hasOwnProperty('prop1'),
     'Should mix properties.');
-  t.ok(obj.prop2 && !obj.hasOwnProperty('prop1'),
+  t.truthy(obj.prop2 && !obj.hasOwnProperty('prop1'),
     'Should mix properties.');
-
-  t.end();
 });
 
 test('stampit().methods(a, b)', (t) => {
@@ -71,8 +64,6 @@ test('stampit().methods(a, b)', (t) => {
     b() { return 'b'; }
   }).create();
 
-  t.ok(obj.a() === 'a' && obj.b() === 'b',
+  t.truthy(obj.a() === 'a' && obj.b() === 'b',
     'Should mixIn objects when multiple methods are passed.');
-
-  t.end();
 });
