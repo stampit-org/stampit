@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Props safety
 
 test('Stamp deepProps deep cloned for object created', (t) => {
@@ -11,18 +10,16 @@ test('Stamp deepProps deep cloned for object created', (t) => {
   let o1 = stamp1();
   let o2 = stamp1();
   o1.foo = 'another value';
-  t.notEqual(o1.foo, o2.foo);
+  t.not(o1.foo, o2.foo);
   o1.deep.foo = 'another value';
-  t.notEqual(o1.deep.foo, o2.deep.foo);
+  t.not(o1.deep.foo, o2.deep.foo);
 
   o1 = stamp2();
   o2 = stamp2();
   o1.foo = 'another value';
-  t.notEqual(o1.foo, o2.foo);
+  t.not(o1.foo, o2.foo);
   o1.deep.foo = 'another value';
-  t.notEqual(o1.deep.foo, o2.deep.foo);
-
-  t.end();
+  t.not(o1.deep.foo, o2.deep.foo);
 });
 
 test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
@@ -31,14 +28,12 @@ test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
     .deepProps({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
   const o = stamp();
 
-  t.equal(o.foo, 'override');
-  t.equal(o.bar, 'bar');
-  t.equal(o.baz, 'baz');
-  t.equal(o.deep.foo, 'override');
-  t.equal(o.deep.bar, 'bar');
-  t.equal(o.deep.baz, 'baz');
-
-  t.end();
+  t.is(o.foo, 'override');
+  t.is(o.bar, 'bar');
+  t.is(o.baz, 'baz');
+  t.is(o.deep.foo, 'override');
+  t.is(o.deep.bar, 'bar');
+  t.is(o.deep.baz, 'baz');
 });
 
 test('stamp.compose() deep merge deepProps', (t) => {
@@ -46,12 +41,10 @@ test('stamp.compose() deep merge deepProps', (t) => {
     .compose(stampit({ deepProps: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
   const o = stamp();
 
-  t.equal(o.foo, 'override');
-  t.equal(o.bar, 'bar');
-  t.equal(o.baz, 'baz');
-  t.equal(o.deep.foo, 'override');
-  t.equal(o.deep.bar, 'bar');
-  t.equal(o.deep.baz, 'baz');
-
-  t.end();
+  t.is(o.foo, 'override');
+  t.is(o.bar, 'bar');
+  t.is(o.baz, 'baz');
+  t.is(o.deep.foo, 'override');
+  t.is(o.deep.bar, 'bar');
+  t.is(o.deep.baz, 'baz');
 });

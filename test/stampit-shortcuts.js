@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-import _ from 'lodash';
+import { test } from 'ava';import _ from 'lodash';
 
 // stampit.methods, stampit.refs, stampit.init, stampit.props
 
@@ -10,8 +9,6 @@ test('stampit.methods shortcut', (t) => {
   const stamp2 = stampit.methods(methods);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
 });
 
 test('stampit.refs shortcut', (t) => {
@@ -20,8 +17,6 @@ test('stampit.refs shortcut', (t) => {
   const stamp2 = stampit.refs(refs);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
 });
 
 test('stampit.init shortcut', (t) => {
@@ -30,8 +25,6 @@ test('stampit.init shortcut', (t) => {
   const stamp2 = stampit.init(init);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
 });
 
 test('stampit.props shortcut', (t) => {
@@ -40,8 +33,6 @@ test('stampit.props shortcut', (t) => {
   const stamp2 = stampit.props(props);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
 });
 
 test('stampit.statics shortcut', (t) => {
@@ -50,15 +41,11 @@ test('stampit.statics shortcut', (t) => {
   const stamp2 = stampit.statics(statics);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
 });
 
 test('stampit.statics(arg1, arg2) shortcut', (t) => {
   const stamp1 = stampit.statics({ foo: 1 }, { bar: '2' });
 
-  t.ok(stamp1.foo);
-  t.ok(stamp1.bar);
-
-  t.end();
+  t.truthy(stamp1.foo);
+  t.truthy(stamp1.bar);
 });

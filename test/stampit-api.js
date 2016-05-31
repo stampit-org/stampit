@@ -1,68 +1,53 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Main API
 
 test('stampit()', (t) => {
-  t.equal(typeof stampit(), 'function', 'Should produce a function.');
-
-  t.end();
+  t.is(typeof stampit(), 'function', 'Should produce a function.');
 });
 
 test('stampit({})', (t) => {
-  t.ok(stampit.isStamp(stampit({})));
-
-  t.end();
+  t.truthy(stampit.isStamp(stampit({})));
 });
 
 test('incorrect stampit({ methods }) args', (t) => {
-  t.same(stampit({ methods: 42 }).compose.methods, undefined);
-  t.same(stampit({ methods: null }).compose.methods, undefined);
-  t.same(stampit({ methods: 'a string' }).compose.methods, undefined);
-
-  t.end();
+  t.deepEqual(stampit({ methods: 42 }).compose.methods, undefined);
+  t.deepEqual(stampit({ methods: null }).compose.methods, undefined);
+  t.deepEqual(stampit({ methods: 'a string' }).compose.methods, undefined);
 });
 
 test('incorrect stampit({ refs }) args', (t) => {
-  t.same(stampit({ refs: 42 }).compose.properties, undefined);
-  t.same(stampit({ refs: null }).compose.properties, undefined);
-
-  t.end();
+  t.deepEqual(stampit({ refs: 42 }).compose.properties, undefined);
+  t.deepEqual(stampit({ refs: null }).compose.properties, undefined);
 });
 
 test('incorrect stampit({ init }) args', (t) => {
-  t.same(stampit({ init: 42 }).compose.initializers, undefined);
-  t.same(stampit({ init: null }).compose.initializers, undefined);
-  t.same(stampit({ init: [undefined] }).compose.initializers, undefined);
-  t.same(stampit({ init: new RegExp() }).compose.initializers, undefined);
-  t.same(stampit({ init: [42] }).compose.initializers, undefined);
-  t.same(stampit({ init: 'a string' }).compose.initializers, undefined);
-
-  t.end();
+  t.deepEqual(stampit({ init: 42 }).compose.initializers, undefined);
+  t.deepEqual(stampit({ init: null }).compose.initializers, undefined);
+  t.deepEqual(stampit({ init: [undefined] }).compose.initializers, undefined);
+  t.deepEqual(stampit({ init: new RegExp() }).compose.initializers, undefined);
+  t.deepEqual(stampit({ init: [42] }).compose.initializers, undefined);
+  t.deepEqual(stampit({ init: 'a string' }).compose.initializers, undefined);
 });
 
 test('incorrect stampit({ deepProps }) args', (t) => {
-  t.same(stampit({ deepProps: 42 }).compose.deepProperties, undefined);
-  t.same(stampit({ deepProps: null }).compose.deepProperties, undefined);
-
-  t.end();
+  t.deepEqual(stampit({ deepProps: 42 }).compose.deepProperties, undefined);
+  t.deepEqual(stampit({ deepProps: null }).compose.deepProperties, undefined);
 });
 
 test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
-  t.equal(stampit(null, { init: () => {} }).compose.initializers.length, 1,
+  t.is(stampit(null, { init: () => {} }).compose.initializers.length, 1,
     'must recognize init from second argument');
-  t.equal(stampit(null, { props: { x: 2 }}).compose.properties.x, 2,
+  t.is(stampit(null, { props: { x: 2 }}).compose.properties.x, 2,
     'must recognize props from second argument');
-  t.equal(stampit(null, { refs: { x: 2 }}).compose.properties.x, 2,
+  t.is(stampit(null, { refs: { x: 2 }}).compose.properties.x, 2,
     'must recognize refs from second argument');
-  t.equal(stampit(null, { deepProps: { x: 2 }}).compose.deepProperties.x, 2,
+  t.is(stampit(null, { deepProps: { x: 2 }}).compose.deepProperties.x, 2,
     'must recognize deepProps from second argument');
-  t.equal(stampit(null, { statics: { x: 2 }}).compose.staticProperties.x, 2,
+  t.is(stampit(null, { statics: { x: 2 }}).compose.staticProperties.x, 2,
     'must recognize statics properties from second argument');
-  t.equal(stampit(null, { conf: { x: 2 }}).compose.configuration.x, 2,
+  t.is(stampit(null, { conf: { x: 2 }}).compose.configuration.x, 2,
     'must recognize conf properties from second argument');
-  t.equal(stampit(null, { deepConf: { x: 2 }}).compose.deepConfiguration.x, 2,
+  t.is(stampit(null, { deepConf: { x: 2 }}).compose.deepConfiguration.x, 2,
     'must recognize deepConf properties from second argument');
-
-  t.end();
 });

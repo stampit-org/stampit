@@ -1,6 +1,5 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Basics statics
 
 test('stampit().statics()', (t) => {
@@ -12,11 +11,9 @@ test('stampit().statics()', (t) => {
       bar: 'space'
     });
 
-  t.ok(stamp1.foo, 'Should add statics props to factory.');
-  t.equal(stamp1.foo(), 42, 'Should set proper reference.');
-  t.equal(stamp1.bar, 'space', 'Should set proper reference.');
-
-  t.end();
+  t.truthy(stamp1.foo, 'Should add statics props to factory.');
+  t.is(stamp1.foo(), 42, 'Should set proper reference.');
+  t.is(stamp1.bar, 'space', 'Should set proper reference.');
 });
 
 test('stampit({statics})', (t) => {
@@ -26,9 +23,7 @@ test('stampit({statics})', (t) => {
     }
   });
 
-  t.equal(stamp1.foo, 42, 'Should accept statics in options.');
-
-  t.end();
+  t.is(stamp1.foo, 42, 'Should accept statics in options.');
 });
 
 test('stampit().statics() last override', (t) => {
@@ -44,9 +39,7 @@ test('stampit().statics() last override', (t) => {
       foo() {}
     }).compose(stamp1);
 
-  t.equal(stamp2.foo(), 'override', 'Should override props during composition.');
-
-  t.end();
+  t.is(stamp2.foo(), 'override', 'Should override props during composition.');
 });
 
 test('stampit().statics(arg1, arg2)', (t) => {
@@ -59,10 +52,8 @@ test('stampit().statics(arg1, arg2)', (t) => {
     }
   );
 
-  t.ok(stamp1.foo1, 'Should accept multiple args.');
-  t.ok(stamp1.foo2, 'Should accept multiple args.');
-
-  t.end();
+  t.truthy(stamp1.foo1, 'Should accept multiple args.');
+  t.truthy(stamp1.foo2, 'Should accept multiple args.');
 });
 
 test('stampit.statics(arg1, arg2)', (t) => {
@@ -75,10 +66,8 @@ test('stampit.statics(arg1, arg2)', (t) => {
     }
   );
 
-  t.ok(stamp1.foo1, 'Should accept multiple args.');
-  t.ok(stamp1.foo2, 'Should accept multiple args.');
-
-  t.end();
+  t.truthy(stamp1.foo1, 'Should accept multiple args.');
+  t.truthy(stamp1.foo2, 'Should accept multiple args.');
 });
 
 test('stampit({statics}).statics()', (t) => {
@@ -93,8 +82,6 @@ test('stampit({statics}).statics()', (t) => {
       }
     });
 
-  t.equal(stamp1.foo1, 'foo1 value', 'Should have statics from options.');
-  t.equal(stamp1.foo2(), 'foo2 value', 'Should have statics form chain method.');
-
-  t.end();
+  t.is(stamp1.foo1, 'foo1 value', 'Should have statics from options.');
+  t.is(stamp1.foo2(), 'foo2 value', 'Should have statics form chain method.');
 });

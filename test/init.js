@@ -1,57 +1,48 @@
 import stampit from '../src/stampit';
-import test from 'tape';
-
+import { test } from 'ava';
 // Closure arguments
 
 test('stamp.init() arguments are passed', (t) => {
   let initStamp = undefined;
   const outerStamp = stampit().init((options, { instance, stamp, args }) => {
-    t.ok(instance, '{ instance } should exist');
-    t.equal(typeof instance, 'object', '{ instance } should be object');
-    t.ok(stamp, '{ stamp } should exist');
-    t.equal(typeof stamp, 'function', '{ stamp } should be function');
-    t.ok(args, '{ args } should exist');
-    t.ok(Array.isArray(args), '{ args } should be array');
+    t.truthy(instance, '{ instance } should exist');
+    t.is(typeof instance, 'object', '{ instance } should be object');
+    t.truthy(stamp, '{ stamp } should exist');
+    t.is(typeof stamp, 'function', '{ stamp } should be function');
+    t.truthy(args, '{ args } should exist');
+    t.truthy(Array.isArray(args), '{ args } should be array');
     initStamp = stamp;
   });
 
   outerStamp();
 
-  t.strictEqual(outerStamp, initStamp, '{ stamp } === stamp returned');
-
-  t.end();
+  t.truthy(outerStamp === initStamp, '{ stamp } === stamp returned');
 });
 
 test('stamp.init() should assign `this` to `{ instance }`', (t) => {
   const stamp = stampit().init(function(options, { instance }) {
-    t.ok(instance === this, '{ instance } should equal `this`');
+    t.truthy(instance === this, '{ instance } should equal `this`');
   });
 
   stamp();
-
-  t.end();
 });
 
 test('stamp.init() should assign stamp to `{ stamp }`', (t) => {
   const outerStamp = stampit().init((options, { stamp }) => {
-    t.ok(outerStamp === stamp, '{ stamp } should equal stamp');
+    t.truthy(outerStamp === stamp, '{ stamp } should equal stamp');
   });
 
   outerStamp();
-
-  t.end();
 });
 
 test('stamp.init() should assign arguments to `{ args }`', (t) => {
   const stamp = stampit().init((options, { args }) => {
-    t.equal(args[0], 'arg1', '{ args } should equal arguments');
-    t.equal(args[1], undefined, '{ args } should equal arguments');
-    t.equal(args[2], 'arg3', '{ args } should equal arguments');
+    t.is(args[0], 'arg1', '{ args } should equal arguments');
+    t.is(args[1], undefined, '{ args } should equal arguments');
+    t.is(args[2], 'arg3', '{ args } should equal arguments');
   });
 
   stamp('arg1', undefined, 'arg3');
-
-  t.end();
 });
 
 test('stamp.init() can handle multiple init functions', (t) => {
@@ -70,11 +61,9 @@ test('stamp.init() can handle multiple init functions', (t) => {
 
   stamp();
 
-  t.ok(init1, 'init 1 fired');
-  t.ok(init2, 'init 2 fired');
-  t.ok(init3, 'init 3 fired');
-
-  t.end();
+  t.truthy(init1, 'init 1 fired');
+  t.truthy(init2, 'init 2 fired');
+  t.truthy(init3, 'init 3 fired');
 });
 
 test('stamp.init() can handle multiple init functions assigned with array', (t) => {
@@ -96,11 +85,9 @@ test('stamp.init() can handle multiple init functions assigned with array', (t) 
 
   stamp();
 
-  t.ok(init1, 'init 1 fired');
-  t.ok(init2, 'init 2 fired');
-  t.ok(init3, 'init 3 fired');
-
-  t.end();
+  t.truthy(init1, 'init 1 fired');
+  t.truthy(init2, 'init 2 fired');
+  t.truthy(init3, 'init 3 fired');
 });
 
 test('stamp.init() can handle multiple init functions assigned with object', (t) => {
@@ -122,11 +109,9 @@ test('stamp.init() can handle multiple init functions assigned with object', (t)
 
   stamp();
 
-  t.ok(init1, 'init 1 fired');
-  t.ok(init2, 'init 2 fired');
-  t.ok(init3, 'init 3 fired');
-
-  t.end();
+  t.truthy(init1, 'init 1 fired');
+  t.truthy(init2, 'init 2 fired');
+  t.truthy(init3, 'init 3 fired');
 });
 
 test('stamp.init() should call composed init functions in order', (t) => {
@@ -153,8 +138,6 @@ test('stamp.init() should call composed init functions in order', (t) => {
 
   stamp3();
   t.deepEqual(result, ['a', 'b', 'c', 'd', 'e'], 'init called in order');
-
-  t.end();
 });
 
 test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
@@ -166,9 +149,7 @@ test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
   stamp.compose.initializers.push(42); // breaking the stamp.
   const obj = stamp();
 
-  t.equal(obj.getSecret(), 'foo', 'Should omit malformed compose.initializers[] elements.');
-
-  t.end();
+  t.is(obj.getSecret(), 'foo', 'Should omit malformed compose.initializers[] elements.');
 });
 
 test('stamp.compose.initializers malformed object', (t) => {
@@ -180,7 +161,5 @@ test('stamp.compose.initializers malformed object', (t) => {
   stamp.compose.initializers = 42; // breaking the stamp badly
   const obj = stamp();
 
-  t.ok(obj.ref, 42, 'Should be okay with malformed compose.init.');
-
-  t.end();
+  t.truthy(obj.ref, 42, 'Should be okay with malformed compose.init.');
 });
