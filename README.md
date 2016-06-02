@@ -16,6 +16,7 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 * **v1, stable,** in production use with millions of monthly users. There will be no breaking changes in the 1.x line.
 * **v2, current stable**. See breaking changes and new features on the 
 [releases page](https://github.com/stampit-org/stampit/releases/tag/2.0).
+* **v3, upcoming**. [Release Candidate](https://github.com/stampit-org/stampit/tree/v3_0) is available via `npm i stampit@rc`. 
 
 
 ## Install
