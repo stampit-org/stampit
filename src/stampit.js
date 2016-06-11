@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import compose, {merge} from 'stamp-specification';
+import compose, {merge} from './compose';
 import isComposable from '../isComposable';
 import isStamp from '../isStamp';
 
