@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "lodash": "^4.11.1",
-    "stamp-specification": "^1.1.1"
+    "stamp-specification": "^1.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.9.1",
@@ -41,7 +41,7 @@
     "babel-preset-stage-1": "^6.5.0",
     "babel-register": "^6.9.0",
     "babel-runtime": "^6.9.2",
-    "check-compose": "^1.1.3",
+    "check-compose": "^3.1.2",
     "dependency-check": "^2.5.0",
     "eslint": "^1.7.1",
     "isparta": "^3.0.3",
