@@ -1,13 +1,14 @@
-import _ from 'lodash';
 import compose, {merge} from './compose';
 import isComposable from '../isComposable';
 import isStamp from '../isStamp';
+import isFunction from '../isFunction';
+import isObject from '../isObject';
 
 function extractFunctions(...args) {
   const functions = args.reduce((result, arg) => {
-    if (_.isFunction(arg)) { return result.concat(arg); }
+    if (isFunction(arg)) { return result.concat(arg); }
     if (Array.isArray(arg)) { return result.concat(extractFunctions(...arg) || []); }
-    if (_.isObject(arg)) { return result.concat(extractFunctions(...Object.values(arg)) || []); }
+    if (isObject(arg)) { return result.concat(extractFunctions(...Object.values(arg)) || []); }
     return result;
   }, []);
   return functions.length === 0 ? undefined : functions;
@@ -69,23 +70,23 @@ function standardiseDescriptor({
   deepConfiguration,
   deepConf
 } = {}) {
-  const p = _.isObject(props) || _.isObject(refs) || _.isObject(properties) ?
+  const p = isObject(props) || isObject(refs) || isObject(properties) ?
     Object.assign({}, props, refs, properties) : undefined;
 
-  let dp = _.isObject(deepProps) ? merge({}, deepProps) : undefined;
-  dp = _.isObject(deepProperties) ? merge(dp, deepProperties) : dp;
+  let dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
+  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
 
-  const sp = _.isObject(statics) || _.isObject(staticProperties) ?
+  const sp = isObject(statics) || isObject(staticProperties) ?
     Object.assign({}, statics, staticProperties) : undefined;
 
-  let dsp = _.isObject(deepStatics) ? merge({}, deepStatics) : undefined;
-  dsp = _.isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
+  let dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
+  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
 
-  const c = _.isObject(conf) || _.isObject(configuration) ?
+  const c = isObject(conf) || isObject(configuration) ?
     Object.assign({}, conf, configuration) : undefined;
 
-  let dc = _.isObject(deepConf) ? merge({}, deepConf) : undefined;
-  dc = _.isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
+  let dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
+  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
 
   return {
     methods: methods,
