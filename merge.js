@@ -22,18 +22,20 @@ export default function deepmerge(target, src) {
         dst[key] = target[key];
       })
     }
-    Object.keys(src).forEach(function (key) {
-      if (typeof src[key] !== 'object' || !src[key]) {
-        dst[key] = src[key];
-      }
-      else {
-        if (!target[key]) {
+    if (src && typeof src === 'object') {
+      Object.keys(src).forEach(function (key) {
+        if (typeof src[key] !== 'object' || !src[key]) {
           dst[key] = src[key];
-        } else {
-          dst[key] = deepmerge(target[key], src[key]);
         }
-      }
-    });
+        else {
+          if (!target[key]) {
+            dst[key] = src[key];
+          } else {
+            dst[key] = deepmerge(target[key], src[key]);
+          }
+        }
+      });
+    }
   }
 
   return dst;
