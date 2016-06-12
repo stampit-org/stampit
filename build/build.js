@@ -16,7 +16,7 @@ function execute() {
       { format: 'es6', ext: '.mjs' }
     ),
     makeBundle(
-      { format: 'cjs', ext: '.js' },
+      { format: 'cjs', ext: '.js' }
     ),
     makeBundle(
       { format: 'cjs', ext: '.es5.js',
@@ -27,19 +27,19 @@ function execute() {
     makeBundle(
       { format: 'umd', ext: '.full.js',
         babelPresets: ['es2015-rollup'],
-        babelPlugins: ['transform-runtime', 'lodash']
+        babelPlugins: ['transform-runtime']
       }
     ),
     makeBundle(
       { format: 'umd', ext: '.full.min.js', minify: true,
         babelPresets: ['es2015-rollup'],
-        babelPlugins: ['transform-runtime', 'lodash']
+        babelPlugins: ['transform-runtime']
       }
     )
   ]);
 }
 
-async function makeBundle(config) {
+function makeBundle(config) {
   const isUMD = config.format === 'umd';
 
   const inputConfig = {
@@ -48,7 +48,7 @@ async function makeBundle(config) {
       babel({
         babelrc: false,
         exclude: 'node_modules/**',
-        presets: ['stage-1'].concat(config.babelPresets || []),
+        presets: config.babelPresets || [],
         plugins: config.babelPlugins || [],
         runtimeHelpers: isUMD,
         externalHelpers: isUMD
@@ -74,9 +74,9 @@ async function makeBundle(config) {
     exports: 'named'
   };
 
-  const bundle = await rollup.rollup(inputConfig);
-  await bundle.write(outputConfig);
-  console.log('created', outputConfig.dest);
+  return rollup.rollup(inputConfig)
+    .then(bundle => bundle.write(outputConfig))
+    .then(() => console.log('created', outputConfig.dest));
 }
 
 console.log('building...');

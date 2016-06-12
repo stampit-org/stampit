@@ -1,1 +1,3 @@
-export default from './isObject';
+import isObject from './isObject';
+
+export default isObject;
