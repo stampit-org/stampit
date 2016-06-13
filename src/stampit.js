@@ -131,7 +131,7 @@ const baseStampit = compose({
     deepConf: rawUtilities.deepConfiguration,
 
     create() {
-      return this(slice.call(arguments));
+      return this.apply(undefined, arguments);
     },
 
     compose() {

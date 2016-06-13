@@ -15,3 +15,12 @@ test('.create()', (t) => {
 
   t.end();
 });
+
+test('.create(options)', (t) => {
+  const stamp = stampit.init((options) => {
+    t.deepEqual(options, {foo: 'bar'},
+      'Should pass options object to initializer.');
+    t.end();
+  });
+  stamp.create({foo: 'bar'});
+});
