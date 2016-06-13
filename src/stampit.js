@@ -4,12 +4,13 @@ import isStamp from '../isStamp';
 import isFunction from '../isFunction';
 import isObject from '../isObject';
 import assign from '../assign';
+import values from '../values';
 
 function extractFunctions(...args) {
   const functions = args.reduce((result, arg) => {
     if (isFunction(arg)) { return result.concat(arg); }
     if (Array.isArray(arg)) { return result.concat(extractFunctions(...arg) || []); }
-    if (isObject(arg)) { return result.concat(extractFunctions(...Object.values(arg)) || []); }
+    if (isObject(arg)) { return result.concat(extractFunctions(...values(arg)) || []); }
     return result;
   }, []);
   return functions.length === 0 ? undefined : functions;
