@@ -88,4 +88,7 @@ console.log('building...');
 
 execute()
   .then(() => console.log('finished'))
-  .catch((err) => console.log(err.stack || err));
+  .catch((err) =>{
+    console.error(err.stack || err);
+    process.exit(1);
+  });
