@@ -9,12 +9,9 @@ import uglify from 'rollup-plugin-uglify';
 // This code reimplements the "babel-preset-es2015-rollup" module.
 // But also does not include "external-helpers" babel plugin.
 // That plugin made the code too large and also is hard to configure.
-const es2015Plugins =
-  Object.keys(
-    require('../node_modules/babel-preset-es2015/package.json').dependencies
-  )
-  // Rollup recognizes ES6 modules, not need to transpile that
-  .filter(dep => dep !== 'babel-plugin-transform-es2015-modules-commonjs');
+// The main idea is to make sure babel does not transpile ES6 modules to CJS
+// because Rollup handles import/export itself.
+const es2015Plugins = pkg.babel.plugins;
 
 const moduleName = 'stampit';
 
