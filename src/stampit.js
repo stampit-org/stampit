@@ -23,7 +23,7 @@ function extractFunctions() {
   return functions.length === 0 ? undefined : functions;
 }
 
-function _composeArgsCall(self, propName, action, args) {
+function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
   descriptor[propName] = action.apply(null, [{}].concat(slice.call(args)));
   return (self.compose || compose).call(self, descriptor);
@@ -31,10 +31,10 @@ function _composeArgsCall(self, propName, action, args) {
 
 const rawUtilities = {
   methods() {
-    return _composeArgsCall(this, 'methods', assign, arguments);
+    return composeArgsCall(this, 'methods', assign, arguments);
   },
   properties() {
-    return _composeArgsCall(this, 'properties', assign, arguments);
+    return composeArgsCall(this, 'properties', assign, arguments);
   },
   initializers() {
     return (this.compose || compose).call(this, {
@@ -42,19 +42,19 @@ const rawUtilities = {
     });
   },
   deepProperties() {
-    return _composeArgsCall(this, 'deepProperties', merge, arguments);
+    return composeArgsCall(this, 'deepProperties', merge, arguments);
   },
   staticProperties() {
-    return _composeArgsCall(this, 'staticProperties', assign, arguments);
+    return composeArgsCall(this, 'staticProperties', assign, arguments);
   },
   staticDeepProperties() {
-    return _composeArgsCall(this, 'staticDeepProperties', merge, arguments);
+    return composeArgsCall(this, 'staticDeepProperties', merge, arguments);
   },
   configuration() {
-    return _composeArgsCall(this, 'configuration', assign, arguments);
+    return composeArgsCall(this, 'configuration', assign, arguments);
   },
   deepConfiguration() {
-    return _composeArgsCall(this, 'deepConfiguration', merge, arguments);
+    return composeArgsCall(this, 'deepConfiguration', merge, arguments);
   }
 };
 

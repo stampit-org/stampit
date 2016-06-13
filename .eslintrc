@@ -5,6 +5,7 @@
     "object-curly-spacing": [2, "never"],
     "no-param-reassign": 0,
     "comma-dangle": 0,
-    "no-confusing-arrow": 0
+    "no-confusing-arrow": 0,
+    "prefer-rest-params": 0
   }
 }

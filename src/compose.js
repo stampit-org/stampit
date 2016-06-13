@@ -21,7 +21,7 @@ function createFactory(descriptor) {
     if (!descriptor.initializers || descriptor.initializers.length === 0) return obj;
 
     const args = slice.call(arguments, 1);
-    if (options == undefined) options = {};
+    if (options === undefined) options = {};
     return descriptor.initializers.filter(isFunction).reduce((resultingObj, initializer) => {
       const returnedValue = initializer.call(resultingObj, options,
         {instance: resultingObj, stamp: Stamp, args: [options].concat(args)});
