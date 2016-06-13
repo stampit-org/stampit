@@ -55,6 +55,7 @@
     "dependency-check": "^2.5.0",
     "eslint": "^2.12.0",
     "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.8.1",
     "isparta": "^3.0.3",
     "lodash": "^4.11.1",
     "nsp": "^2.1.0",

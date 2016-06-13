@@ -1,6 +1,7 @@
 import isObject from './isObject';
+import slice from './slice';
 
-function mergeOne(dst, src, shallow = false) {
+function mergeOne(dst, src, shallow) {
   if (src === undefined) return dst;
   const srcIdObject = isObject(src);
   if (!srcIdObject) return src; // not a POJO, array, or function
@@ -9,6 +10,7 @@ function mergeOne(dst, src, shallow = false) {
   const srcIsArray = Array.isArray(src);
   if (srcIsArray) return (dstIsArray ? dst : []).concat(src);
 
+  if (shallow === undefined) shallow = false;
   if (dstIsArray) return mergeOne({}, src, shallow);
 
   const keys = Object.keys(src);
@@ -26,14 +28,13 @@ function mergeOne(dst, src, shallow = false) {
 }
 
 function mergeFew(dst, srcs, shallow) {
-  for (const src of srcs) dst = mergeOne(dst, src, shallow);
-  return dst;
+  return srcs.reduce((target, src) => mergeOne(target, src, shallow), dst);
 }
 
-export function assign(dst, ...args) {
-  return mergeFew(dst, args, true);
+export function assign(dst) {
+  return mergeFew(dst, slice.call(arguments, 1), true);
 }
 
-export function merge(dst, ...args) {
-  return mergeFew(dst, args, false);
+export function merge(dst) {
+  return mergeFew(dst, slice.call(arguments, 1), false);
 }

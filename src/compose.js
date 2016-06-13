@@ -1,5 +1,6 @@
 import isFunction from './isFunction';
 import isObject from './isObject';
+import slice from './slice';
 import {merge, assign} from './merge';
 
 const isDescriptor = isObject;
@@ -10,7 +11,7 @@ const isDescriptor = isObject;
  * @returns {Function} The new factory function.
  */
 function createFactory(descriptor) {
-  return function Stamp(options = {}, ...args) {
+  return function Stamp(options) {
     const obj = Object.create(descriptor.methods || {});
 
     merge(obj, descriptor.deepProperties);
@@ -19,6 +20,8 @@ function createFactory(descriptor) {
 
     if (!descriptor.initializers || descriptor.initializers.length === 0) return obj;
 
+    const args = slice.call(arguments, 1);
+    if (options == undefined) options = {};
     return descriptor.initializers.filter(isFunction).reduce((resultingObj, initializer) => {
       const returnedValue = initializer.call(resultingObj, options,
         {instance: resultingObj, stamp: Stamp, args: [options].concat(args)});
@@ -41,8 +44,8 @@ function createStamp(descriptor, composeFunction) {
   Object.defineProperties(Stamp, descriptor.staticPropertyDescriptors || {});
 
   const composeImplementation = isFunction(Stamp.compose) ? Stamp.compose : composeFunction;
-  Stamp.compose = function _compose(...args) {
-    return composeImplementation.apply(this, args);
+  Stamp.compose = function _compose() {
+    return composeImplementation.apply(this, slice.call(arguments));
   };
   assign(Stamp.compose, descriptor);
 
@@ -92,7 +95,10 @@ function mergeComposable(dstDescriptor, srcComposable) {
  * @param {...(object|Function)} [composables] The list of composables.
  * @returns {Function} A new stamp (aka composable factory function).
  */
-export default function compose(...composables) {
-  const descriptor = [this].concat(composables).filter(isObject).reduce(mergeComposable, {});
+export default function compose() {
+  const descriptor = [this]
+    .concat(slice.call(arguments))
+    .filter(isObject)
+    .reduce(mergeComposable, {});
   return createStamp(descriptor, compose);
 }

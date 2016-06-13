@@ -3,43 +3,58 @@ import isComposable from '../isComposable';
 import isStamp from '../isStamp';
 import isFunction from './isFunction';
 import isObject from './isObject';
+import slice from './slice';
 import {merge, assign} from './merge';
 import values from './values';
 
-function extractFunctions(...args) {
-  const functions = args.reduce((result, arg) => {
-    if (isFunction(arg)) { return result.concat(arg); }
-    if (Array.isArray(arg)) { return result.concat(extractFunctions(...arg) || []); }
-    if (isObject(arg)) { return result.concat(extractFunctions(...values(arg)) || []); }
+function extractFunctions() {
+  const functions = slice.call(arguments).reduce((result, arg) => {
+    if (isFunction(arg)) {
+      return result.concat(arg);
+    }
+    if (Array.isArray(arg)) {
+      return result.concat(extractFunctions.apply(null, arg) || []);
+    }
+    if (isObject(arg)) {
+      return result.concat(extractFunctions.apply(null, values(arg)) || []);
+    }
     return result;
   }, []);
   return functions.length === 0 ? undefined : functions;
 }
 
+function _composeArgsCall(self, propName, action, args) {
+  const descriptor = {};
+  descriptor[propName] = action.apply(null, [{}].concat(slice.call(args)));
+  return (self.compose || compose).call(self, descriptor);
+}
+
 const rawUtilities = {
-  methods(...args) {
-    return (this.compose || compose).call(this, {methods: assign({}, ...args)});
+  methods() {
+    return _composeArgsCall(this, 'methods', assign, arguments);
   },
-  properties(...args) {
-    return (this.compose || compose).call(this, {properties: assign({}, ...args)});
+  properties() {
+    return _composeArgsCall(this, 'properties', assign, arguments);
   },
-  initializers(...args) {
-    return (this.compose || compose).call(this, {initializers: extractFunctions(...args)});
+  initializers() {
+    return (this.compose || compose).call(this, {
+      initializers: extractFunctions.apply(null, slice.call(arguments))
+    });
   },
-  deepProperties(...args) {
-    return (this.compose || compose).call(this, {deepProperties: merge({}, ...args)});
+  deepProperties() {
+    return _composeArgsCall(this, 'deepProperties', merge, arguments);
   },
-  staticProperties(...args) {
-    return (this.compose || compose).call(this, {staticProperties: assign({}, ...args)});
+  staticProperties() {
+    return _composeArgsCall(this, 'staticProperties', assign, arguments);
   },
-  staticDeepProperties(...args) {
-    return (this.compose || compose).call(this, {staticDeepProperties: merge({}, ...args)});
+  staticDeepProperties() {
+    return _composeArgsCall(this, 'staticDeepProperties', merge, arguments);
   },
-  configuration(...args) {
-    return (this.compose || compose).call(this, {configuration: assign({}, ...args)});
+  configuration() {
+    return _composeArgsCall(this, 'configuration', assign, arguments);
   },
-  deepConfiguration(...args) {
-    return (this.compose || compose).call(this, {deepConfiguration: merge({}, ...args)});
+  deepConfiguration() {
+    return _composeArgsCall(this, 'deepConfiguration', merge, arguments);
   }
 };
 
@@ -115,19 +130,19 @@ const baseStampit = compose({
     conf: rawUtilities.configuration,
     deepConf: rawUtilities.deepConfiguration,
 
-    create(...args) {
-      return this(...args);
+    create() {
+      return this(slice.call(arguments));
     },
 
-    compose(...args) {
-      return compose(this, ...args.filter(isComposable)
+    compose() {
+      return compose.apply(this, slice.call(arguments).filter(isComposable)
         .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg)));
     }
   }, rawUtilities)
 });
 
-function stampit(...args) {
-  return baseStampit.compose(...args);
+function stampit() {
+  return baseStampit.compose.apply(baseStampit, slice.call(arguments));
 }
 
 export default assign(stampit,
