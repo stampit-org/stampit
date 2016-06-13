@@ -1,41 +1,25 @@
-export default function deepmerge(target, src) {
-  var array = Array.isArray(src);
-  var dst = array && [] || {};
+import isObject from './isObject';
 
-  if (array) {
-    target = target || [];
-    dst = dst.concat(target);
-    src.forEach(function(e, i) {
-      if (typeof dst[i] === 'undefined') {
-        dst[i] = e;
-      } else if (typeof e === 'object') {
-        dst[i] = deepmerge(target[i], e);
-      } else {
-        if (target.indexOf(e) === -1) {
-          dst.push(e);
-        }
-      }
-    });
-  } else {
-    if (target && typeof target === 'object') {
-      Object.keys(target).forEach(function (key) {
-        dst[key] = target[key];
-      })
-    }
-    if (src && typeof src === 'object') {
-      Object.keys(src).forEach(function (key) {
-        if (typeof src[key] !== 'object' || !src[key]) {
-          dst[key] = src[key];
-        }
-        else {
-          if (!target[key]) {
-            dst[key] = src[key];
-          } else {
-            dst[key] = deepmerge(target[key], src[key]);
-          }
-        }
-      });
-    }
+export default function merge(dst, src, shallow = false) {
+  const bObject = isObject(src);
+  if (!bObject) return src; // not a POJO, array, or function
+
+  const aArray = Array.isArray(dst);
+  const bArray = Array.isArray(src);
+  if (bArray) return (aArray ? dst : []).concat(src);
+
+  if (aArray) return merge({}, src, shallow);
+
+  const keys = Object.keys(src);
+  if (!dst) dst = {};
+
+  let key, srcValue;
+  for (let i = 0; i < keys.length; i++) {
+    key = keys[i];
+    srcValue = src[key];
+    if (srcValue === undefined) continue;
+
+    dst[key] = shallow ? src[key] : merge(dst[key], srcValue, shallow);
   }
 
   return dst;
