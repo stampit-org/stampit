@@ -49,7 +49,7 @@
     "cov": "npm run cov:clean && npm run cov:generate",
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node node_modules/.bin/isparta cover --report text --report html test/index.js",
-    "prepublish": "npm run check && npm run build",
+    "prepublish": "npm run check",
     "test": "npm run build && babel-node ./node_modules/.bin/tape test/index.js",
     "clean": "rimraf dist/* && mkdir dist || true",
     "lint": "eslint src && eslint test",
