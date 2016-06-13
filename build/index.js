@@ -9,16 +9,13 @@ import uglify from 'rollup-plugin-uglify';
 // This code reimplements the "babel-preset-es2015-rollup" module.
 // But also does not include "external-helpers" babel plugin.
 // That plugin made the code too large and also is hard to configure.
-const es2015Plugins = Object.keys(
-  require('../node_modules/babel-preset-es2015/package.json')
-  .dependencies)
-  // This plugin must be excluded for rollup. Otherwise, it doesn't work.
-  .filter(dep =>
-    dep !== 'babel-plugin-transform-es2015-modules-commonjs' &&
-    dep !== 'babel-plugin-transform-es2015-typeof-symbol'
+const es2015Plugins = 
+  Object.keys(
+    require('../node_modules/babel-preset-es2015/package.json').dependencies
   )
-  .map(dep => '../node_modules/babel-preset-es2015/node_modules/' + dep)
-  .map(require);
+  // Rollup recognizes ES6 modules, not need to transpile that
+  .filter(dep => dep !== 'babel-plugin-transform-es2015-modules-commonjs')
+;
 
 const moduleName = 'stampit';
 
