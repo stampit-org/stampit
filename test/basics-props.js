@@ -4,7 +4,7 @@ import test from 'tape';
 // Basics Props
 
 test('stampit({ props })', (t) => {
-  const obj = stampit({ props: { foo: { bar: 'bar' } } }).create();
+  const obj = stampit({props: {foo: {bar: 'bar'}}}).create();
 
   t.equal(obj.foo.bar, 'bar',
     'Should set default props.');
@@ -14,7 +14,7 @@ test('stampit({ props })', (t) => {
 
 test('stampit().props()', (t) => {
   const obj = stampit().props({
-    foo: { bar: 'bar' },
+    foo: {bar: 'bar'},
     propsOverride: false,
     func1() {}
   }).props({
@@ -38,11 +38,13 @@ test('stampit().props()', (t) => {
 });
 
 test('stampit({ props }).props()', (t) => {
-  const obj = stampit({ props: {
-    foo: { bar: 'bar' },
-    propsOverride: false,
-    func1() {}
-  }}).props({
+  const obj = stampit({
+    props: {
+      foo: {bar: 'bar'},
+      propsOverride: false,
+      func1() {}
+    }
+  }).props({
     bar: 'bar',
     propsOverride: true,
     func2() {}

@@ -5,10 +5,12 @@ import test from 'tape';
 
 test('stampit.isStamp() with stamps', (t) => {
   const emptyStamp = stampit();
-  const refsOnlyStamp = stampit().refs({ a: 'b' });
-  const methodsOnlyStamp = stampit({ methods: {
-    method() {}
-  }});
+  const refsOnlyStamp = stampit().refs({a: 'b'});
+  const methodsOnlyStamp = stampit({
+    methods: {
+      method() {}
+    }
+  });
   const closureOnlyStamp = stampit().init(() => {});
 
   t.ok(stampit.isStamp(emptyStamp), 'Empty stamp should be seen as stamp.');
@@ -21,16 +23,18 @@ test('stampit.isStamp() with stamps', (t) => {
 
 test('stampit.isStamp() with non stamps', (t) => {
   const obj1 = undefined;
-  const obj2 = { refs: {}, methods: {}, init: {}, compose: {}, props: {} };
-  const obj3 = function() {
+  const obj2 = {refs: {}, methods: {}, init: {}, compose: {}, props: {}};
+  const obj3 = function () {
     this.init = this;
   };
-  const obj4 = function() {
+  const obj4 = function () {
     this.compose = () => {};
   };
 
-  t.ok(!stampit.isStamp(obj1) && !stampit.isStamp(obj2) && !stampit.isStamp(obj3) && !stampit.isStamp(obj4),
-    'Should not be seen as stamp.');
+  t.ok(!stampit.isStamp(obj1), 'Should not be seen as stamp.');
+  t.ok(!stampit.isStamp(obj2), 'Should not be seen as stamp.');
+  t.ok(!stampit.isStamp(obj3), 'Should not be seen as stamp.');
+  t.ok(!stampit.isStamp(obj4), 'Should not be seen as stamp.');
 
   t.end();
 });

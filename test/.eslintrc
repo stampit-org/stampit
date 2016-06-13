@@ -1,0 +1,9 @@
+// Add our overrides as necessary
+{
+  "rules": {
+    "object-shorthand": 0,
+    "arrow-body-style": 0,
+    "func-names": 0,
+    "newline-per-chained-call": 0
+  }
+}

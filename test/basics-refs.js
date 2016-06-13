@@ -4,7 +4,7 @@ import test from 'tape';
 // Basics refs
 
 test('stampit({ refs })', (t) => {
-  const obj = stampit({ refs: { foo: { bar: 'bar' } } }).create();
+  const obj = stampit({refs: {foo: {bar: 'bar'}}}).create();
 
   t.equal(obj.foo.bar, 'bar',
     'Should set default refs.');
@@ -14,7 +14,7 @@ test('stampit({ refs })', (t) => {
 
 test('stampit().refs()', (t) => {
   const obj = stampit().refs({
-    foo: { bar: 'bar' },
+    foo: {bar: 'bar'},
     refsOverride: false,
     func1() {}
   }).refs({
@@ -38,11 +38,13 @@ test('stampit().refs()', (t) => {
 });
 
 test('stampit({ refs }).refs()', (t) => {
-  const obj = stampit({ refs: {
-    foo: { bar: 'bar' },
-    refsOverride: false,
-    func1() {}
-  }}).refs({
+  const obj = stampit({
+    refs: {
+      foo: {bar: 'bar'},
+      refsOverride: false,
+      func1() {}
+    }
+  }).refs({
     bar: 'bar',
     refsOverride: true,
     func2() {}

@@ -4,9 +4,11 @@ import test from 'tape';
 // Basics Methods
 
 test('stampit({ methods })', (t) => {
-  const obj = stampit({ methods: {
-    foo() { return 'foo'; }
-  }}).create();
+  const obj = stampit({
+    methods: {
+      foo() { return 'foo'; }
+    }
+  }).create();
 
   t.ok(obj.foo() && !obj.hasOwnProperty('foo'),
     'Should set the new object\'s prototype.');
@@ -40,11 +42,13 @@ test('stampit().methods()', (t) => {
 });
 
 test('stampit({ methods }).methods()', (t) => {
-  const obj = stampit({ methods: {
-    foo() { return 'foo'; },
-    methodOverride() { return false; },
-    prop1: 1
-  }}).methods({
+  const obj = stampit({
+    methods: {
+      foo() { return 'foo'; },
+      methodOverride() { return false; },
+      prop1: 1
+    }
+  }).methods({
     bar() { return 'bar'; },
     methodOverride() { return true; },
     prop2: 2

@@ -4,9 +4,9 @@ import test from 'tape';
 // Refs shallow mixing
 
 test('Stamp refs shallow copied for object created', (t) => {
-  const deep = { foo: 'foo', bar: 'bar' };
-  const stamp1 = stampit().refs({ deep: deep, foo: 'foo' });
-  const stamp2 = stampit({ refs: { deep: deep, foo: 'foo' } });
+  const deep = {foo: 'foo', bar: 'bar'};
+  const stamp1 = stampit().refs({deep: deep, foo: 'foo'});
+  const stamp2 = stampit({refs: {deep: deep, foo: 'foo'}});
 
   const o1 = stamp1();
   const o2 = stamp2();
@@ -20,8 +20,8 @@ test('Stamp refs shallow copied for object created', (t) => {
 
 test('stampit.refs(refs) shallow copied into stamp', (t) => {
   const stamp = stampit()
-    .refs({ deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' })
-    .refs({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
+    .refs({deep: {foo: '1', bar: '1'}, foo: '1', bar: '1'})
+    .refs({deep: {foo: 'override', baz: 'baz'}, foo: 'override', baz: 'baz'});
   const o = stamp();
 
   t.equal(o.foo, 'override');
@@ -35,8 +35,20 @@ test('stampit.refs(refs) shallow copied into stamp', (t) => {
 });
 
 test('stamp.compose() shallow copy refs', (t) => {
-  const stamp = stampit({ refs: { deep: { foo: '1', bar: '1' }, foo: '1', bar: '1' } })
-    .compose(stampit({ refs: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
+  const stamp = stampit({
+    refs: {
+      deep: {foo: '1', bar: '1'},
+      foo: '1',
+      bar: '1'
+    }
+  })
+    .compose(stampit({
+      refs: {
+        deep: {foo: 'override', baz: 'baz'},
+        foo: 'override',
+        baz: 'baz'
+      }
+    }));
   const o = stamp();
 
   t.equal(o.foo, 'override');

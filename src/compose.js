@@ -1,18 +1,8 @@
-// import mergeWith from 'lodash/mergeWith';
-import assign from '../assign';
-import isFunction from '../isFunction';
-import isObject from '../isObject';
+import isFunction from './isFunction';
+import isObject from './isObject';
+import {merge, assign} from './merge';
 
 const isDescriptor = isObject;
-// export const merge = (dst, src) => mergeWith(dst, src, (dstValue, srcValue) => {
-//   if (Array.isArray(dstValue)) {
-//     if (Array.isArray(srcValue)) return dstValue.concat(srcValue);
-//     if (isObject(srcValue)) return merge({}, srcValue);
-//   }
-// });
-
-import merge from '../merge';
-export {merge};
 
 /**
  * Creates new factory instance.
@@ -21,7 +11,7 @@ export {merge};
  */
 function createFactory(descriptor) {
   return function Stamp(options = {}, ...args) {
-    let obj = Object.create(descriptor.methods || {});
+    const obj = Object.create(descriptor.methods || {});
 
     merge(obj, descriptor.deepProperties);
     assign(obj, descriptor.properties);
@@ -51,8 +41,8 @@ function createStamp(descriptor, composeFunction) {
   Object.defineProperties(Stamp, descriptor.staticPropertyDescriptors || {});
 
   const composeImplementation = isFunction(Stamp.compose) ? Stamp.compose : composeFunction;
-  Stamp.compose = function() {
-    return composeImplementation.apply(this, arguments);
+  Stamp.compose = function _compose(...args) {
+    return composeImplementation.apply(this, args);
   };
   assign(Stamp.compose, descriptor);
 
@@ -97,7 +87,8 @@ function mergeComposable(dstDescriptor, srcComposable) {
 }
 
 /**
- * Given the list of composables (stamp descriptors and stamps) returns a new stamp (composable factory function).
+ * Given the list of composables (stamp descriptors and stamps) returns
+ * a new stamp (composable factory function).
  * @param {...(object|Function)} [composables] The list of composables.
  * @returns {Function} A new stamp (aka composable factory function).
  */

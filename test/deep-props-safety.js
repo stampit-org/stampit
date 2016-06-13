@@ -4,9 +4,9 @@ import test from 'tape';
 // Props safety
 
 test('Stamp deepProps deep cloned for object created', (t) => {
-  const deep = { foo: 'foo', bar: 'bar' };
-  const stamp1 = stampit().deepProps({ deep: deep, foo: 'foo' });
-  const stamp2 = stampit({ deepProps: { deep: deep, foo: 'foo' } });
+  const deep = {foo: 'foo', bar: 'bar'};
+  const stamp1 = stampit().deepProps({deep: deep, foo: 'foo'});
+  const stamp2 = stampit({deepProps: {deep: deep, foo: 'foo'}});
 
   let o1 = stamp1();
   let o2 = stamp1();
@@ -27,8 +27,12 @@ test('Stamp deepProps deep cloned for object created', (t) => {
 
 test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
   const stamp = stampit()
-    .deepProps({ deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' })
-    .deepProps({ deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' });
+    .deepProps({deep: {foo: 'foo', bar: 'bar'}, foo: 'foo', bar: 'bar'})
+    .deepProps({
+      deep: {foo: 'override', baz: 'baz'},
+      foo: 'override',
+      baz: 'baz'
+    });
   const o = stamp();
 
   t.equal(o.foo, 'override');
@@ -42,8 +46,20 @@ test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
 });
 
 test('stamp.compose() deep merge deepProps', (t) => {
-  const stamp = stampit({ deepProps: { deep: { foo: 'foo', bar: 'bar' }, foo: 'foo', bar: 'bar' } })
-    .compose(stampit({ deepProps: { deep: { foo: 'override', baz: 'baz' }, foo: 'override', baz: 'baz' } }));
+  const stamp = stampit({
+    deepProps: {
+      deep: {foo: 'foo', bar: 'bar'},
+      foo: 'foo',
+      bar: 'bar'
+    }
+  })
+    .compose(stampit({
+      deepProps: {
+        deep: {foo: 'override', baz: 'baz'},
+        foo: 'override',
+        baz: 'baz'
+      }
+    }));
   const o = stamp();
 
   t.equal(o.foo, 'override');

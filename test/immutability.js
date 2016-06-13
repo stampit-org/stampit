@@ -4,16 +4,26 @@ import test from 'tape';
 // Immutability
 
 test('Basic stamp immutability', (t) => {
-  const methods = { f() {} };
-  const refs = { s: { deep: 1 } };
-  const props = { p: { deep: 1 } };
+  const methods = {f() {}};
+  const refs = {s: {deep: 1}};
+  const props = {p: {deep: 1}};
   const init = () => {};
-  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props, init });
+  const stamp1 = stampit({
+    methods: methods,
+    refs: refs,
+    deepProps: props,
+    init
+  });
 
   methods.f = () => {};
   refs.s.deep = 2;
   props.p.deep = 2;
-  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props, init });
+  const stamp2 = stampit({
+    methods: methods,
+    refs: refs,
+    deepProps: props,
+    init
+  });
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.methods.f, stamp2.compose.methods.f);
@@ -29,12 +39,22 @@ test('Basic stamp immutability', (t) => {
 });
 
 test('Stamp immutability made of same source', (t) => {
-  const methods = { f() {} };
-  const refs = { s: { deep: 1 } };
-  const props = { p: { deep: 1 } };
+  const methods = {f() {}};
+  const refs = {s: {deep: 1}};
+  const props = {p: {deep: 1}};
   const init = () => {};
-  const stamp1 = stampit({ methods: methods, refs: refs, deepProps: props, init });
-  const stamp2 = stampit({ methods: methods, refs: refs, deepProps: props, init });
+  const stamp1 = stampit({
+    methods: methods,
+    refs: refs,
+    deepProps: props,
+    init
+  });
+  const stamp2 = stampit({
+    methods: methods,
+    refs: refs,
+    deepProps: props,
+    init
+  });
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.properties, stamp2.compose.properties);
@@ -47,15 +67,15 @@ test('Stamp immutability made of same source', (t) => {
 });
 
 test('Basic object immutability', (t) => {
-  const methods = { f() {} };
-  const refs = { s: { deep: 1 } };
-  const props = { p: { deep: 1 } };
-  const o1 = stampit({ methods: methods, refs: refs, deepProps: props })();
+  const methods = {f() {}};
+  const refs = {s: {deep: 1}};
+  const props = {p: {deep: 1}};
+  const o1 = stampit({methods: methods, refs: refs, deepProps: props})();
 
   methods.f = () => {};
   refs.s.deep = 2;
   props.p.deep = 2;
-  const o2 = stampit({ methods: methods, refs: refs, deepProps: props })();
+  const o2 = stampit({methods: methods, refs: refs, deepProps: props})();
 
   t.notEqual(o1, o2);
   t.notEqual(o1.f, o2.f);
@@ -69,10 +89,10 @@ test('Basic object immutability', (t) => {
 
 test('Stamp chaining functions immutability', (t) => {
   const stamp1 = stampit();
-  const stamp2 = stamp1.methods({ f() {} });
-  const stamp3 = stamp2.properties( { s: { deep: 1 } });
+  const stamp2 = stamp1.methods({f() {}});
+  const stamp3 = stamp2.properties({s: {deep: 1}});
   const stamp4 = stamp3.init(() => {});
-  const stamp5 = stamp2.deepProperties( { p: { deep: 1 } });
+  const stamp5 = stamp2.deepProperties({p: {deep: 1}});
   const stamp6 = stamp4.compose(stampit());
 
   t.notEqual(stamp1, stamp2);

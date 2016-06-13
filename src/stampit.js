@@ -1,10 +1,10 @@
-import compose, {merge} from './compose';
+import compose from './compose';
 import isComposable from '../isComposable';
 import isStamp from '../isStamp';
-import isFunction from '../isFunction';
-import isObject from '../isObject';
-import assign from '../assign';
-import values from '../values';
+import isFunction from './isFunction';
+import isObject from './isObject';
+import {merge, assign} from './merge';
+import values from './values';
 
 function extractFunctions(...args) {
   const functions = args.reduce((result, arg) => {
@@ -91,7 +91,7 @@ function standardiseDescriptor({
   dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
 
   return {
-    methods: methods,
+    methods,
     properties: p,
     initializers: extractFunctions(init, initializers),
     deepProperties: dp,

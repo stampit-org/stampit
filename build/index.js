@@ -21,7 +21,10 @@ function execute() {
       {format: 'es6', ext: '.mjs'}
     ),
     makeBundle(
-      {format: 'cjs', ext: '.js'}
+      {
+        format: 'cjs', ext: '.js',
+        babelPlugins: es2015Plugins
+      }
     ),
     makeBundle(
       {
@@ -85,7 +88,7 @@ console.log('building...');
 
 execute()
   .then(() => console.log('finished'))
-  .catch((err) =>{
+  .catch((err) => {
     console.error(err.stack || err);
     process.exit(1);
   });

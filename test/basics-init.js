@@ -4,10 +4,12 @@ import test from 'tape';
 // Basics Enclose
 
 test('stampit({ init })', (t) => {
-  const obj = stampit({ init() {
-    const secret = 'foo';
-    this.getSecret = () => { return secret; };
-  }}).create();
+  const obj = stampit({
+    init() {
+      const secret = 'foo';
+      this.getSecret = () => { return secret; };
+    }
+  }).create();
 
   t.equal(obj.getSecret(), 'foo',
     'Should set closure.');
@@ -16,10 +18,10 @@ test('stampit({ init })', (t) => {
 });
 
 test('stampit().init()', (t) => {
-  const obj = stampit().init(function() {
+  const obj = stampit().init(function () {
     const secret = 'foo';
     this.getSecret = () => { return secret; };
-  }).init(function() {
+  }).init(function () {
     this.a = 'a';
   }).init({
     bar() { this.b = 'b'; }
@@ -36,10 +38,12 @@ test('stampit().init()', (t) => {
 });
 
 test('stampit({ init }).init()', (t) => {
-  const obj = stampit({ init() {
-    const secret = 'foo';
-    this.getSecret = () => { return secret; };
-  }}).init(function() {
+  const obj = stampit({
+    init() {
+      const secret = 'foo';
+      this.getSecret = () => { return secret; };
+    }
+  }).init(function () {
     this.a = 'a';
   }).init({
     bar() { this.b = 'b'; }
