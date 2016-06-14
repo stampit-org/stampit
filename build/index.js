@@ -2,7 +2,7 @@
 
 import pkg from '../package.json';
 
-import rollup from 'rollup';
+import {rollup} from 'rollup';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 
@@ -79,7 +79,7 @@ function makeBundle(config) {
     exports: 'named'
   };
 
-  return rollup.rollup(inputConfig)
+  return rollup(inputConfig)
     .then(bundle => bundle.write(outputConfig))
     .then(() => console.log('created', outputConfig.dest));
 }
