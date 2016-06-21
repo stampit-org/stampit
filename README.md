@@ -10,6 +10,7 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 
 **React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
 
+Check out series of articles explaining stamps basics and following with some advanced topics: [Fun with stamps](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0#.d3j78cb2p)
 
 ## Status
 
