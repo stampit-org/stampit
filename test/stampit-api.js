@@ -49,7 +49,7 @@ test('incorrect stampit({ deepProps }) args', (t) => {
 });
 
 test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
-  t.equal(stampit(null, {init: () => {}}).compose.initializers.length, 1,
+  t.equal(stampit(null, {init() {}}).compose.initializers.length, 1,
     'must recognize init from second argument');
   t.equal(stampit(null, {props: {x: 2}}).compose.properties.x, 2,
     'must recognize props from second argument');
@@ -64,11 +64,17 @@ test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
   t.equal(stampit(null, {deepConf: {x: 2}}).compose.deepConfiguration.x, 2,
     'must recognize deepConf properties from second argument');
   t.deepEqual(
-    stampit(null, {propertyDescriptors: {x: {writable: true}}}).compose.propertyDescriptors,
+    stampit(
+      null,
+      {propertyDescriptors: {x: {writable: true}}}
+    ).compose.propertyDescriptors,
     {x: {writable: true}},
     'must recognize propertyDescriptors properties from second argument');
   t.deepEqual(
-    stampit(null, {staticPropertyDescriptors: {x: {writable: true}}}).compose.staticPropertyDescriptors,
+    stampit(
+      null,
+      {staticPropertyDescriptors: {x: {writable: true}}}
+    ).compose.staticPropertyDescriptors,
     {x: {writable: true}},
     'must recognize staticPropertyDescriptors properties from second argument');
 
