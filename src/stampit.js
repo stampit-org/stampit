@@ -55,6 +55,12 @@ const rawUtilities = {
   },
   deepConfiguration() {
     return composeArgsCall(this, 'deepConfiguration', merge, arguments);
+  },
+  propertyDescriptors() {
+    return composeArgsCall(this, 'propertyDescriptors', assign, arguments);
+  },
+  staticPropertyDescriptors() {
+    return composeArgsCall(this, 'staticPropertyDescriptors', assign, arguments);
   }
 };
 
@@ -129,6 +135,8 @@ const baseStampit = compose({
     deepStatics: rawUtilities.staticDeepProperties,
     conf: rawUtilities.configuration,
     deepConf: rawUtilities.deepConfiguration,
+    propertyDescriptors: rawUtilities.propertyDescriptors,
+    staticPropertyDescriptors: rawUtilities.staticPropertyDescriptors,
 
     create() {
       return this.apply(undefined, arguments);
@@ -157,7 +165,9 @@ export default assign(stampit,
     statics: rawUtilities.staticProperties,
     deepStatics: rawUtilities.staticDeepProperties,
     conf: rawUtilities.configuration,
-    deepConf: rawUtilities.deepConfiguration
+    deepConf: rawUtilities.deepConfiguration,
+    propertyDescriptors: rawUtilities.propertyDescriptors,
+    staticPropertyDescriptors: rawUtilities.staticPropertyDescriptors
   },
   rawUtilities
 );

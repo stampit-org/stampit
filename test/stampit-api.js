@@ -63,6 +63,14 @@ test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
     'must recognize conf properties from second argument');
   t.equal(stampit(null, {deepConf: {x: 2}}).compose.deepConfiguration.x, 2,
     'must recognize deepConf properties from second argument');
+  t.deepEqual(
+    stampit(null, {propertyDescriptors: {x: {writable: true}}}).compose.propertyDescriptors,
+    {x: {writable: true}},
+    'must recognize propertyDescriptors properties from second argument');
+  t.deepEqual(
+    stampit(null, {staticPropertyDescriptors: {x: {writable: true}}}).compose.staticPropertyDescriptors,
+    {x: {writable: true}},
+    'must recognize staticPropertyDescriptors properties from second argument');
 
   t.end();
 });
