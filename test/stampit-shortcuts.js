@@ -82,3 +82,42 @@ test('stampit.staticPropertyDescriptors shortcut', (t) => {
 
   t.end();
 });
+
+test('all shortcuts combined', (t) => {
+  const {compose, methods, init} = stampit;
+  const HasFoo = compose({
+    properties: {
+      foo: 'default foo!'
+    }
+  }).methods().properties().initializers().deepProperties()
+    .staticProperties().staticDeepProperties()
+    .configuration().deepConfiguration()
+    .propertyDescriptors().staticPropertyDescriptors()
+    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+
+  const PrintFoo = methods({
+    printFoo() {
+      console.log(this.foo || 'There is no foo')
+    }
+  }).methods().properties().initializers().deepProperties()
+    .staticProperties().staticDeepProperties()
+    .configuration().deepConfiguration()
+    .propertyDescriptors().staticPropertyDescriptors()
+    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+
+  const Init = init(function() {
+    console.log(this);
+  }).methods().properties().initializers().deepProperties()
+    .staticProperties().staticDeepProperties()
+    .configuration().deepConfiguration()
+    .propertyDescriptors().staticPropertyDescriptors()
+    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+
+  const Foo = compose(HasFoo, PrintFoo, Init);
+
+  t.equal(Foo.compose.properties.foo, 'default foo!', 'the method should exit');
+  t.ok(typeof Foo.compose.methods.printFoo === 'function', 'the method should exit');
+  t.equal(Foo.compose.initializers.length, 1, 'should be single initializer');
+
+  t.end();
+});

@@ -26,7 +26,7 @@ function extractFunctions() {
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
   descriptor[propName] = action.apply(null, [{}].concat(slice.call(args)));
-  return (self.compose || compose).call(self, descriptor);
+  return ((self && self.compose) || baseStampit.compose).call(self, descriptor);
 }
 
 const rawUtilities = {
@@ -37,7 +37,7 @@ const rawUtilities = {
     return composeArgsCall(this, 'properties', assign, arguments);
   },
   initializers() {
-    return (this.compose || compose).call(this, {
+    return ((this && this.compose) || baseStampit.compose).call(this, {
       initializers: extractFunctions.apply(null, slice.call(arguments))
     });
   },
@@ -125,6 +125,11 @@ function standardiseDescriptor({
   };
 }
 
+/**
+ * Infected stamp
+ * @type {Function}
+ * @return {Stamp}
+ */
 const baseStampit = compose({
   staticProperties: assign({
     refs: rawUtilities.properties,
@@ -143,12 +148,17 @@ const baseStampit = compose({
     },
 
     compose() {
-      return compose.apply(this, slice.call(arguments).filter(isComposable)
-        .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg)));
+      const args = slice.call(arguments).filter(isComposable)
+        .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
+      return compose.apply(this || baseStampit, args);
     }
   }, rawUtilities)
 });
 
+/**
+ * Infected compose
+ * @return {Stamp}
+ */
 function stampit() {
   return baseStampit.compose.apply(baseStampit, slice.call(arguments));
 }
