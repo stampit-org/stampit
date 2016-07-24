@@ -1,7 +1,7 @@
 import slice from './slice';
 
 function isObjectLike(value) {
-  return !!value && typeof value == 'object';
+  return !!value && typeof value === 'object';
 }
 
 /**

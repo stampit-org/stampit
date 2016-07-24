@@ -97,7 +97,7 @@ test('all shortcuts combined', (t) => {
 
   const PrintFoo = methods({
     printFoo() {
-      console.log(this.foo || 'There is no foo')
+      // console.log(this.foo || 'There is no foo');
     }
   }).methods().properties().initializers().deepProperties()
     .staticProperties().staticDeepProperties()
@@ -105,8 +105,8 @@ test('all shortcuts combined', (t) => {
     .propertyDescriptors().staticPropertyDescriptors()
     .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
 
-  const Init = init(function() {
-    console.log(this);
+  const Init = init(function ({foo}) {
+    this.foo = foo;
   }).methods().properties().initializers().deepProperties()
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
