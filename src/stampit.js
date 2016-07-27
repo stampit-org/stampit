@@ -3,12 +3,11 @@ import isComposable from '../isComposable';
 import isStamp from '../isStamp';
 import isFunction from './isFunction';
 import isObject from './isObject';
-import slice from './slice';
 import {merge, assign} from './merge';
 import values from './values';
 
-function extractFunctions() {
-  const functions = slice.call(arguments).reduce((result, arg) => {
+function extractFunctions(...args) {
+  const functions = args.reduce((result, arg) => {
     if (isFunction(arg)) {
       return result.concat(arg);
     }
@@ -25,42 +24,42 @@ function extractFunctions() {
 
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
-  descriptor[propName] = action.apply(null, [{}].concat(slice.call(args)));
+  descriptor[propName] = action.apply(null, [{}].concat(args));
   return ((self && self.compose) || baseStampit.compose).call(self, descriptor);
 }
 
 const rawUtilities = {
-  methods() {
-    return composeArgsCall(this, 'methods', assign, arguments);
+  methods(...args) {
+    return composeArgsCall(this, 'methods', assign, args);
   },
-  properties() {
-    return composeArgsCall(this, 'properties', assign, arguments);
+  properties(...args) {
+    return composeArgsCall(this, 'properties', assign, args);
   },
-  initializers() {
+  initializers(...args) {
     return ((this && this.compose) || baseStampit.compose).call(this, {
-      initializers: extractFunctions.apply(null, slice.call(arguments))
+      initializers: extractFunctions.apply(null, args)
     });
   },
-  deepProperties() {
-    return composeArgsCall(this, 'deepProperties', merge, arguments);
+  deepProperties(...args) {
+    return composeArgsCall(this, 'deepProperties', merge, args);
   },
-  staticProperties() {
-    return composeArgsCall(this, 'staticProperties', assign, arguments);
+  staticProperties(...args) {
+    return composeArgsCall(this, 'staticProperties', assign, args);
   },
-  staticDeepProperties() {
-    return composeArgsCall(this, 'staticDeepProperties', merge, arguments);
+  staticDeepProperties(...args) {
+    return composeArgsCall(this, 'staticDeepProperties', merge, args);
   },
-  configuration() {
-    return composeArgsCall(this, 'configuration', assign, arguments);
+  configuration(...args) {
+    return composeArgsCall(this, 'configuration', assign, args);
   },
-  deepConfiguration() {
-    return composeArgsCall(this, 'deepConfiguration', merge, arguments);
+  deepConfiguration(...args) {
+    return composeArgsCall(this, 'deepConfiguration', merge, args);
   },
-  propertyDescriptors() {
-    return composeArgsCall(this, 'propertyDescriptors', assign, arguments);
+  propertyDescriptors(...args) {
+    return composeArgsCall(this, 'propertyDescriptors', assign, args);
   },
-  staticPropertyDescriptors() {
-    return composeArgsCall(this, 'staticPropertyDescriptors', assign, arguments);
+  staticPropertyDescriptors(...args) {
+    return composeArgsCall(this, 'staticPropertyDescriptors', assign, args);
   }
 };
 
@@ -143,12 +142,12 @@ const baseStampit = compose({
     propertyDescriptors: rawUtilities.propertyDescriptors,
     staticPropertyDescriptors: rawUtilities.staticPropertyDescriptors,
 
-    create() {
-      return this.apply(undefined, arguments);
+    create(...args) {
+      return this.apply(undefined, args);
     },
 
-    compose() {
-      const args = slice.call(arguments).filter(isComposable)
+    compose(...args) {
+      args = args.filter(isComposable)
         .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
       return compose.apply(this || baseStampit, args);
     }
@@ -159,8 +158,8 @@ const baseStampit = compose({
  * Infected compose
  * @return {Stamp}
  */
-function stampit() {
-  return baseStampit.compose.apply(baseStampit, slice.call(arguments));
+function stampit(...args) {
+  return baseStampit.compose.apply(baseStampit, args);
 }
 
 export default assign(stampit,

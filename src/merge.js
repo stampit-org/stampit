@@ -25,18 +25,21 @@ function mergeOne(dst, src) {
   // See if 'dst' is allowed to be mutated. If not - it's overridden with a new plain object.
   const returnValue = isObject(dst) ? dst : {};
 
-  Object.keys(src).forEach(key => {
+  const keys = Object.keys(src);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+
     const srcValue = src[key];
     // Do not merge properties with the 'undefined' value.
-    if (srcValue === undefined) return;
+    if (srcValue !== undefined) {
+      const dstValue = returnValue[key];
+      // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
+      const newDst = isPlainObject(dstValue) || Array.isArray(srcValue) ? dstValue : {};
 
-    // Recursive calls to mergeOne() must allow only plain objects in dst!!!
-    const dstValue = returnValue[key];
-    const newDst = isPlainObject(dstValue) || Array.isArray(srcValue) ? dstValue : {};
-
-    // deep merge each property. Recursion!
-    returnValue[key] = mergeOne(newDst, srcValue);
-  });
+      // deep merge each property. Recursion!
+      returnValue[key] = mergeOne(newDst, srcValue);
+    }
+  }
 
   return returnValue;
 }
