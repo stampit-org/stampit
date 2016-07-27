@@ -1,7 +1,7 @@
-import slice from './slice';
+import isObject from './isObject';
 
-function isObjectLike(value) {
-  return !!value && typeof value === 'object';
+function isPlainObject(value) {
+  return isObject(value) && Object.getPrototypeOf(value) === Object.prototype;
 }
 
 /**
@@ -9,43 +9,40 @@ function isObjectLike(value) {
  * The returned values is always of the same type as the 'src'.
  * @param dst
  * @param src
- * @param shallow
  * @returns {*}
  */
-function mergeOne(dst, src, shallow) {
+function mergeOne(dst, src) {
   if (src === undefined) return dst;
 
-  // Deal with arrays the first because arrays are object-like.
-  const dstIsArray = Array.isArray(dst);
-  const srcIsArray = Array.isArray(src);
-  if (srcIsArray) return (dstIsArray ? dst : []).concat(src);
-  if (dstIsArray) return mergeOne({}, src, shallow);
+  // According to specification arrays must be concatenated.
+  // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
+  if (Array.isArray(src)) return (Array.isArray(dst) ? dst : []).concat(src);
 
-  const srcIsObjectLike = isObjectLike(src);
-  if (!srcIsObjectLike) return src; // not a POJO or array or regexp overwrites
+  // Now deal with non plain 'src' object. 'src' overrides 'dst'
+  // Note that functions are also assigned! We do not deep merge functions.
+  if (!isPlainObject(src)) return src;
 
-  const keys = Object.keys(src);
-  const returnValue = dst || {};
+  // See if 'dst' is allowed to be mutated. If not - it's overridden with a new plain object.
+  const returnValue = isObject(dst) ? dst : {};
 
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
+  Object.keys(src).forEach(key => {
     const srcValue = src[key];
-    if (srcValue !== undefined) {
-      returnValue[key] = shallow ? src[key] : mergeOne(returnValue[key], srcValue, shallow);
-    }
-  }
+    // Do not merge properties with the 'undefined' value.
+    if (srcValue === undefined) return;
+
+    // Recursive calls to mergeOne() must allow only plain objects in dst!!!
+    const dstValue = returnValue[key];
+    const newDst = isPlainObject(dstValue) || Array.isArray(srcValue) ? dstValue : {};
+
+    // deep merge each property. Recursion!
+    returnValue[key] = mergeOne(newDst, srcValue);
+  });
 
   return returnValue;
 }
 
-function mergeFew(dst, srcs, shallow) {
-  return srcs.reduce((target, src) => mergeOne(target, src, shallow), dst);
-}
+export const assign = Object.assign;
 
-export function assign(dst) {
-  return mergeFew(dst, slice.call(arguments, 1), true);
-}
-
-export function merge(dst) {
-  return mergeFew(dst, slice.call(arguments, 1), false);
+export function merge(dst, ...srcs) {
+  return srcs.reduce((target, src) => mergeOne(target, src), dst);
 }

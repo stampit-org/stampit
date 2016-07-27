@@ -5,20 +5,20 @@ import test from 'tape';
 
 test('Stamp deepProps deep cloned for object created', (t) => {
   const deep = {foo: 'foo', bar: 'bar'};
-  const stamp1 = stampit().deepProps({deep: deep, foo: 'foo'});
-  const stamp2 = stampit({deepProps: {deep: deep, foo: 'foo'}});
+  const stamp1 = stampit().deepProps({deep: deep, baz: 'baz'});
+  const stamp2 = stampit({deepProps: {deep: deep, baz: 'baz'}});
 
   let o1 = stamp1();
   let o2 = stamp1();
-  o1.foo = 'another value';
-  t.notEqual(o1.foo, o2.foo);
+  o1.baz = 'another value';
+  t.notEqual(o1.baz, o2.baz);
   o1.deep.foo = 'another value';
   t.notEqual(o1.deep.foo, o2.deep.foo);
 
   o1 = stamp2();
   o2 = stamp2();
-  o1.foo = 'another value';
-  t.notEqual(o1.foo, o2.foo);
+  o1.baz = 'another value';
+  t.notEqual(o1.baz, o2.baz);
   o1.deep.foo = 'another value';
   t.notEqual(o1.deep.foo, o2.deep.foo);
 
