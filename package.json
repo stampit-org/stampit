@@ -65,6 +65,7 @@
     "rollup": "^0.31.2",
     "rollup-plugin-babel": "^2.4.0",
     "rollup-plugin-uglify": "^1.0.0",
+    "tap-dot": "^1.0.5",
     "tape": "^4.2.2",
     "watch": "^0.18.0"
   },
@@ -74,7 +75,7 @@
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
     "prepublish": "publish-please guard && npm run check",
     "pretest": "npm run build",
-    "test": "babel-node test/index.js",
+    "test": "babel-node test/index.js | tap-dot",
     "clean": "rimraf dist/* && mkdir dist || true",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
