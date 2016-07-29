@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "lodash": "^3.9.1",
-    "supermixer": "^1.0.2"
+    "supermixer": "^1.0.3"
   },
   "devDependencies": {
     "babel": "^5.5.8",
