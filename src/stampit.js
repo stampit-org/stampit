@@ -92,47 +92,81 @@ function composeArgsCall(self, propName, action, args) {
 export function methods(...args) {
   return composeArgsCall(this, 'methods', assign, args);
 }
+
 export function properties(...args) {
   return composeArgsCall(this, 'properties', assign, args);
 }
+export {properties as refs};
+export {properties as props};
+
 export function initializers(...args) {
   return ((this && this.compose) || baseStampit.compose).call(this, {
     initializers: extractFunctions(...args)
   });
 }
+export {initializers as init};
+
 export function deepProperties(...args) {
   return composeArgsCall(this, 'deepProperties', merge, args);
 }
+export {deepProperties as deepProps};
+
 export function staticProperties(...args) {
   return composeArgsCall(this, 'staticProperties', assign, args);
 }
+export {staticProperties as statics};
+
 export function staticDeepProperties(...args) {
   return composeArgsCall(this, 'staticDeepProperties', merge, args);
 }
+export {staticDeepProperties as deepStatics};
+
 export function configuration(...args) {
   return composeArgsCall(this, 'configuration', assign, args);
 }
+export {configuration as conf};
+
 export function deepConfiguration(...args) {
   return composeArgsCall(this, 'deepConfiguration', merge, args);
 }
+export {deepConfiguration as deepConf};
+
 export function propertyDescriptors(...args) {
   return composeArgsCall(this, 'propertyDescriptors', assign, args);
 }
+
 export function staticPropertyDescriptors(...args) {
   return composeArgsCall(this, 'staticPropertyDescriptors', assign, args);
 }
 
-const rawUtilities = {
+const allUtilities = {
   methods,
+
   properties,
+  refs: properties,
+  props: properties,
+
   initializers,
+  init: initializers,
+
   deepProperties,
+  deepProps: deepProperties,
+
   staticProperties,
+  statics: staticProperties,
+
   staticDeepProperties,
+  deepStatics: staticDeepProperties,
+
   configuration,
+  conf: configuration,
+
   deepConfiguration,
+  deepConf: deepConfiguration,
+
   propertyDescriptors,
-  staticPropertyDescriptors
+
+  staticPropertyDescriptors,
 };
 
 /**
@@ -142,17 +176,6 @@ const rawUtilities = {
  */
 const baseStampit = compose({
   staticProperties: assign({
-    refs: properties,
-    props: properties,
-    init: initializers,
-    deepProps: deepProperties,
-    statics: staticProperties,
-    deepStatics: staticDeepProperties,
-    conf: configuration,
-    deepConf: deepConfiguration,
-    propertyDescriptors: propertyDescriptors,
-    staticPropertyDescriptors: staticPropertyDescriptors,
-
     create(...args) {
       return this(...args);
     },
@@ -162,7 +185,7 @@ const baseStampit = compose({
         .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
       return compose.apply(this || baseStampit, args);
     }
-  }, rawUtilities)
+  }, allUtilities)
 });
 
 /**
@@ -179,33 +202,7 @@ export default assign(stampit,
 
     isComposable,
 
-    compose: baseStampit.compose,
-
-    properties,
-    refs: properties,
-    props: properties,
-
-    initializers,
-    init: initializers,
-
-    deepProperties,
-    deepProps: deepProperties,
-
-    staticProperties,
-    statics: staticProperties,
-
-    staticDeepProperties,
-    deepStatics: staticDeepProperties,
-
-    configuration,
-    conf: configuration,
-
-    deepConfiguration,
-    deepConf: deepConfiguration,
-
-    propertyDescriptors,
-
-    staticPropertyDescriptors
+    compose: baseStampit.compose
   },
-  rawUtilities
+  allUtilities
 );
