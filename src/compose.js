@@ -1,6 +1,6 @@
 import isFunction from './isFunction';
 import isObject from './isObject';
-import isComposable from '../isComposable';
+import isComposable from './isComposable';
 import {merge, assign} from './merge';
 
 /**

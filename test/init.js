@@ -103,32 +103,6 @@ test('stamp.init() can handle multiple init functions assigned with array', (t) 
   t.end();
 });
 
-test('stamp.init() can handle multiple init functions assigned with object', (t) => {
-  let init1;
-  let init2;
-  let init3;
-
-  const stamp = stampit().init({
-    foo() {
-      init1 = true;
-    },
-    bar() {
-      init2 = true;
-    },
-    bam() {
-      init3 = true;
-    }
-  });
-
-  stamp();
-
-  t.ok(init1, 'init 1 fired');
-  t.ok(init2, 'init 2 fired');
-  t.ok(init3, 'init 3 fired');
-
-  t.end();
-});
-
 test('stamp.init() should call composed init functions in order', (t) => {
   const result = [];
 

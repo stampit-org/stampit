@@ -23,16 +23,12 @@ test('stampit().init()', (t) => {
     this.getSecret = () => { return secret; };
   }).init(function () {
     this.a = 'a';
-  }).init({
-    bar() { this.b = 'b'; }
-  }, {
-    baz() { this.c = 'c'; }
   }).create();
 
   t.equal(obj.getSecret(), 'foo',
     'Should set closure.');
-  t.ok(obj.a && obj.b && obj.c,
-    'Should allow chaining and take object literals.');
+  t.ok(obj.a,
+    'Should allow chaining.');
 
   t.end();
 });
@@ -45,16 +41,12 @@ test('stampit({ init }).init()', (t) => {
     }
   }).init(function () {
     this.a = 'a';
-  }).init({
-    bar() { this.b = 'b'; }
-  }, {
-    baz() { this.c = 'c'; }
   }).create();
 
   t.equal(obj.getSecret(), 'foo',
     'Should set closure.');
-  t.ok(obj.a && obj.b && obj.c,
-    'Should allow chaining and take object literals.');
+  t.ok(obj.a,
+    'Should allow chaining.');
 
   t.end();
 });

@@ -1,8 +1,5 @@
 import isObject from './isObject';
-
-function isPlainObject(value) {
-  return isObject(value) && Object.getPrototypeOf(value) === Object.prototype;
-}
+import isPlainObject from './isPlainObject';
 
 /**
  * The 'src' argument plays the command role.
