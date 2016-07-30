@@ -5,6 +5,7 @@ import pkg from '../package.json';
 import {rollup} from 'rollup';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
+import filesize from 'rollup-plugin-filesize';
 
 // This code reimplements the "babel-preset-es2015-rollup" module.
 // But also does not include "external-helpers" babel plugin.
@@ -69,6 +70,7 @@ function makeBundle(config) {
 
   if (config.minify) {
     inputConfig.plugins.push(uglify());
+    inputConfig.plugins.push(filesize());
   }
 
   const outputConfig = {
