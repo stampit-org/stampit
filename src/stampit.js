@@ -12,10 +12,10 @@ function extractFunctions(...args) {
       return result.concat(arg);
     }
     if (Array.isArray(arg)) {
-      return result.concat(extractFunctions.apply(null, arg) || []);
+      return result.concat(extractFunctions(...arg) || []);
     }
     if (isObject(arg)) {
-      return result.concat(extractFunctions.apply(null, values(arg)) || []);
+      return result.concat(extractFunctions(...values(arg)) || []);
     }
     return result;
   }, []);
@@ -24,7 +24,7 @@ function extractFunctions(...args) {
 
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
-  descriptor[propName] = action.apply(null, [{}].concat(args));
+  descriptor[propName] = action(...[{}].concat(args));
   return ((self && self.compose) || baseStampit.compose).call(self, descriptor);
 }
 
@@ -37,7 +37,7 @@ const rawUtilities = {
   },
   initializers(...args) {
     return ((this && this.compose) || baseStampit.compose).call(this, {
-      initializers: extractFunctions.apply(null, args)
+      initializers: extractFunctions(...args)
     });
   },
   deepProperties(...args) {
@@ -143,7 +143,7 @@ const baseStampit = compose({
     staticPropertyDescriptors: rawUtilities.staticPropertyDescriptors,
 
     create(...args) {
-      return this.apply(undefined, args);
+      return this(...args);
     },
 
     compose(...args) {
@@ -159,7 +159,7 @@ const baseStampit = compose({
  * @return {Stamp}
  */
 function stampit(...args) {
-  return baseStampit.compose.apply(baseStampit, args);
+  return baseStampit.compose(...args);
 }
 
 export default assign(stampit,
