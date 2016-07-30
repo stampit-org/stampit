@@ -41,8 +41,6 @@ function mergeOne(dst, src) {
   return returnValue;
 }
 
-export const assign = Object.assign;
-
-export function merge(dst, ...srcs) {
+export default function (dst, ...srcs) {
   return srcs.reduce((target, src) => mergeOne(target, src), dst);
 }

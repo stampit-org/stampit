@@ -5,83 +5,13 @@ export {compose};
 export {isComposable};
 export {isStamp};
 
-import isFunction from './isFunction';
-import isObject from './isObject';
-import {merge, assign} from './merge';
+import standardiseDescriptor from './standardise-descriptor';
+import extractFunctions from './extract-functions';
+import merge from './merge';
 
-function extractFunctions(...args) {
-  let result = [];
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (isFunction(arg)) result.push(arg);
-    else if (Array.isArray(arg)) result = result.concat(arg.filter(isFunction));
-  }
-  return result.length === 0 ? undefined : result;
-}
+const assign = Object.assign;
 
-function standardiseDescriptor({
-  methods,
-
-  properties,
-  props,
-  refs,
-
-  initializers,
-  init,
-
-  deepProperties,
-  deepProps,
-
-  propertyDescriptors,
-
-  staticProperties,
-  statics,
-
-  staticDeepProperties,
-  deepStatics,
-
-  staticPropertyDescriptors,
-
-  configuration,
-  conf,
-
-  deepConfiguration,
-  deepConf
-} = {}) {
-  const p = isObject(props) || isObject(refs) || isObject(properties) ?
-    assign({}, props, refs, properties) : undefined;
-
-  let dp = isObject(deepProps) ? merge({}, deepProps) : undefined;
-  dp = isObject(deepProperties) ? merge(dp, deepProperties) : dp;
-
-  const sp = isObject(statics) || isObject(staticProperties) ?
-    assign({}, statics, staticProperties) : undefined;
-
-  let dsp = isObject(deepStatics) ? merge({}, deepStatics) : undefined;
-  dsp = isObject(staticDeepProperties) ? merge(dsp, staticDeepProperties) : dsp;
-
-  const c = isObject(conf) || isObject(configuration) ?
-    assign({}, conf, configuration) : undefined;
-
-  let dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
-  dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
-
-  return {
-    methods,
-    properties: p,
-    initializers: extractFunctions(init, initializers),
-    deepProperties: dp,
-    staticProperties: sp,
-    staticDeepProperties: dsp,
-    propertyDescriptors,
-    staticPropertyDescriptors,
-    configuration: c,
-    deepConfiguration: dc
-  };
-}
-
-
-/* Composition function */
+/* Composition functions */
 
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
@@ -206,3 +136,4 @@ export default assign(stampit,
   },
   allUtilities
 );
+
