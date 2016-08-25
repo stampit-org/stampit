@@ -58,6 +58,7 @@
     "eslint-plugin-import": "^1.8.1",
     "isparta": "^4.0.0",
     "lodash": "^4.11.1",
+    "magic-string": "^0.16.0",
     "nsp": "^2.1.0",
     "publish-please": "^2.1.4",
     "require-all": "^2.0.0",

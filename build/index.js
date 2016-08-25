@@ -6,6 +6,7 @@ import {rollup} from 'rollup';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
+import MagicString from 'magic-string';
 
 // This code reimplements the "babel-preset-es2015-rollup" module.
 // But also does not include "external-helpers" babel plugin.
@@ -48,8 +49,29 @@ function execute() {
   ]);
 }
 
+/**
+ * Adds a `module.exports = exports.default` so Node users can
+ * do `require('stampit')()`
+ * @param {Object} [opts={}] Options
+ * @param {boolean} [opts.sourceMap=true] Generate a source map
+ * @returns {Object}
+ */
+function defaultExport(opts = {}) {
+  const sourceMap = opts.sourceMap !== false;
+  return {
+    transformBundle (code) {
+      const magicString = new MagicString(code);
+      magicString.append("\nmodule.exports = exports['default'];");
+      code = magicString.toString();
+      const map = sourceMap ? magicString.generateMap() : null;
+      return {code, map};
+    }
+  }
+}
+
 function makeBundle(config) {
   const isUMD = config.format === 'umd';
+  const isCJS = config.format === 'cjs';
 
   const inputConfig = {
     entry: 'src/stampit.js',
@@ -71,6 +93,12 @@ function makeBundle(config) {
   if (config.minify) {
     inputConfig.plugins.push(uglify());
     inputConfig.plugins.push(filesize());
+  }
+
+  if (isCJS) {
+    inputConfig.plugins.push(defaultExport({
+      sourceMap: !config.minify
+    }));
   }
 
   const outputConfig = {
