@@ -303,13 +303,13 @@ const JoiPrevalidator = stampit
   .init(function () { // This will be called for each new object instance.
     _.forOwn(this.prevalidations, (value, key) => { // overriding functions
       const actualFunc = this[key];
-      this[key] = () => { // Overwrite a real function with ours.
+      this[key] = ( ...args ) => { // Overwrite a real function with ours.
         const result = joi.validate(this, value, {allowUnknown: true});
         if (result.error) {
           throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);
         }
 
-        return actualFunc.apply(this, arguments);
+        return actualFunc.apply(this, args);
       }
     });
   });
