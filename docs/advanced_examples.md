@@ -1,3 +1,7 @@
+**NOTE! The examples are for stampit v2 which is not the latest. Feel free to contribute a PR to update this file. Just click "Edit" at the top. :)**
+  
+=====
+
 This is a set of handy **composable** stamps, as well as few tips and tricks.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

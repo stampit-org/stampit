@@ -2,10 +2,10 @@
 
 # Stampit [![Travis-CI](https://travis-ci.org/stampit-org/stampit.svg)](https://travis-ci.org/stampit-org/stampit)[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is stamps on steroids.
-
-Our slogan: **Create objects from reusable, composable behaviors** 
+**Create objects from reusable, composable behaviors** 
  
+Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622).
+
  
 ## Simplest Example
 
@@ -39,9 +39,9 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 ## Status
 
-* **v1**. `npm i stampit@1`
-* **v2**. `npm i stampit@latest` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
-* **v3**. `npm i stampit@rc` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/3.0)
+* **v1**. `npm i stampit@1` Not compatible with the [specification](https://github.com/stampit-org/stamp-specification).
+* **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0). Not compatible with the [specification](https://github.com/stampit-org/stamp-specification).
+* **v3**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/3.0)
 
 
 ## Install
@@ -53,7 +53,7 @@ npm install stampit
 
 ## Examples
 
-See the [API](docs/API.md) and the [advanced examples](docs/advanced_examples.md).
+See the [API](docs/API.md).
 
 
 # What's the Point?
@@ -63,7 +63,7 @@ Prototypal OO is great, and JavaScript's capabilities give us some really powerf
 Basic questions like "how do I inherit privileged methods and private data?" and 
 "what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
 
-Let's answer both of these questions at the same time. First, we'll use a closure to create data privacy:
+Let's answer both of these questions at the same time.
 
 ```js
 // Some privileged methods with some private data.
@@ -123,12 +123,12 @@ const myBar = Bar({name: 'Moe\'s'});
 myBar.add({name: 'Homer'}).open().getMember('Homer');
 ```
 
-For more examples see the [API](docs/API.md) and the [advanced examples](docs/advanced_examples.md).
+For more examples see the [API](docs/API.md).
 
 
 # More info
 
-Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com).
+Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com). See [this page](https://github.com/stampit-org/stampit/blob/master/docs/pjabook-updated-examples.md) to make book examples work with the latest stampit.
 
 Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
