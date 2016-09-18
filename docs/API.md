@@ -1,3 +1,39 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Stampit API](#stampit-api)
+  - [Example](#example)
+  - [stampit(...args)](#stampitargs)
+  - [The stamp object](#the-stamp-object)
+    - [stamp.methods()](#stampmethods)
+    - [stamp.props() and stamp.properties()](#stampprops-and-stampproperties)
+    - [stamp.init([arg1] [,arg2] [,arg3...])](#stampinitarg1-arg2-arg3)
+      - [Examples](#examples)
+    - [stamp.deepProps() and stamp.deepProperties()](#stampdeepprops-and-stampdeepproperties)
+    - [stamp.statics() and stamp.staticProperties()](#stampstatics-and-stampstaticproperties)
+    - [stamp.deepStatics() and stamp.deepStaticProperties()](#stampdeepstatics-and-stampdeepstaticproperties)
+    - [stamp.conf() and stamp.configuration()](#stampconf-and-stampconfiguration)
+      - [Examples](#examples-1)
+    - [stamp.deepConf() and stamp.deepConfiguration()](#stampdeepconf-and-stampdeepconfiguration)
+    - [stamp.propertyDescriptors()](#stamppropertydescriptors)
+    - [stamp.staticPopertyDescriptors()](#stampstaticpopertydescriptors)
+    - [stamp.compose([arg1] [,arg2] [,arg3...])](#stampcomposearg1-arg2-arg3)
+    - [stamp.create([arg1] [,arg2...])](#stampcreatearg1-arg2)
+  - [Shortcut methods](#shortcut-methods)
+    - [stampit.isStamp(obj)](#stampitisstampobj)
+    - [stampit.isComposable(obj)](#stampitiscomposableobj)
+  - [More Examples](#more-examples)
+  - [Chaining methods](#chaining-methods)
+    - [Pass multiple objects into all methods and functions](#pass-multiple-objects-into-all-methods-and-functions)
+- [Breaking changes](#breaking-changes)
+  - [Stampit v2](#stampit-v2)
+  - [Stampit v3](#stampit-v3)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
 # Stampit API
 
 ## Example
@@ -58,7 +94,7 @@ const localConn = DbConnection({ connectionConfig: 'mongodb://localhost' });
 ```
 
 
-### stampit(...args)
+## stampit(...args)
 
 The arguments can be either another stamps, or the following structure:
 
@@ -393,7 +429,7 @@ Take an object and return `true` if it's a stamp, `false` otherwise.
 Take an object and return `true` if it's a stamp or a stamp descriptor.
 
 
-## Examples
+## More Examples
 
 ## Chaining methods
 
@@ -499,7 +535,7 @@ const obj = stampit()
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now receive the following object `{ instance, stamp, args }`.
 
-##### New features
+**New features**
 * `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * Instead of factory arguments the `enclose()` functions now receive the following object `{ instance, stamp, args }`.
 * New `stamp.props()` method for deeply merged state.
@@ -511,8 +547,6 @@ const obj = stampit()
 
 
 ## Stampit v3
-
-### BREAKING CHANGES
 
 * node.js v0.10 is not supported any more because it's maintenance period has ended.
 * Stamps from stampit v2 and stampit v3 and not compatible. You should not compose them together.
@@ -550,18 +584,18 @@ const Stamp = stampit({init(arg, {instance, stamp, args}) {
 Stamp({foo: 'bar'}); // {}
 ```
 
-* A stamp's metadata is now stored in the `stamp.compose` object. Previously in the `stamp.fixed`.
+* A stamp's metadata is now stored in the `stamp.compose` object. Previously it was stored in `stamp.fixed` object.
 * Removed `convertConstructor()` (we plan to revive it supporting ES6 classes)
 * Removed `state()`. Use `props()` instead.
 * `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
 * `static()` got renamed to `statics()`
 
-##### New features
+**New features**
 * Stampit is compatible with the [Stamp Specification](https://github.com/stampit-org/stamp-specification/).
 * You can import shortcut and utility functions in various ways:
   * `import {statics} from 'stampit'`
   * `const {statics} = require('stampit')`
 * New functions `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors`
 
-##### Other notable changes
+**Other notable changes**
 * The `refs` are **deprecated**
