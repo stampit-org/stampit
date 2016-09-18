@@ -144,7 +144,7 @@ const stamp = stampit().methods({
 stamp().amplify('BADF00D'); // value BADF00D is incorrect
 ```
 
-### stamp.props() and stamp.props() and stamp.properties()
+### stamp.props() and stamp.properties()
 
 Take n objects and add them to the references list of a new stamp. Creates new stamp.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
