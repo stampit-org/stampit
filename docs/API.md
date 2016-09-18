@@ -304,6 +304,8 @@ Take n objects and add all its properties to the stamp's metadata. This arbitrar
 
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
 
+NOTE: Accessible as `stamp.compose.configuration`. Do not confuse with the `stamp.compose.deepConfiguration`.
+
 #### Examples
 
 Use metadata in initializers:
@@ -352,6 +354,9 @@ console.log(stamp2().setFactor(5).getFactor()); // 5
 Same as `stamp.conf()` and `stamp.configuration()` but deeply merges the
 provided objects. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
+* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+
+NOTE: Accessible as `stamp.compose.deepConfiguration`. Do not confuse with the `stamp.compose.configuration`.
 
 ### stamp.propertyDescriptors()
 
