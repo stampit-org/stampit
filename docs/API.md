@@ -1,31 +1,32 @@
+# Stampit API
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Stampit API](#stampit-api)
-  - [Example](#example)
-  - [stampit(...args)](#stampitargs)
-  - [The stamp object](#the-stamp-object)
-    - [stamp.methods()](#stampmethods)
-    - [stamp.props() and stamp.properties()](#stampprops-and-stampproperties)
-    - [stamp.init([arg1] [,arg2] [,arg3...])](#stampinitarg1-arg2-arg3)
-      - [Examples](#examples)
-    - [stamp.deepProps() and stamp.deepProperties()](#stampdeepprops-and-stampdeepproperties)
-    - [stamp.statics() and stamp.staticProperties()](#stampstatics-and-stampstaticproperties)
-    - [stamp.deepStatics() and stamp.deepStaticProperties()](#stampdeepstatics-and-stampdeepstaticproperties)
-    - [stamp.conf() and stamp.configuration()](#stampconf-and-stampconfiguration)
-      - [Examples](#examples-1)
-    - [stamp.deepConf() and stamp.deepConfiguration()](#stampdeepconf-and-stampdeepconfiguration)
-    - [stamp.propertyDescriptors()](#stamppropertydescriptors)
-    - [stamp.staticPopertyDescriptors()](#stampstaticpopertydescriptors)
-    - [stamp.compose([arg1] [,arg2] [,arg3...])](#stampcomposearg1-arg2-arg3)
-    - [stamp.create([arg1] [,arg2...])](#stampcreatearg1-arg2)
-  - [Shortcut methods](#shortcut-methods)
-    - [stampit.isStamp(obj)](#stampitisstampobj)
-    - [stampit.isComposable(obj)](#stampitiscomposableobj)
-  - [More Examples](#more-examples)
-  - [Chaining methods](#chaining-methods)
-    - [Pass multiple objects into all methods and functions](#pass-multiple-objects-into-all-methods-and-functions)
+- [Example](#example)
+- [stampit(...args)](#stampitargs)
+- [The stamp object](#the-stamp-object)
+  - [stamp.methods()](#stampmethods)
+  - [stamp.props() and stamp.properties()](#stampprops-and-stampproperties)
+  - [stamp.init([arg1] [,arg2] [,arg3...])](#stampinitarg1-arg2-arg3)
+    - [Examples](#examples)
+  - [stamp.deepProps() and stamp.deepProperties()](#stampdeepprops-and-stampdeepproperties)
+  - [stamp.statics() and stamp.staticProperties()](#stampstatics-and-stampstaticproperties)
+  - [stamp.deepStatics() and stamp.deepStaticProperties()](#stampdeepstatics-and-stampdeepstaticproperties)
+  - [stamp.conf() and stamp.configuration()](#stampconf-and-stampconfiguration)
+    - [Examples](#examples-1)
+  - [stamp.deepConf() and stamp.deepConfiguration()](#stampdeepconf-and-stampdeepconfiguration)
+  - [stamp.propertyDescriptors()](#stamppropertydescriptors)
+  - [stamp.staticPopertyDescriptors()](#stampstaticpopertydescriptors)
+  - [stamp.compose([arg1] [,arg2] [,arg3...])](#stampcomposearg1-arg2-arg3)
+  - [stamp.create([arg1] [,arg2...])](#stampcreatearg1-arg2)
+- [Shortcut methods](#shortcut-methods)
+  - [stampit.isStamp(obj)](#stampitisstampobj)
+  - [stampit.isComposable(obj)](#stampitiscomposableobj)
+- [More Examples](#more-examples)
+- [Chaining methods](#chaining-methods)
+  - [Pass multiple objects into all methods and functions](#pass-multiple-objects-into-all-methods-and-functions)
 - [Breaking changes](#breaking-changes)
   - [Stampit v2](#stampit-v2)
   - [Stampit v3](#stampit-v3)
@@ -33,8 +34,6 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-
-# Stampit API
 
 ## Example
 
@@ -526,9 +525,9 @@ const obj = stampit()
 ```
 
 
-# Breaking changes
+## Breaking changes
 
-## Stampit v2
+### Stampit v2
 
 * `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * All chaining methods return new stamps instead of self-mutating this stamp.
@@ -546,7 +545,7 @@ const obj = stampit()
 * All unit tests are now on `tape` instead of mocha+should.
 
 
-## Stampit v3
+### Stampit v3
 
 * node.js v0.10 is not supported any more because it's maintenance period has ended.
 * Stamps from stampit v2 and stampit v3 and not compatible. You should not compose them together.
@@ -595,7 +594,8 @@ Stamp({foo: 'bar'}); // {}
 * You can import shortcut and utility functions in various ways:
   * `import {statics} from 'stampit'`
   * `const {statics} = require('stampit')`
-* New functions `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors`
+* New utility function `isComposalbe`. Can be imported in any of the above ways.
+* New methods on stamps, as well as new shortcut methods on stampit, as well as new options to `stampit()`: `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
 
 **Other notable changes**
 * The `refs` are **deprecated**
