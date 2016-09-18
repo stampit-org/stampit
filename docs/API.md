@@ -26,7 +26,7 @@ const AcceptsDbConnection = stampit()
 
 // The connection object.
 const DbConnection = stampit()
-  .refs({ // Assigns the mongoose connection object.
+  .props({ // Assigns the mongoose connection object.
     dbConnection: mongoose.connection
   })
   .compose(
@@ -65,7 +65,7 @@ The arguments can be either another stamps, or the following structure:
  * `@param  {Object} [options]` Options to build stamp from
  * `@param  {Object} [options.methods]` A map of method names and bodies for delegation
  * `@param  {Object} [options.props]` A map of property names and values to be mixed into each new object
- * `@param  {Object} [options.refs]` Same as `options.props`
+ * `@param  {Object} [options.refs]` Same as `options.props`. *DEPRECATED*
  * `@param  {Object} [options.properties]` Same as `options.props`
  * `@param  {Object} [options.init]` A closure (function) used to create private data and privileged methods
  * `@param  {Object} [options.initializers]` Same as `options.init`
@@ -89,7 +89,7 @@ Returns a new factory function (called a stamp) that will produce new objects.
  * `@return {Function} stamp.compose` An object map containing the stamp metadata, also composes arguments and creates new stamps based on the current
  * `@return {Function} stamp.methods` Add methods to the stamp. Returns a new stamp
  * `@return {Function} stamp.props` Add properties by assignment to the stamp. Returns a new stamp
- * `@return {Function} stamp.refs` Same as `stamp.props`
+ * `@return {Function} stamp.refs` Same as `stamp.props`. *DEPRECATED*
  * `@return {Function} stamp.properties` Same as `stamp.props`
  * `@return {Function} stamp.init` Add an initializer which called on object instantiation. Returns a new stamp
  * `@return {Function} stamp.initializers` Add an initializer which called on object instantiation. Returns a new stamp
@@ -113,7 +113,7 @@ const stamp = stampit({
       return this.factor * value;
     }
   },
-  refs: {
+  props: {
     defaultFactor: 1
   },
   init({factor}) {
@@ -144,7 +144,7 @@ const stamp = stampit().methods({
 stamp().amplify('BADF00D'); // value BADF00D is incorrect
 ```
 
-### stamp.props() and stamp.refs() and stamp.properties()
+### stamp.props() and stamp.props() and stamp.properties()
 
 Take n objects and add them to the references list of a new stamp. Creates new stamp.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
@@ -200,7 +200,7 @@ const Cloneable = stampit().init((opts, {instance, stamp, args}) => {
   instance.clone = () => stamp.apply(undefined, args);
 });
 
-const MyStamp = stampit().refs({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
+const MyStamp = stampit().props({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
 MyStamp().clone().clone().clone().x === 42; // true
 ```
 
@@ -208,7 +208,7 @@ MyStamp().clone().clone().clone().x === 42; // true
 ### stamp.deepProps() and stamp.deepProperties()
 
 Take n objects and deep merge them safely to the properties. Creates new stamp.
-Note: the merge algorithm will not change any existing `refs` data of a resulting object instance.
+Note: the merge algorithm will not change any existing `props` data of a resulting object instance.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
 
 
@@ -339,7 +339,7 @@ Combining overrides properties with last-in priority.
 
 ```js
 const stamp1 = stampit({ methods: { log: console.log } });
-const stamp2 = stampit({ refs: { theAnswer: 42 } });
+const stamp2 = stampit({ props: { theAnswer: 42 } });
 
 const composedStamp = stamp1.compose(stamp2);
 ```
@@ -361,14 +361,13 @@ See more useful tips in the [advanced examples](advanced_examples.md#validate-be
 
 ## Shortcut methods
 
-Also available as `import FUNCTION from 'stampit'`
+Also available as `import {FUNCTION} from 'stampit'` or `const {FUNCTION} = require('stampit')`.
 
 All return a new stamp.
 
 * stampit.methods()
 * stampit.props()
-* stampit.refs()
-* stampit.propserties()
+* stampit.properties()
 * stampit.init()
 * stampit.initializers()
 * stampit.deepProps()
@@ -412,10 +411,10 @@ const MyStamp = stampit()
     return true;
   }
 })
-.refs({
+.props({
   stateOverride: false
 })
-.refs({
+.props({
   stateOverride: true
 })
 .props({
@@ -466,7 +465,7 @@ const obj = stampit()
 }, {
   b() { return 'b'; }
 })
-.refs({
+.props({
   a: 'a'
 }, {
   b: 'b'
@@ -553,7 +552,7 @@ Stamp({foo: 'bar'}); // {}
 
 * A stamp's metadata is now stored in the `stamp.compose` object. Previously in the `stamp.fixed`.
 * Removed `convertConstructor()` (we plan to revive it supporting ES6 classes)
-* Removed `state()`. Use `props()` or its alias `refs()` instead.
+* Removed `state()`. Use `props()` instead.
 * `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
 * `static()` got renamed to `statics()`
 
@@ -563,3 +562,6 @@ Stamp({foo: 'bar'}); // {}
   * `import {statics} from 'stampit'`
   * `const {statics} = require('stampit')`
 * New functions `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors`
+
+##### Other notable changes
+* The `refs` are **deprecated**
