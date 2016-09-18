@@ -207,10 +207,10 @@ is invoked, or when the `.create()` method is called.
 If an initializer returns a non-undefined value then it becomes the factory 
 instantiated value.
 
-Each function receives the following object as the second argument:
+Each function receives the first argument of the called factory function and second object argument is like this:
 ```
 {
-  instance, // The same as `this`
+  instance, // The same as `this`. Handy when using with the ES6 fat arrows
   stamp,    // The factory being executed at the moment
   args      // The arguments passed to the factory
 }
@@ -300,17 +300,17 @@ provided objects.
 
 ### stamp.conf() and stamp.configuration()
 
-Take n objects and add all its properties to the stamp's metadata.
+Take n objects and add all its properties to the stamp's metadata. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
 
 #### Examples
 
-Use metadata in intializers:
+Use metadata in initializers:
 ```js
 const stamp = stampit()
 .conf({addFactorSetter: false})
-.init((opts, {stamp}) => {
+.init((opts, {stamp, instance}) => {
   let factor = opts.factor || 1;
   instance.getFactor = () => factor;
   
@@ -350,7 +350,7 @@ console.log(stamp2().setFactor(5).getFactor()); // 5
 ### stamp.deepConf() and stamp.deepConfiguration()
 
 Same as `stamp.conf()` and `stamp.configuration()` but deeply merges the
-provided objects.
+provided objects. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
 
 ### stamp.propertyDescriptors()
@@ -368,7 +368,7 @@ See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Glob
 ### stamp.compose([arg1] [,arg2] [,arg3...])
 
 Take one or more stamp or stamp descriptors and
-combine them with `this` stamp to produce and return a new factory object.
+combine them with `this` stamp to produce and return a new stamp.
 Combining overrides properties with last-in priority.
  * `@return {Function}` A new stampit factory composed from arguments.
 
@@ -386,7 +386,7 @@ Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. 
 
 ```js
-const stamp = stampit().init((opts, {args}) => { console.log(args); });
+const stamp = stampit().init((opts, {args}) => { console.log(...args); });
 stamp.create(null, 42); // null, 42
 stamp(null, 42); // null, 42
 ```
