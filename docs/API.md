@@ -552,13 +552,13 @@ const obj = stampit()
 * Initializers now receive two arguments instead of just one.
 First is the factory first argument (i.e. `arguments[0]`), second is the same options object as before - `{ instance, stamp, args }`.
 
-Was:
+Stampit v2:
 ```js
 const Stamp = stampit({ init({instance, stamp, args}) {
   // ...
 }});
 ```
-Became:
+Stampit v3:
 ```js
 const Stamp = stampit({ init(arg, {instance, stamp, args}) {
   console.log(arg); // 42
@@ -568,14 +568,14 @@ Stamp(42);
 
 * Thus, the factory first argument properties are no longer automatically assigned to the instance.
 
-Was:
+Stampit v2:
 ```js
 const Stamp = stampit({ init({instance, stamp, args}) {
   console.log(this);
 }});
 Stamp({foo: 'bar'}); // {foo: "bar"}
 ```
-Became:
+Stampit v3:
 ```js
 const Stamp = stampit({init(arg, {instance, stamp, args}) {
   console.log(this);
