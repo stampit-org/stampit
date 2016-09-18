@@ -1,3 +1,4 @@
+/* eslint-disable */
 import test from 'tape';
 
 import stampit1 from '../dist/stampit';
