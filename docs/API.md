@@ -500,7 +500,7 @@ const obj = stampit()
 * `state()` always shallow merge properties. It was not doing so in a single rare case.
 * Instead of factory arguments the `enclose()` functions now receive the following object `{ instance, stamp, args }`.
 
-New features:
+##### New features
 * `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * Instead of factory arguments the `enclose()` functions now receive the following object `{ instance, stamp, args }`.
 * New `stamp.props()` method for deeply merged state.
@@ -515,6 +515,7 @@ New features:
 
 ### BREAKING CHANGES
 
+* node.js v0.10 is not supported any more because it's maintenance period has ended.
 * Stamps from stampit v2 and stampit v3 and not compatible. You should not compose them together.
 * Initializers now receive two arguments instead of just one.
 First is the factory first argument (i.e. `arguments[0]`), second is the same options object as before - `{ instance, stamp, args }`.
@@ -551,17 +552,14 @@ Stamp({foo: 'bar'}); // {}
 ```
 
 * A stamp's metadata is now stored in the `stamp.compose` object. Previously in the `stamp.fixed`.
-
 * Removed `convertConstructor()` (we plan to revive it supporting ES6 classes)
 * Removed `state()`. Use `props()` or its alias `refs()` instead.
 * `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
 * `static()` got renamed to `statics()`
 
-
-### New features
-
+##### New features
 * Stampit is compatible with the [Stamp Specification](https://github.com/stampit-org/stamp-specification/).
 * You can import shortcut and utility functions in various ways:
-  * `import statics from 'stampit'`
-  * `const statics = require('stampit')`
+  * `import {statics} from 'stampit'`
+  * `const {statics} = require('stampit')`
 * New functions `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors`
