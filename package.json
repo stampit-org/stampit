@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "3.0.0-rc.10",
+  "version": "3.0.0-rc.9",
   "description": "Create objects from reusable, composable behaviors.",
   "author": {
     "name": "Eric Elliott",
@@ -60,7 +60,6 @@
     "lodash": "^4.11.1",
     "magic-string": "^0.16.0",
     "nsp": "^2.1.0",
-    "publish-please": "^2.1.4",
     "require-all": "^2.0.0",
     "rimraf": "^2.3.4",
     "rollup": "^0.31.2",
@@ -75,7 +74,6 @@
     "cov": "npm run cov:clean && npm run cov:generate",
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
-    "prepublish": "publish-please guard && npm run check",
     "pretest": "npm run build",
     "test": "babel-node test/index.js | tap-dot",
     "clean": "rimraf dist/* && mkdir dist || true",
@@ -88,8 +86,7 @@
     "audit": "nsp check",
     "precheck": "npm run lint && npm test",
     "check": "npm run audit && npm run deps && npm outdated --depth 0",
-    "watch": "watch 'clear && npm -s test' test/ src/",
-    "publish-please": "publish-please"
+    "watch": "watch 'clear && npm -s test' test/ src/"
   },
   "license": "MIT",
   "npmName": "stampit",
