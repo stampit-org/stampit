@@ -73,3 +73,32 @@ test('stampit().staticPropertyDescriptors static method', (t) => {
 
   t.end();
 });
+
+test('stampit() can be infected', t => {
+  let counter = 0;
+  const infectedStampit = function (...args) {
+    counter++;
+    args.push({
+      staticProperties: {
+        compose: infectedStampit
+      }
+    });
+
+    return stampit.apply(this, args);
+  };
+
+  const stamp = infectedStampit({props: {a: 1}}) // 1
+    .compose({deepProps: {b: 2}}) // 2
+    .methods({c: 3}) // 3
+    .compose( // 4
+      infectedStampit({conf: {d: 4}}) // 5
+    );
+
+  t.equal(counter, 5, 'should call infected compose 5 times');
+  t.equal(stamp.compose.properties.a, 1, 'should compose properties');
+  t.equal(stamp.compose.deepProperties.b, 2, 'should compose deepProperties');
+  t.equal(stamp.compose.methods.c, 3, 'should compose methods');
+  t.equal(stamp.compose.configuration.d, 4, 'should compose configuration');
+
+  t.end();
+});

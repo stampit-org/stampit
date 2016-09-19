@@ -110,11 +110,7 @@ const baseStampit = compose({
       return this(...args);
     },
 
-    compose(...args) {
-      args = args.filter(isComposable)
-        .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
-      return compose.apply(this || baseStampit, args);
-    }
+    compose: stampit
   }, allUtilities)
 });
 
@@ -123,7 +119,9 @@ const baseStampit = compose({
  * @return {Stamp}
  */
 function stampit(...args) {
-  return baseStampit.compose(...args);
+  args = args.filter(isComposable)
+    .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
+  return compose.apply(this || baseStampit, args);
 }
 
 export default assign(stampit,
