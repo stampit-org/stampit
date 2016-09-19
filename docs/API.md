@@ -588,11 +588,21 @@ const Stamp = stampit({init(arg, {instance, stamp, args}) {
 Stamp({foo: 'bar'}); // {}
 ```
 
+A workaround can be implemented as a separate behavior (stamp).
+```js
+const AssignFirstArgument = stampit({ init(opts) {
+  Object.assign(this, opts);
+}});
+Stamp = AssignFirstArgument.compose(Stamp);
+Stamp({foo: 'bar'}); // {foo: "bar"}ß
+```
+
 * A stamp's metadata is now stored in the `stamp.compose` object. Previously it was stored in `stamp.fixed` object.
 * Removed `convertConstructor()` (we plan to revive it supporting ES6 classes)
 * Removed `state()`. Use `props()` instead.
 * `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
 * `static()` got renamed to `statics()`
+* Initializers do not support Promises anymore. Meaning that "thenables" are not automatically unwrapped by initializers.
 
 **New features**
 * Stampit is compatible with the [Stamp Specification](https://github.com/stampit-org/stamp-specification/).
