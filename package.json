@@ -75,7 +75,7 @@
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
     "pretest": "npm run build",
-    "test": "babel-node test/index.js | tap-dot",
+    "test": "set -o pipefail; babel-node test/index.js | tap-dot",
     "clean": "rimraf dist/* && mkdir dist || true",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
