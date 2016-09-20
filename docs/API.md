@@ -639,7 +639,7 @@ Use `.deepProps()` instead.
   * `const {statics} = require('stampit')`
 * New utility function `isComposalbe`. Can be imported separately: `require('stampit/isComposable')`.
 * New utility function `compose`. It is the pure [standard](https://github.com/stampit-org/stamp-specification) `compose` function implementation. Can be imported separately: `require('stampit/compose')`.
-* New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *}`). They are: `initializers`, `init`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
+* New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *})`). They are: `initializers`, `init`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
 
 **Other notable changes**
 * The `refs` are **deprecated** now.
