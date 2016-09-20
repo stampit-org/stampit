@@ -10,6 +10,7 @@ test('.create()', (t) => {
     }
   });
 
+  t.ok(stamp.create);
   t.equal(stamp.create().foo(), 'foo',
     'Should produce an object from specified prototypes.');
 
@@ -22,5 +23,6 @@ test('.create(options)', (t) => {
       'Should pass options object to initializer.');
     t.end();
   });
+  t.ok(stamp.create);
   stamp.create({foo: 'bar'});
 });

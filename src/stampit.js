@@ -16,7 +16,7 @@ const assign = Object.assign;
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
   descriptor[propName] = action(...[{}].concat(args));
-  return ((self && self.compose) || baseStampit.compose).call(self, descriptor);
+  return ((self && self.compose) || stampit).call(self, descriptor);
 }
 
 export function methods(...args) {
@@ -30,7 +30,7 @@ export {properties as refs};
 export {properties as props};
 
 export function initializers(...args) {
-  return ((this && this.compose) || baseStampit.compose).call(this, {
+  return ((this && this.compose) || stampit).call(this, {
     initializers: extractFunctions(...args)
   });
 }
