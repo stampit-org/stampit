@@ -627,10 +627,11 @@ Stamp({foo: 'bar'}); // {foo: "bar"}ß
 * The `.props()` does not deeply merge objects any more, but shallow assigns properties. Just like `.properties()` and `.refs()`.
 Use `.deepProps()` instead.
 * Removed `state()`. Use `props()` instead.
-* `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
+* `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use ES6 `Object.assign()`
 * `static()` got renamed to `statics()`
 * The `stampit.isStamp` was moved. You should import it separately now: `require('stampit/isStamp')`.
 * Initializers do not support Promises anymore. Meaning that "thenables" are not automatically unwrapped by initializers.
+* The `stamp.init()` and `stampit.init()` do not support objects as incoming arguments anymore. Use ES6 `.init(Object.values(obj))` instead.
 
 **New features**
 * Stampit is compatible with the [Stamp Specification](https://github.com/stampit-org/stamp-specification/).
