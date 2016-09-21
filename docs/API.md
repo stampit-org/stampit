@@ -209,8 +209,8 @@ console.log(firstInstance.salaries); // [100]
 
 const secondInstance = stamp();
 secondInstance.salaries.push(200);
-console.log(firstInstance.salaries); // // [100, 200]
-console.log(secondInstance.salaries); // // [100, 200]
+console.log(firstInstance.salaries); // [100, 200]
+console.log(secondInstance.salaries); // [100, 200]
 ```
 
 What happened? The `salaries` property was kept as *reference* inside the stamp metadata. Every
