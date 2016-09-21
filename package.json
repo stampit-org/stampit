@@ -74,6 +74,7 @@
     "cov": "npm run cov:clean && npm run cov:generate",
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
+    "prepublish": "npm run check",
     "pretest": "npm run build",
     "test": "babel-node test | tap-dot",
     "clean": "rimraf dist/* && mkdir dist || true",
