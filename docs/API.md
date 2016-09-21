@@ -461,48 +461,48 @@ Take an object and return `true` if it's a stamp or a stamp descriptor.
 All the methods *always* create new stamps.
 
 ```js
-const MyStamp = stampit() // new stamp
-.methods({ // new stamp
+const MyStamp = stampit() // creates new stamp
+.methods({ // creates new stamp
   methodOverride() {
     return false;
   }
 })
-.methods({ // new stamp
+.methods({ // creates new stamp
   methodOverride() {
     return true;
   }
 })
-.props({ // new stamp
+.props({ // creates new stamp
   stateOverride: false
 })
-.props({ // new stamp
+.props({ // creates new stamp
   stateOverride: true
 })
-.props({ // new stamp
+.props({ // creates new stamp
   name: { first: 'John' }
 })
-.props({ // new stamp
+.props({ // creates new stamp
   name: { last: 'Doe' }
 })
-.statics({ // new stamp
+.statics({ // creates new stamp
   staticOverride: false
 })
-.statics({ // new stamp
+.statics({ // creates new stamp
   staticOverride: true
 })
-.init(function () { // new stamp
+.init(function () { // creates new stamp
   const secret = 'foo';
 
   this.getSecret = function () {
     return secret;
   };
 })
-.init(function bar() { // new stamp
+.init(function bar() { // creates new stamp
   this.a = true;
 }, function baz() {
   this.b = true;
 })
-.compose(AnotherStamp); // new stamp
+.compose(AnotherStamp); // creates new stamp
 
 MyStamp.staticOverride; // true
 
@@ -531,12 +531,12 @@ const obj = stampit()
 }, {
   b: 'b'
 })
-.init(function () {
-  console.log(this);
-}, function () {
-  console.log(this); // same as above
+.init(function ({x}) {
+  this.value = x;
+}, function ({y}) {
+  this.value = y; // overwrites previous init() effort
 })
-.props({
+.deepProps({
   name: { first: 'John' }
 }, {
   name: { last: 'Doe' }
@@ -547,7 +547,7 @@ const obj = stampit()
   bar: 'bar'
 })
 .compose(concreteStamp, additionalStamp, utilityStamp)
-.create(42, 511, 3.14);
+.create({x: 5, y: 10});
 ```
 
 
@@ -637,7 +637,7 @@ Use `.deepProps()` instead.
 * You can import shortcuts and utility functions in various ways:
   * `import {statics} from 'stampit'`
   * `const {statics} = require('stampit')`
-* New utility function `isComposalbe`. Can be imported separately: `require('stampit/isComposable')`.
+* New utility function `isComposable`. Can be imported separately: `require('stampit/isComposable')`.
 * New utility function `compose`. It is the pure [standard](https://github.com/stampit-org/stamp-specification) `compose` function implementation. Can be imported separately: `require('stampit/compose')`.
 * New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *})`). They are: `initializers`, `init`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
 
