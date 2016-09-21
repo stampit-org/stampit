@@ -194,6 +194,40 @@ console.log(stamp().factor); // 1
 console.log(stamp({factor: 5}).factor); // 5
 ```
 
+It's really important to know the difference between a reference and an actual value. [Primitive
+types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) can be used in `props`
+without limititation. However the following might be source of confusion and bugs.
+
+```js
+const stamp = stampit().props({
+  salaries: []
+});
+
+const firstInstance = stamp();
+firstInstance.salaries.push(100);
+console.log(firstInstance.salaries); // [100]
+
+const secondInstance = stamp();
+secondInstance.salaries.push(200);
+console.log(firstInstance.salaries); // [100, 200]
+console.log(secondInstance.salaries); // [100, 200]
+```
+
+What happened? The `salaries` property was kept as *reference* inside the stamp metadata. Every
+instance made from that stamp would share the same reference. To solve this, you can either
+create a new array for every instance or simply use `deepProps` instead which would make 
+a copy of everything.
+
+```js
+const stamp = stampit().props({
+  salaries: null
+}).init((opts, {instance}) => {
+  instance.salaries = [];
+});
+
+// just last line from previous example, now it works correctly
+secondInstance.salaries.push(200); // [200]
+```
 
 ### stamp.init(...args) and stamp.initializers(...args)
 
