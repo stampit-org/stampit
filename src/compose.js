@@ -91,7 +91,7 @@ function mergeComposable(dstDescriptor, srcComposable) {
  * Given the list of composables (stamp descriptors and stamps) returns
  * a new stamp (composable factory function).
  * @param {...(object|Function)} [composables] The list of composables.
- * @returns {Function} A new stamp (aka composable factory function).
+ * @returns {Stamp} A new stamp (aka composable factory function)
  */
 export default function compose(...composables) {
   const descriptor = [this]
@@ -100,3 +100,27 @@ export default function compose(...composables) {
     .reduce(mergeComposable, {});
   return createStamp(descriptor, compose);
 }
+
+
+/**
+ * The Stamp Descriptor
+ * @typedef {Function|Object} Descriptor
+ * @returns {Stamp} A new stamp based on this Stamp
+ * @property {Object} [methods] Methods or other data used as object instances' prototype
+ * @property {Array<Function>} [initializers] List of initializers called for each object instance
+ * @property {Object} [properties] Shallow assigned properties of object instances
+ * @property {Object} [deepProperties] Deeply merged properties of object instances
+ * @property {Object} [staticProperties] Shallow assigned properties of Stamps
+ * @property {Object} [staticDeepProperties] Deeply merged properties of Stamps
+ * @property {Object} [configuration] Shallow assigned properties of Stamp arbitrary metadata
+ * @property {Object} [deepConfiguration] Deeply merged properties of Stamp arbitrary metadata
+ * @property {Object} [propertyDescriptors] ES5 Property Descriptors applied to object instances
+ * @property {Object} [staticPropertyDescriptors] ES5 Property Descriptors applied to Stamps
+ */
+
+/**
+ * The Stamp factory function
+ * @typedef {Function} Stamp
+ * @returns {*} Instantiated object
+ * @property {Descriptor} compose - The Stamp descriptor and composition function
+ */
