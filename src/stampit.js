@@ -96,7 +96,7 @@ const allUtilities = {
 
   propertyDescriptors,
 
-  staticPropertyDescriptors,
+  staticPropertyDescriptors
 };
 
 /**
@@ -104,15 +104,17 @@ const allUtilities = {
  * @type {Function}
  * @return {Stamp}
  */
-const baseStampit = compose({
-  staticProperties: assign({
-    create(...args) {
-      return this(...args);
-    },
-
-    compose: stampit
-  }, allUtilities)
-});
+const baseStampit = compose(
+  {staticProperties: allUtilities},
+  {
+    staticProperties: {
+      create(...args) {
+        return this(...args);
+      },
+      compose: stampit // infecting
+    }
+  }
+);
 
 /**
  * Infected compose
@@ -121,8 +123,10 @@ const baseStampit = compose({
 function stampit(...args) {
   args = args.filter(isComposable)
     .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
+
   return compose.apply(this || baseStampit, args);
 }
 
-// Copying statics (aka shortcut functions) from the infected stamp
-export default assign(stampit, baseStampit);
+// Setting up the shortcut functions
+stampit.compose = baseStampit.compose;
+export default assign(stampit, allUtilities);
