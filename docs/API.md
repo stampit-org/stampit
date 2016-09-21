@@ -7,24 +7,25 @@
 - [Example](#example)
 - [stampit(...args)](#stampitargs)
 - [The stamp object](#the-stamp-object)
-  - [stamp.methods()](#stampmethods)
-  - [stamp.props() and stamp.properties()](#stampprops-and-stampproperties)
-  - [stamp.init([arg1] [,arg2] [,arg3...])](#stampinitarg1-arg2-arg3)
+  - [stamp.methods(...args)](#stampmethodsargs)
+  - [stamp.props(...args) and stamp.properties(...args)](#stamppropsargs-and-stamppropertiesargs)
+  - [stamp.init(...args)](#stampinitargs)
     - [Examples](#examples)
-  - [stamp.deepProps() and stamp.deepProperties()](#stampdeepprops-and-stampdeepproperties)
-  - [stamp.statics() and stamp.staticProperties()](#stampstatics-and-stampstaticproperties)
-  - [stamp.deepStatics() and stamp.deepStaticProperties()](#stampdeepstatics-and-stampdeepstaticproperties)
-  - [stamp.conf() and stamp.configuration()](#stampconf-and-stampconfiguration)
+  - [stamp.deepProps(...args) and stamp.deepProperties(...args)](#stampdeeppropsargs-and-stampdeeppropertiesargs)
+  - [stamp.statics(...args) and stamp.staticProperties(...args)](#stampstaticsargs-and-stampstaticpropertiesargs)
+  - [stamp.deepStatics(...args) and stamp.deepStaticProperties(...args)](#stampdeepstaticsargs-and-stampdeepstaticpropertiesargs)
+  - [stamp.conf(...args) and stamp.configuration(...args)](#stampconfargs-and-stampconfigurationargs)
     - [Examples](#examples-1)
-  - [stamp.deepConf() and stamp.deepConfiguration()](#stampdeepconf-and-stampdeepconfiguration)
-  - [stamp.propertyDescriptors()](#stamppropertydescriptors)
-  - [stamp.staticPopertyDescriptors()](#stampstaticpopertydescriptors)
-  - [stamp.compose([arg1] [,arg2] [,arg3...])](#stampcomposearg1-arg2-arg3)
-  - [stamp.create([arg1] [,arg2...])](#stampcreatearg1-arg2)
+  - [stamp.deepConf(...args) and stamp.deepConfiguration(...args)](#stampdeepconfargs-and-stampdeepconfigurationargs)
+  - [stamp.propertyDescriptors(...args)](#stamppropertydescriptorsargs)
+  - [stamp.staticPropertyDescriptors(...args)](#stampstaticpropertydescriptorsargs)
+  - [stamp.compose(...args)](#stampcomposeargs)
+  - [stamp.create(...args)](#stampcreateargs)
 - [Shortcut methods](#shortcut-methods)
-  - [stampit.isStamp(obj)](#stampitisstampobj)
-  - [stampit.isComposable(obj)](#stampitiscomposableobj)
-- [More Examples](#more-examples)
+- [Utility functions](#utility-functions)
+  - [stampit/compose](#stampitcompose)
+  - [stampit/isStamp](#stampitisstamp)
+  - [stampit/isComposable](#stampitiscomposable)
 - [Chaining methods](#chaining-methods)
   - [Pass multiple objects into all methods and functions](#pass-multiple-objects-into-all-methods-and-functions)
 - [Breaking changes](#breaking-changes)
@@ -162,7 +163,7 @@ const objectInstance = stamp({factor: 1.1});
 ## The stamp object
 
 
-### stamp.methods()
+### stamp.methods(...args)
 
 Take n objects and add them to the methods list of a new stamp. Creates new stamp.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
@@ -179,7 +180,7 @@ const stamp = stampit().methods({
 stamp().amplify('BADF00D'); // value BADF00D is incorrect
 ```
 
-### stamp.props() and stamp.properties()
+### stamp.props(...args) and stamp.properties(...args)
 
 Take n objects and add them to the references list of a new stamp. Creates new stamp.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
@@ -194,7 +195,7 @@ console.log(stamp({factor: 5}).factor); // 5
 ```
 
 
-### stamp.init([arg1] [,arg2] [,arg3...])
+### stamp.init(...args)
 
 Take n functions, an array of functions, or n objects and add
 the functions to the initializers list of a new stamp. Creates new stamp.
@@ -240,7 +241,7 @@ MyStamp().clone().clone().clone().x === 42; // true
 ```
 
 
-### stamp.deepProps() and stamp.deepProperties()
+### stamp.deepProps(...args) and stamp.deepProperties(...args)
 
 Take n objects and deep merge them safely to the properties. Creates new stamp.
 Note: the merge algorithm will not change any existing `props` data of a resulting object instance.
@@ -263,7 +264,7 @@ console.log(effectMashup.effects.cutoff.max); // 255
 ```
 
 
-### stamp.statics() and stamp.staticProperties()
+### stamp.statics(...args) and stamp.staticProperties(...args)
 
 Take n objects and add all its properties to the stamp (aka factory object).
 
@@ -292,13 +293,13 @@ stamp = stamp.statics({
 ```
 
 
-### stamp.deepStatics() and stamp.deepStaticProperties()
+### stamp.deepStatics(...args) and stamp.deepStaticProperties(...args)
 
 Same as `stamp.statics()` and `stamp.staticProperties()` but deeply merges the
 provided objects.
 
 
-### stamp.conf() and stamp.configuration()
+### stamp.conf(...args) and stamp.configuration(...args)
 
 Take n objects and add all its properties to the stamp's metadata. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
@@ -349,7 +350,7 @@ console.log(stamp2().setFactor(5).getFactor()); // 5
 ```
 
 
-### stamp.deepConf() and stamp.deepConfiguration()
+### stamp.deepConf(...args) and stamp.deepConfiguration(...args)
 
 Same as `stamp.conf()` and `stamp.configuration()` but deeply merges the
 provided objects. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
@@ -358,19 +359,19 @@ provided objects. This arbitrary data could be used in initializers and static m
 
 NOTE: Accessible as `stamp.compose.deepConfiguration`. Do not confuse with the `stamp.compose.configuration`.
 
-### stamp.propertyDescriptors()
+### stamp.propertyDescriptors(...args)
 
 Property descriptors applied to the instantiated objects. 
 See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
 
 
-### stamp.staticPopertyDescriptors()
+### stamp.staticPropertyDescriptors(...args)
 
 Property descriptors applied to the stamps. 
 See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
 
 
-### stamp.compose([arg1] [,arg2] [,arg3...])
+### stamp.compose(...args)
 
 Take one or more stamp or stamp descriptors and
 combine them with `this` stamp to produce and return a new stamp.
@@ -384,9 +385,9 @@ const stamp2 = stampit({ props: { theAnswer: 42 } });
 const composedStamp = stamp1.compose(stamp2);
 ```
 
-### stamp.create([arg1] [,arg2...])
+### stamp.create(...args)
 
-Alias to `stamp([arg1] [,arg2...])`.
+Alias to `stamp(...args)`.
 Just like calling `stamp()`, `stamp.create()` invokes the stamp
 and returns a new object instance. 
 
@@ -403,7 +404,7 @@ See more useful tips in the [advanced examples](advanced_examples.md#validate-be
 
 Also available as `import {FUNCTION} from 'stampit'` or `const {FUNCTION} = require('stampit')`.
 
-All return a new stamp.
+All return a new stamp exactly as the `stamp.*` methods above.
 
 * stampit.methods()
 * stampit.props()
@@ -424,64 +425,84 @@ All return a new stamp.
 * stampit.deepPropertyDescriptors()
 * stampit.compose()
 
-### stampit.isStamp(obj)
+
+## Utility functions
+
+### stampit/compose
+
+```js
+import compose from 'stampit/compose'; // or
+const compose = require('stampit/compose');
+```
+
+It's a pure clean standard `compose` function implementation. See [specification](https://github.com/stampit-org/stamp-specification).
+
+### stampit/isStamp
+
+```js
+import isStamp from 'stampit/isStamp'; // or
+const isStamp = require('stampit/isStamp');
+```
 
 Take an object and return `true` if it's a stamp, `false` otherwise.
 
-### stampit.isComposable(obj)
+### stampit/isComposable
+
+```js
+import isComposable from 'stampit/isComposable'; // or
+const isComposable = require('stampit/isComposable');
+```
 
 Take an object and return `true` if it's a stamp or a stamp descriptor.
 
 
-## More Examples
-
 ## Chaining methods
 
-Chaining stamps *always* creates new stamps.
+All the methods *always* create new stamps.
 
 ```js
-const MyStamp = stampit()
-.methods({
+const MyStamp = stampit() // creates new stamp
+.methods({ // creates new stamp
   methodOverride() {
     return false;
   }
 })
-.methods({
+.methods({ // creates new stamp
   methodOverride() {
     return true;
   }
 })
-.props({
+.props({ // creates new stamp
   stateOverride: false
 })
-.props({
+.props({ // creates new stamp
   stateOverride: true
 })
-.props({
+.props({ // creates new stamp
   name: { first: 'John' }
 })
-.props({
+.props({ // creates new stamp
   name: { last: 'Doe' }
 })
-.statics({
+.statics({ // creates new stamp
   staticOverride: false
 })
-.statics({
+.statics({ // creates new stamp
   staticOverride: true
 })
-.init(function () {
+.init(function () { // creates new stamp
   const secret = 'foo';
 
   this.getSecret = function () {
     return secret;
   };
 })
-.init(function bar() {
+.init(function bar() { // creates new stamp
   this.a = true;
 }, function baz() {
   this.b = true;
 })
-.compose(AnotherStamp);
+.compose(AnotherStamp); // creates new stamp
 
 MyStamp.staticOverride; // true
 
@@ -510,12 +531,12 @@ const obj = stampit()
 }, {
   b: 'b'
 })
-.init(function () {
-  console.log(this);
-}, function () {
-  console.log(this); // same as above
+.init(function ({x}) {
+  this.value = x;
+}, function ({y}) {
+  this.value = y; // overwrites previous init() effort
 })
-.props({
+.deepProps({
   name: { first: 'John' }
 }, {
   name: { last: 'Doe' }
@@ -526,13 +547,15 @@ const obj = stampit()
   bar: 'bar'
 })
 .compose(concreteStamp, additionalStamp, utilityStamp)
-.create();
+.create({x: 5, y: 10});
 ```
 
 
 ## Breaking changes
 
 ### Stampit v2
+
+Differences with Stampit v1.
 
 * `stampit()` now receives options object (`{methods,refs,init,props,static}`) instead of multiple arguments.
 * All chaining methods return new stamps instead of self-mutating this stamp.
@@ -551,6 +574,8 @@ const obj = stampit()
 
 
 ### Stampit v3
+
+Differences with Stampit v2.
 
 * node.js v0.10 is not supported any more because it's maintenance period has ended.
 * Stamps from stampit v2 and stampit v3 and not compatible. You should not compose them together.
@@ -571,7 +596,7 @@ const Stamp = stampit({ init(arg, {instance, stamp, args}) {
 Stamp(42);
 ```
 
-* Thus, the factory first argument properties are no longer automatically assigned to the instance.
+* The factory first argument properties are no longer automatically assigned to the instance.
 
 Stampit v2:
 ```js
@@ -598,19 +623,23 @@ Stamp({foo: 'bar'}); // {foo: "bar"}ß
 ```
 
 * A stamp's metadata is now stored in the `stamp.compose` object. Previously it was stored in `stamp.fixed` object.
-* Removed `convertConstructor()` (we plan to revive it supporting ES6 classes)
+* Removed `convertConstructor()`. We plan to revive it and support the ES6 classes.
+* The `.props()` does not deeply merge objects any more, but shallow assigns properties. Just like `.properties()` and `.refs()`.
+Use `.deepProps()` instead.
 * Removed `state()`. Use `props()` instead.
 * `stampit.mixin()`, `.extend()`, `.mixIn()`, `.assign()` are all gone too. Use `Object.assign()`
 * `static()` got renamed to `statics()`
+* The `stampit.isStamp` was moved. You should import it separately now: `require('stampit/isStamp')`.
 * Initializers do not support Promises anymore. Meaning that "thenables" are not automatically unwrapped by initializers.
 
 **New features**
 * Stampit is compatible with the [Stamp Specification](https://github.com/stampit-org/stamp-specification/).
-* You can import shortcut and utility functions in various ways:
+* You can import shortcuts and utility functions in various ways:
   * `import {statics} from 'stampit'`
   * `const {statics} = require('stampit')`
-* New utility function `isComposalbe`. Can be imported in any of the above ways.
-* New methods on stamps, as well as new shortcut methods on stampit, as well as new options to `stampit()`: `initializers`, `properties`, `deepProps`, `deepProperties`, `deepStatics`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
+* New utility function `isComposable`. Can be imported separately: `require('stampit/isComposable')`.
+* New utility function `compose`. It is the pure [standard](https://github.com/stampit-org/stamp-specification) `compose` function implementation. Can be imported separately: `require('stampit/compose')`.
+* New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *})`). They are: `initializers`, `init`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
 
 **Other notable changes**
-* The `refs` are **deprecated**
+* The `refs` are **deprecated** now.

@@ -4,7 +4,7 @@
 
 **Create objects from reusable, composable behaviors** 
  
-Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622).
+Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
  
 ## Simplest Example
@@ -51,7 +51,7 @@ npm install stampit
 ```
 
 
-## Examples
+## API
 
 See the [API](docs/API.md).
 

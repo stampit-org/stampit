@@ -42,5 +42,5 @@ function mergeOne(dst, src) {
 }
 
 export default function (dst, ...srcs) {
-  return srcs.reduce((target, src) => mergeOne(target, src), dst);
+  return srcs.reduce(mergeOne, dst);
 }

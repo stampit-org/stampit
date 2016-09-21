@@ -20,30 +20,76 @@ const moduleName = 'stampit';
 function execute() {
   return Promise.all([
     makeBundle(
-      {format: 'es6', ext: '.mjs'}
-    ),
-    makeBundle(
       {
-        format: 'cjs', ext: '.js',
-        babelPlugins: es2015Plugins
+        format: 'es6',
+        ext: '.mjs',
+        dest: 'dist',
+        moduleName: 'stampit'
       }
     ),
     makeBundle(
       {
-        format: 'cjs', ext: '.es5.js',
-        babelPlugins: es2015Plugins
+        format: 'cjs',
+        ext: '.js',
+        babelPlugins: es2015Plugins,
+        dest: 'dist',
+        moduleName: 'stampit'
       }
     ),
     makeBundle(
       {
-        format: 'umd', ext: '.full.js',
-        babelPlugins: es2015Plugins
+        format: 'cjs',
+        ext: '.es5.js',
+        babelPlugins: es2015Plugins,
+        dest: 'dist',
+        moduleName: 'stampit'
       }
     ),
     makeBundle(
       {
-        format: 'umd', ext: '.full.min.js', minify: true,
-        babelPlugins: es2015Plugins
+        format: 'umd',
+        ext: '.full.js',
+        babelPlugins: es2015Plugins,
+        dest: 'dist',
+        moduleName: 'stampit'
+      }
+    ),
+    makeBundle(
+      {
+        format: 'umd',
+        ext: '.full.min.js',
+        minify: true,
+        babelPlugins: es2015Plugins,
+        dest: 'dist',
+        moduleName: 'stampit'
+      }
+    ),
+
+    makeBundle(
+      {
+        format: 'cjs',
+        ext: '.js',
+        babelPlugins: es2015Plugins,
+        dest: '.',
+        moduleName: 'compose'
+      }
+    ),
+    makeBundle(
+      {
+        format: 'cjs',
+        ext: '.js',
+        babelPlugins: es2015Plugins,
+        dest: '.',
+        moduleName: 'isStamp'
+      }
+    ),
+    makeBundle(
+      {
+        format: 'cjs',
+        ext: '.js',
+        babelPlugins: es2015Plugins,
+        dest: '.',
+        moduleName: 'isComposable'
       }
     )
   ]);
@@ -74,7 +120,7 @@ function makeBundle(config) {
   const isCJS = config.format === 'cjs';
 
   const inputConfig = {
-    entry: 'src/stampit.js',
+    entry: `src/${config.moduleName}.js`,
     plugins: [
       babel({
         babelrc: false,
@@ -102,10 +148,10 @@ function makeBundle(config) {
   }
 
   const outputConfig = {
-    dest: `dist/${moduleName}${config.ext}`,
+    dest: `${config.dest}/${config.moduleName}${config.ext}`,
     format: config.format,
     sourceMap: !config.minify,
-    moduleName: moduleName,
+    moduleName: config.moduleName,
     exports: 'named'
   };
 

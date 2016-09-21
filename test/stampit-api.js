@@ -1,5 +1,6 @@
 import stampit from '../src/stampit';
 import test from 'tape';
+import isStamp from '../src/isStamp';
 
 // Main API
 
@@ -10,7 +11,7 @@ test('stampit()', (t) => {
 });
 
 test('stampit({})', (t) => {
-  t.ok(stampit.isStamp(stampit({})));
+  t.ok(isStamp(stampit({})));
 
   t.end();
 });

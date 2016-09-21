@@ -15,7 +15,7 @@ const assign = Object.assign;
 
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
-  descriptor[propName] = action(...[{}].concat(args));
+  descriptor[propName] = action({}, ...args);
   return ((self && self.compose) || stampit).call(self, descriptor);
 }
 
@@ -96,7 +96,7 @@ const allUtilities = {
 
   propertyDescriptors,
 
-  staticPropertyDescriptors,
+  staticPropertyDescriptors
 };
 
 /**
@@ -104,15 +104,17 @@ const allUtilities = {
  * @type {Function}
  * @return {Stamp}
  */
-const baseStampit = compose({
-  staticProperties: assign({
-    create(...args) {
-      return this(...args);
-    },
-
-    compose: stampit
-  }, allUtilities)
-});
+const baseStampit = compose(
+  {staticProperties: allUtilities},
+  {
+    staticProperties: {
+      create(...args) {
+        return this(...args);
+      },
+      compose: stampit // infecting
+    }
+  }
+);
 
 /**
  * Infected compose
@@ -121,17 +123,10 @@ const baseStampit = compose({
 function stampit(...args) {
   args = args.filter(isComposable)
     .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
+
   return compose.apply(this || baseStampit, args);
 }
 
-export default assign(stampit,
-  {
-    isStamp,
-
-    isComposable,
-
-    compose: baseStampit.compose
-  },
-  allUtilities
-);
-
+// Setting up the shortcut functions
+stampit.compose = baseStampit.compose;
+export default assign(stampit, allUtilities);
