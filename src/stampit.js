@@ -15,7 +15,7 @@ const assign = Object.assign;
 
 function composeArgsCall(self, propName, action, args) {
   const descriptor = {};
-  descriptor[propName] = action(...[{}].concat(args));
+  descriptor[propName] = action({}, ...args);
   return ((self && self.compose) || stampit).call(self, descriptor);
 }
 
@@ -124,14 +124,5 @@ function stampit(...args) {
   return compose.apply(this || baseStampit, args);
 }
 
-export default assign(stampit,
-  {
-    isStamp,
-
-    isComposable,
-
-    compose: baseStampit.compose
-  },
-  allUtilities
-);
-
+// Copying statics (aka shortcut functions) from the infected stamp
+export default assign(stampit, baseStampit);
