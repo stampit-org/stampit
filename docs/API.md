@@ -195,9 +195,9 @@ console.log(stamp({factor: 5}).factor); // 5
 ```
 
 
-### stamp.init(...args)
+### stamp.init(...args) and stamp.initializers(...args)
 
-Take n functions, an array of functions, or n objects and add
+Take n functions or array(s) of functions and add
 the functions to the initializers list of a new stamp. Creates new stamp.
 * `@return {Object} stamp` The new stamp based on the original `this` stamp.
 
