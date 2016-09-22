@@ -8,7 +8,7 @@
   },
   "main": "dist/stampit.full.js",
   "jsnext:main": "dist/stampit.mjs",
-  "browser": "dist/stampit.es5.js",
+  "browser": "dist/stampit.umd.js",
   "keywords": [
     "object",
     "prototype",
