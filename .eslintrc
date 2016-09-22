@@ -8,6 +8,6 @@
     "no-confusing-arrow": 0,
     "prefer-rest-params": 0,
     "no-use-before-define": 1,
-    "no-plusplus": 0
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
   }
 }
