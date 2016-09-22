@@ -48,6 +48,8 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 [![NPM](https://nodei.co/npm/stampit.png)](https://www.npmjs.com/package/stampit)
 
+[![NPM](https://img.shields.io/badge/cdnjs.com--green.svg)](https://cdnjs.com/libraries/stampit)
+
 ## API
 
 See the [API](docs/API.md).
