@@ -12,7 +12,7 @@ export {isStamp};
 const assign = Object.assign;
 
 function createUtilityFunction(propName, action) {
-  return function () {
+  return function composeUtil() {
     const descriptor = {};
     descriptor[propName] = action({}, ...arguments);
     return ((this && this.compose) || stampit).call(this, descriptor);
