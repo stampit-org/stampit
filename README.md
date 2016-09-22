@@ -46,10 +46,7 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 ## Install
 
-```shell
-npm install stampit
-```
-
+[![NPM](https://nodei.co/npm/stampit.png)](https://www.npmjs.com/package/stampit)
 
 ## API
 
