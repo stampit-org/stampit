@@ -1,10 +1,10 @@
-import stampit from '../src/stampit';
 import test from 'tape';
+import stampit from '../src/stampit';
 
 // Closure arguments
 
 test('stamp.init() arguments are passed', (t) => {
-  let initStamp = undefined;
+  let initStamp;
   const outerStamp = stampit().init((options, {instance, stamp, args}) => {
     t.ok(instance, '{ instance } should exist');
     t.equal(typeof instance, 'object', '{ instance } should be object');
@@ -55,9 +55,9 @@ test('stamp.init() should assign arguments to `{ args }`', (t) => {
 });
 
 test('stamp.init() can handle multiple init functions', (t) => {
-  let init1 = undefined;
-  let init2 = undefined;
-  let init3 = undefined;
+  let init1;
+  let init2;
+  let init3;
 
   const stamp = stampit()
     .init(() => {
@@ -78,9 +78,9 @@ test('stamp.init() can handle multiple init functions', (t) => {
 });
 
 test('stamp.init() can handle multiple init functions assigned with array', (t) => {
-  let init1 = undefined;
-  let init2 = undefined;
-  let init3 = undefined;
+  let init1;
+  let init2;
+  let init3;
 
   const stamp = stampit().init([
     () => {

@@ -1,5 +1,5 @@
-import stampit from '../src/stampit';
 import test from 'tape';
+import stampit from '../src/stampit';
 
 // Compose
 
@@ -13,7 +13,7 @@ test('stampit().compose()', (t) => {
     },
     refs: {ref: false},
     init() {
-      closuresCalled++;
+      closuresCalled += 1;
     },
     props: {prop: false}
   });
@@ -25,7 +25,7 @@ test('stampit().compose()', (t) => {
     },
     refs: {ref: true},
     init() {
-      closuresCalled++;
+      closuresCalled += 1;
     },
     props: {prop: true}
   });

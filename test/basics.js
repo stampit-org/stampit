@@ -1,5 +1,5 @@
-import stampit from '../src/stampit';
 import test from 'tape';
+import stampit from '../src/stampit';
 
 // Basics
 

@@ -19,45 +19,34 @@ const moduleName = 'stampit';
 
 function execute() {
   return Promise.all([
-    makeBundle(
-      {
-        format: 'es6',
-        ext: '.mjs',
-        dest: 'dist',
-        moduleName: 'stampit'
-      }
-    ),
+
+    // The main stampit distributable bundle. Meaning no other files needed
     makeBundle(
       {
         format: 'cjs',
-        ext: '.js',
-        babelPlugins: es2015Plugins,
-        dest: 'dist',
-        moduleName: 'stampit'
-      }
-    ),
-    makeBundle(
-      {
-        format: 'cjs',
-        ext: '.es5.js',
-        babelPlugins: es2015Plugins,
-        dest: 'dist',
-        moduleName: 'stampit'
-      }
-    ),
-    makeBundle(
-      {
-        format: 'umd',
         ext: '.full.js',
         babelPlugins: es2015Plugins,
         dest: 'dist',
         moduleName: 'stampit'
       }
     ),
+
+    // The UMD build for browsers
     makeBundle(
       {
         format: 'umd',
-        ext: '.full.min.js',
+        ext: '.umd.js',
+        babelPlugins: es2015Plugins,
+        dest: 'dist',
+        moduleName: 'stampit'
+      }
+    ),
+
+    // The minified UMD build for browsers
+    makeBundle(
+      {
+        format: 'umd',
+        ext: '.umd.min.js',
         minify: true,
         babelPlugins: es2015Plugins,
         dest: 'dist',
@@ -65,6 +54,18 @@ function execute() {
       }
     ),
 
+    // The experimental ES6 bundle
+    makeBundle(
+      {
+        format: 'es',
+        ext: '.mjs',
+        dest: 'dist',
+        moduleName: 'stampit'
+      }
+    ),
+
+
+    // The "stampit/compose" file for direct importing
     makeBundle(
       {
         format: 'cjs',
@@ -74,6 +75,7 @@ function execute() {
         moduleName: 'compose'
       }
     ),
+    // The "stampit/isStamp" file for direct importing
     makeBundle(
       {
         format: 'cjs',
@@ -83,6 +85,7 @@ function execute() {
         moduleName: 'isStamp'
       }
     ),
+    // The "stampit/isComposable" file for direct importing
     makeBundle(
       {
         format: 'cjs',
@@ -116,6 +119,14 @@ function defaultExport(opts = {}) {
 }
 
 function makeBundle(config) {
+  const outputConfig = {
+    dest: `${config.dest}/${config.moduleName}${config.ext}`,
+    format: config.format,
+    sourceMap: !config.minify,
+    moduleName: config.moduleName,
+    exports: 'named'
+  };
+
   const isUMD = config.format === 'umd';
   const isCJS = config.format === 'cjs';
 
@@ -138,7 +149,9 @@ function makeBundle(config) {
 
   if (config.minify) {
     inputConfig.plugins.push(uglify());
-    inputConfig.plugins.push(filesize());
+    inputConfig.plugins.push(filesize({
+      render: (opt, size, gzip) => `Estimating ${outputConfig.dest}: ${size}, GZIP : ${gzip}`
+    }));
   }
 
   if (isCJS) {
@@ -146,14 +159,6 @@ function makeBundle(config) {
       sourceMap: !config.minify
     }));
   }
-
-  const outputConfig = {
-    dest: `${config.dest}/${config.moduleName}${config.ext}`,
-    format: config.format,
-    sourceMap: !config.minify,
-    moduleName: config.moduleName,
-    exports: 'named'
-  };
 
   return rollup(inputConfig)
     .then(bundle => bundle.write(outputConfig))

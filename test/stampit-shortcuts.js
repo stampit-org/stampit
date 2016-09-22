@@ -1,6 +1,6 @@
-import stampit from '../src/stampit';
 import test from 'tape';
 import _ from 'lodash';
+import stampit from '../src/stampit';
 
 // stampit.methods, stampit.refs, stampit.init, stampit.props, etc.
 

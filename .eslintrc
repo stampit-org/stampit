@@ -1,12 +1,13 @@
 // Add our overrides as necessary
 {
-  "extends": "airbnb/base",
+  "extends": "airbnb-base",
   "rules": {
     "object-curly-spacing": [2, "never"],
     "no-param-reassign": 0,
     "comma-dangle": 0,
     "no-confusing-arrow": 0,
     "prefer-rest-params": 0,
-    "no-use-before-define": 1
+    "no-use-before-define": 1,
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
   }
 }
