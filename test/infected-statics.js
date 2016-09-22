@@ -1,6 +1,6 @@
-import stampit from '../src/stampit';
 import test from 'tape';
 import _ from 'lodash';
+import stampit from '../src/stampit';
 
 // stampit().methods, stampit.refs, stampit.init, stampit.props, etc
 
@@ -74,7 +74,7 @@ test('stampit().staticPropertyDescriptors static method', (t) => {
   t.end();
 });
 
-test('stampit() can be infected', t => {
+test('stampit() can be infected', (t) => {
   let counter = 0;
   const infectedStampit = function (...args) {
     counter++;

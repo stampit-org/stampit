@@ -1,13 +1,13 @@
-import compose from './compose';
-import isComposable from './isComposable';
-import isStamp from './isStamp';
-export {compose};
-export {isComposable};
-export {isStamp};
-
 import standardiseDescriptor from './standardise-descriptor';
 import extractFunctions from './extract-functions';
 import merge from './merge';
+import compose from './compose';
+import isComposable from './isComposable';
+import isStamp from './isStamp';
+
+export {compose};
+export {isComposable};
+export {isStamp};
 
 const assign = Object.assign;
 

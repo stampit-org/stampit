@@ -2,6 +2,7 @@ import isFunction from './isFunction';
 import isObject from './isObject';
 import isComposable from './isComposable';
 import merge from './merge';
+
 const assign = Object.assign;
 
 /**
