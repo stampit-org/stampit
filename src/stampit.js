@@ -100,7 +100,7 @@ const allUtilities = {
 };
 
 /**
- * Infected stamp
+ * Infected stamp. Used as a storage of the infection metadata
  * @type {Function}
  * @return {Stamp}
  */
@@ -124,6 +124,7 @@ function stampit(...args) {
   args = args.filter(isComposable)
     .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
 
+  // Calling the standard pure compose function here.
   return compose.apply(this || baseStampit, args);
 }
 

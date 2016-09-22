@@ -76,7 +76,7 @@
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
     "prepublish": "npm run check",
     "pretest": "npm run build",
-    "test": "babel-node test | tap-dot",
+    "test": "(babel-node test | tap-dot) && npm run lint",
     "clean": "rimraf dist/* && mkdir dist || true",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
