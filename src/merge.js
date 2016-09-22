@@ -23,7 +23,7 @@ function mergeOne(dst, src) {
   const returnValue = isObject(dst) ? dst : {};
 
   const keys = Object.keys(src);
-  for (let i = 0; i < keys.length; i++) {
+  for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];
 
     const srcValue = src[key];
