@@ -82,7 +82,7 @@ test('Stampit options object', function () {
     'should support privileged methods');
 });
 ```
-Changes to the subsequent examples in Chapter 3 follow. The next example, which demostrates method chaining, becomes
+Changes to the subsequent examples in Chapter 3 follow. The next example, which demonstrates method chaining, becomes
 
 ```js
 var testObj = stampit().methods({

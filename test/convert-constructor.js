@@ -1,10 +1,10 @@
-import stampit from '../src/stampit';
 import test from 'tape';
+import stampit from '../src/stampit';
 
 // Oldskool
 
-test('stampit.convertConstructor()', (t) => {
-  const Base = function() { this.base = 'base'; };
+test.skip('stampit.convertConstructor()', (t) => {
+  const Base = function () { this.base = 'base'; };
   Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
   const Constructor = function Constructor() { this.thing = 'initialized'; };
@@ -37,12 +37,12 @@ test('stampit.convertConstructor()', (t) => {
   t.end();
 });
 
-test('stampit.convertConstructor() composed', (t) => {
+test.skip('stampit.convertConstructor() composed', (t) => {
   // The old constructor / class thing...
-  const BaseOfBase = function() { this.baseOfBase = 'baseOfBase'; };
+  const BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
   BaseOfBase.prototype.baseOfBaseFunc = () => { return 'baseOfBaseFunc'; };
 
-  const Base = function() { this.base = 'base'; };
+  const Base = function () { this.base = 'base'; };
   Base.prototype = new BaseOfBase();
   Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
@@ -61,7 +61,7 @@ test('stampit.convertConstructor() composed', (t) => {
   const newskool = stampit().methods({
     bar() { return 'bar'; }
     // your methods here...
-  }).init(function() {
+  }).init(function () {
     this.baz = 'baz';
   });
 
