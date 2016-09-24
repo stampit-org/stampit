@@ -1,8 +1,9 @@
-.editorconfig
-.publishrc
-.idea/
-/*.tgz
+/.babelrc
+/.editorconfig
+/.eslintrc
+/.npmignore
 /.travis.yml
-/.jshintrc
-/buildconfig.env.example
 /test/
+/coverage/
+/build/
+/src/
