@@ -66,7 +66,6 @@
     "rollup-plugin-babel": "^2.4.0",
     "rollup-plugin-filesize": "^1.0.0",
     "rollup-plugin-uglify": "^1.0.0",
-    "tap-dot": "^1.0.5",
     "tape": "^4.2.2",
     "watch": "^0.19.2"
   },
@@ -76,7 +75,7 @@
     "cov:generate": "babel-node ./node_modules/.bin/isparta cover --report text --report html test/index.js",
     "prepublish": "npm run check",
     "pretest": "npm run build",
-    "test": "(babel-node test | tap-dot) && npm run lint",
+    "test": "babel-node test && npm run lint",
     "clean": "rimraf dist/* && mkdir dist || true",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
@@ -85,7 +84,7 @@
     "deps:missing": "dependency-check package.json",
     "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
     "audit": "nsp check",
-    "precheck": "npm run lint && npm test",
+    "precheck": "npm test",
     "check": "npm run audit && npm run deps && npm outdated --depth 0",
     "watch": "watch 'clear && npm -s test' test/ src/"
   },
