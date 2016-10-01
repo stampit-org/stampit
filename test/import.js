@@ -47,3 +47,21 @@ test('can import the stampit/isComposable', t => {
 
   t.end();
 });
+
+test('infection works using the require("src/stampit")', t => {
+  const obj = require('../src/stampit')
+    .init(function () {
+      const secret = 'foo';
+      this.getSecret = () => { return secret; };
+    })
+    .methods({
+      foo() { return 'foo'; }
+    })
+    .create();
+
+  t.equal(obj.getSecret(), 'foo', 'Should create infected stamps with shortcuts');
+  t.ok(obj.foo() === 'foo',
+    'Should create infected stamps from infected stamps with shortcuts');
+
+  t.end();
+});
