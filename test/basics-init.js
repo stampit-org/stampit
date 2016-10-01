@@ -50,19 +50,3 @@ test('stampit({ init }).init()', (t) => {
 
   t.end();
 });
-
-test('init()', (t) => {
-  const obj = require('../src/stampit').init(function () { // eslint-disable-line
-    const secret = 'foo';
-    this.getSecret = () => { return secret; };
-  }).init(function () {
-    this.a = 'a';
-  }).create();
-
-  t.equal(obj.getSecret(), 'foo',
-    'Should set closure.');
-  t.ok(obj.a,
-    'Should allow chaining.');
-
-  t.end();
-});

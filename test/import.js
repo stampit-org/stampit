@@ -47,3 +47,19 @@ test('can import the stampit/isComposable', t => {
 
   t.end();
 });
+
+test('infection works using the require("src/")', t => {
+  const obj = require('../src/stampit')
+    .init(function () {
+      const secret = 'foo';
+      this.getSecret = () => { return secret; };
+    })
+    .init(function () {
+      this.a = 'a';
+    }).create();
+
+  t.equal(obj.getSecret(), 'foo', 'Should set closure.');
+  t.ok(obj.a, 'Should allow chaining.');
+
+  t.end();
+});

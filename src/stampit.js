@@ -5,10 +5,6 @@ import compose from './compose';
 import isComposable from './isComposable';
 import isStamp from './isStamp';
 
-export {compose};
-export {isComposable};
-export {isStamp};
-
 const assign = Object.assign;
 
 function createUtilityFunction(propName, action) {
@@ -110,6 +106,9 @@ function stampit(...args) {
   return compose.apply(this || baseStampit, args);
 }
 
+const exportedCompose = stampit.bind(); // bind to 'undefined'
+export {exportedCompose as compose};
+stampit.compose = exportedCompose;
+
 // Setting up the shortcut functions
-stampit.compose = baseStampit.compose;
 export default assign(stampit, allUtilities);
