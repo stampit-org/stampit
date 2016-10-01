@@ -80,3 +80,16 @@ test('stampit().methods(a, b)', (t) => {
 
   t.end();
 });
+
+test('stampit().methods(a, b)', (t) => {
+  const obj = require('../src/stampit').methods({ // eslint-disable-line
+    a() { return 'a'; }
+  }).methods({
+    b() { return 'b'; }
+  }).create();
+
+  t.ok(obj.a() === 'a' && obj.b() === 'b',
+    'Should mixIn objects when multiple methods are passed.');
+
+  t.end();
+});
