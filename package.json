@@ -65,7 +65,7 @@
     "rollup-plugin-filesize": "^1.0.0",
     "rollup-plugin-uglify": "^1.0.0",
     "tape": "^4.2.2",
-    "watch": "^0.19.2"
+    "watch": "^1.0.1"
   },
   "scripts": {
     "cov": "npm run cov:clean && npm run cov:generate",
