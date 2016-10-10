@@ -41,7 +41,7 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 * **v1**. `npm i stampit@1`
 * **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
-* **v3**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/3.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification)
+* **v3**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification)
 
 
 ## Install
