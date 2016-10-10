@@ -1,11 +1,17 @@
 import isFunction from './isFunction';
 
-export default function (...args) {
-  let result = [];
-  for (let i = 0; i < args.length; i += 1) {
-    const arg = args[i];
-    if (isFunction(arg)) result.push(arg);
-    else if (Array.isArray(arg)) result = result.concat(arg.filter(isFunction));
+export default function extractFunctions() {
+  const fns = [];
+
+  for (let i = 0; i < arguments.length; i += 1) {
+    const arg = arguments[i];
+
+    if (isFunction(arg)) {
+      fns.push(arg);
+    } else if (Array.isArray(arg)) {
+      fns.push(...(extractFunctions(...arg) || []));
+    }
   }
-  return result.length === 0 ? undefined : result;
+
+  return fns.length === 0 ? undefined : fns;
 }
