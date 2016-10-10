@@ -49,7 +49,7 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 [![NPM](https://nodei.co/npm/stampit.png)](https://www.npmjs.com/package/stampit)
 
 Browsers: [![CDNJS](https://img.shields.io/badge/cdnjs.com--green.svg)](https://cdnjs.com/libraries/stampit)
-[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit)
+[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/)
 
 ## API
 
