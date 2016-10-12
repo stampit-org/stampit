@@ -1,9 +1,10 @@
 import test from 'tape';
 import stampit from '../src/stampit';
+import convertConstructor from '../src/convertConstructor';
 
 // Oldskool
 
-test.skip('stampit.convertConstructor()', (t) => {
+test('stampit/convertConstructor() with handmade class', (t) => {
   const Base = function () { this.base = 'base'; };
   Base.prototype.baseFunc = () => { return 'baseFunc'; };
 
@@ -13,7 +14,7 @@ test.skip('stampit.convertConstructor()', (t) => {
   Constructor.prototype = new Base();
   Constructor.prototype.foo = () => { return 'foo'; };
 
-  const oldskool = stampit.convertConstructor(Constructor);
+  const oldskool = convertConstructor(Constructor);
   const obj = oldskool();
 
   t.equal(obj.thing, 'initialized',
@@ -37,7 +38,7 @@ test.skip('stampit.convertConstructor()', (t) => {
   t.end();
 });
 
-test.skip('stampit.convertConstructor() composed', (t) => {
+test('compose stampit/convertConstructor() with handmade class', (t) => {
   // The old constructor / class thing...
   const BaseOfBase = function () { this.baseOfBase = 'baseOfBase'; };
   BaseOfBase.prototype.baseOfBaseFunc = () => { return 'baseOfBaseFunc'; };
@@ -55,7 +56,170 @@ test.skip('stampit.convertConstructor() composed', (t) => {
   Constructor.staticProp = 'static';
 
   // The conversion
-  const oldskool = stampit.convertConstructor(Constructor);
+  const oldskool = convertConstructor(Constructor);
+
+  // A new stamp to compose with...
+  const newskool = stampit().methods({
+    bar() { return 'bar'; }
+    // your methods here...
+  }).init(function () {
+    this.baz = 'baz';
+  });
+
+  // Now you can compose those old constructors just like you could
+  // with any other factory...
+  const myThing = stampit.compose(oldskool, newskool);
+  const myThing2 = stampit.compose(newskool, oldskool);
+
+  const thing = myThing();
+  const u = myThing2();
+
+  t.equal(thing.thing, 'initialized',
+    'Constructor should execute.');
+
+  t.equal(thing.foo && thing.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  t.equal(thing.base, 'base',
+    'Prototype property should be mixed in.');
+
+  t.equal(thing.baseFunc && thing.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
+
+  t.equal(thing.baseOfBase, 'baseOfBase',
+    'Prototype property chain should be mixed in.');
+
+  t.equal(thing.baseOfBaseFunc && thing.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype function chain should be mixed in.');
+
+  t.equal(thing.bar && thing.bar(), 'bar',
+    'Should be able to add new methods with .compose()');
+
+  t.equal(thing.baz, 'baz',
+    'Should be able to add new methods with .compose()');
+
+  t.equal(u.thing, 'initialized',
+    'Constructor should execute.');
+
+  t.equal(u.foo && u.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  t.equal(u.base, 'base',
+    'Prototype property should be mixed in.');
+
+  t.equal(u.baseFunc && u.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
+
+  t.equal(u.baseOfBase, 'baseOfBase',
+    'Prototype property chain should be mixed in.');
+
+  t.equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype function chain should be mixed in.');
+
+  t.equal(u.bar && u.bar(), 'bar',
+    'Should be able to add new methods with .compose()');
+
+  t.equal(u.baz, 'baz',
+    'Should be able to add new methods with .compose()');
+
+  t.equal(u.baseOfBaseFunc && u.baseOfBaseFunc(), 'baseOfBaseFunc',
+    'Prototype chain function should be mixed in.');
+
+  t.equal(myThing.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
+
+  t.equal(myThing.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
+
+  t.equal(myThing2.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
+
+  t.equal(myThing2.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
+
+  t.end();
+});
+
+test.only('stampit/convertConstructor() with ES6 class', (t) => {
+  class Base {
+    constructor() {
+      this.base = 'base';
+    }
+    baseFunc() {
+      return 'baseFunc';
+    }
+  }
+
+  class Constructor extends Base {
+    constructor() {
+      super();
+      this.thing = 'initialized';
+    }
+    foo() {
+      return 'foo';
+    }
+    static staticFunc() {}
+    static get staticProp() { return 'static'; }
+  }
+
+  const oldskool = convertConstructor(Constructor);
+  const obj = oldskool();
+
+  t.equal(obj.thing, 'initialized',
+    'Constructor should execute.');
+
+  t.equal(oldskool.staticFunc, Constructor.staticFunc,
+    'Non prototype functions should be mixed to stamp.');
+
+  t.equal(oldskool.staticProp, 'static',
+    'Non prototype properties should be mixed to stamp.');
+
+  t.equal(obj.foo && obj.foo(), 'foo',
+    'Constructor prototype should be mixed in.');
+
+  t.equal(obj.base, 'base',
+    'Prototype property should be mixed in.');
+
+  t.equal(obj.baseFunc && obj.baseFunc(), 'baseFunc',
+    'Prototype function should be mixed in.');
+
+  t.end();
+});
+
+test('compose stampit/convertConstructor() with ES6 class', (t) => {
+  class BaseOfBase {
+    constructor() {
+      this.baseOfBase = 'baseOfBase';
+    }
+    baseOfBaseFunc() {
+      return 'baseOfBaseFunc';
+    }
+  }
+
+  class Base extends BaseOfBase {
+    constructor() {
+      super();
+      this.base = 'base';
+    }
+    baseFunc() {
+      return 'baseFunc';
+    }
+  }
+
+  class Constructor extends Base {
+    constructor() {
+      super();
+      this.thing = 'initialized';
+    }
+    foo() {
+      return 'foo';
+    }
+    static staticFunc() {}
+    static get staticProp() { return 'static'; }
+  }
+
+  // The conversion
+  const oldskool = convertConstructor(Constructor);
 
   // A new stamp to compose with...
   const newskool = stampit().methods({
