@@ -48,7 +48,7 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 [![NPM](https://nodei.co/npm/stampit.png)](https://www.npmjs.com/package/stampit)
 
-Browsers: [![CDNJS](https://img.shields.io/badge/cdnjs.com--green.svg)](https://cdnjs.com/libraries/stampit)
+Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
 [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
 
 **WARNING!** If running in node.js <= v0.12 or IE <= 11 then you'd need to polyfill the `Object.assign`. Like [this](https://github.com/sindresorhus/object-assign), or [that](https://github.com/Financial-Times/polyfill-service/blob/master/polyfills/Object/assign/polyfill.js) ([autodetected](https://cdn.polyfill.io/v2/polyfill.min.js?features=Object.assign)).
