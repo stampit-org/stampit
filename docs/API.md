@@ -369,7 +369,7 @@ const stamp = stampit()
     return this.conf({addFactorSetter: !!allow})
   }
 })
-.init((opts, {stamp}) => {
+.init((opts, {instance, stamp}) => {
   let factor = opts.factor || 1;
   instance.getFactor = () => factor;
   
