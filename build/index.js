@@ -13,7 +13,9 @@ import MagicString from 'magic-string';
 // That plugin made the code too large and also is hard to configure.
 // The main idea is to make sure babel does not transpile ES6 modules to CJS
 // because Rollup handles import/export itself.
-const es2015Plugins = pkg.babel.plugins;
+const es2015Presets = [
+  ['es2015', {loose: true, modules: false}]
+];
 
 const moduleName = 'stampit';
 
@@ -25,7 +27,7 @@ function execute() {
       {
         format: 'cjs',
         ext: '.full.js',
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: 'dist',
         moduleName: 'stampit'
       }
@@ -36,7 +38,7 @@ function execute() {
       {
         format: 'umd',
         ext: '.umd.js',
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: 'dist',
         moduleName: 'stampit'
       }
@@ -48,7 +50,7 @@ function execute() {
         format: 'umd',
         ext: '.umd.min.js',
         minify: true,
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: 'dist',
         moduleName: 'stampit'
       }
@@ -70,7 +72,7 @@ function execute() {
       {
         format: 'cjs',
         ext: '.js',
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: '.',
         moduleName: 'compose'
       }
@@ -80,7 +82,7 @@ function execute() {
       {
         format: 'cjs',
         ext: '.js',
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: '.',
         moduleName: 'isStamp'
       }
@@ -90,7 +92,7 @@ function execute() {
       {
         format: 'cjs',
         ext: '.js',
-        babelPlugins: es2015Plugins,
+        babelPresets: es2015Presets,
         dest: '.',
         moduleName: 'isComposable'
       }
@@ -137,6 +139,7 @@ function makeBundle(config) {
         babelrc: false,
         exclude: 'node_modules/**',
         plugins: config.babelPlugins || [],
+        presets: config.babelPresets || [],
         runtimeHelpers: isUMD,
         externalHelpers: isUMD
       })
