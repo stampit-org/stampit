@@ -32,7 +32,7 @@ function createFactory(descriptor) {
 
 /**
  * Returns a new stamp given a descriptor and a compose function implementation.
- * @param {object} [descriptor={}] The information about the object the stamp will be creating.
+ * @param {Descriptor} [descriptor={}] The information about the object the stamp will be creating.
  * @param {Compose} composeFunction The "compose" function implementation.
  * @returns {Stamp}
  */
@@ -55,7 +55,7 @@ function createStamp(descriptor, composeFunction) {
 /**
  * Mutates the dstDescriptor by merging the srcComposable data into it.
  * @param {Descriptor} dstDescriptor The descriptor object to merge into.
- * @param {Stamp|Descriptor} [srcComposable] The composable
+ * @param {Composable} [srcComposable] The composable
  * (either descriptor or stamp) to merge data form.
  * @returns {Descriptor} Returns the dstDescriptor argument.
  */
@@ -94,7 +94,7 @@ function mergeComposable(dstDescriptor, srcComposable) {
  * Given the list of composables (stamp descriptors and stamps) returns
  * a new stamp (composable factory function).
  * @typedef {Function} Compose
- * @param {...(Stamp|Descriptor)} [composables] The list of composables.
+ * @param {...(Composable)} [composables] The list of composables.
  * @returns {Stamp} A new stamp (aka composable factory function)
  */
 export default function compose(...composables) {
@@ -128,3 +128,9 @@ export default function compose(...composables) {
  * @returns {*} Instantiated object
  * @property {Descriptor} compose - The Stamp descriptor and composition function
  */
+
+/**
+ * A composable object - stamp or descriptor
+ * @typedef {Stamp|Descriptor} Composable
+ */
+

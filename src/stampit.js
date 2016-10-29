@@ -96,6 +96,7 @@ const baseStampit = compose(
 
 /**
  * Infected compose
+ * @param {...(Composable)} [args] The list of composables.
  * @return {Stamp}
  */
 function stampit(...args) {
