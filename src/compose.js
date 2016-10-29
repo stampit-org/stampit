@@ -7,12 +7,13 @@ const assign = Object.assign;
 
 /**
  * Creates new factory instance.
- * @param {object} descriptor The information about the object the factory will be creating.
+ * @param {Descriptor} descriptor The information about the object the factory will be creating.
  * @returns {Function} The new factory function.
  */
 function createFactory(descriptor) {
   return function Stamp(options, ...args) {
-    const obj = Object.create(descriptor.methods || {});
+    // Next line was optimized for most JS VMs. Please, be careful here!
+    const obj = Object.create(descriptor.methods || null);
 
     merge(obj, descriptor.deepProperties);
     assign(obj, descriptor.properties);
@@ -32,8 +33,8 @@ function createFactory(descriptor) {
 /**
  * Returns a new stamp given a descriptor and a compose function implementation.
  * @param {object} [descriptor={}] The information about the object the stamp will be creating.
- * @param {Function} composeFunction The "compose" function implementation.
- * @returns {Function}
+ * @param {Compose} composeFunction The "compose" function implementation.
+ * @returns {Stamp}
  */
 function createStamp(descriptor, composeFunction) {
   const Stamp = createFactory(descriptor);
@@ -53,9 +54,10 @@ function createStamp(descriptor, composeFunction) {
 
 /**
  * Mutates the dstDescriptor by merging the srcComposable data into it.
- * @param {object} dstDescriptor The descriptor object to merge into.
- * @param {object} [srcComposable] The composable (either descriptor or stamp) to merge data form.
- * @returns {object} Returns the dstDescriptor argument.
+ * @param {Descriptor} dstDescriptor The descriptor object to merge into.
+ * @param {Stamp|Descriptor} [srcComposable] The composable
+ * (either descriptor or stamp) to merge data form.
+ * @returns {Descriptor} Returns the dstDescriptor argument.
  */
 function mergeComposable(dstDescriptor, srcComposable) {
   const srcDescriptor = (srcComposable && srcComposable.compose) || srcComposable;
@@ -91,7 +93,8 @@ function mergeComposable(dstDescriptor, srcComposable) {
 /**
  * Given the list of composables (stamp descriptors and stamps) returns
  * a new stamp (composable factory function).
- * @param {...(object|Function)} [composables] The list of composables.
+ * @typedef {Function} Compose
+ * @param {...(Stamp|Descriptor)} [composables] The list of composables.
  * @returns {Stamp} A new stamp (aka composable factory function)
  */
 export default function compose(...composables) {

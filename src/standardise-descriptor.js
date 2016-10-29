@@ -4,6 +4,28 @@ import merge from './merge';
 
 const assign = Object.assign;
 
+/**
+ * Converts stampit extended descriptor to a standard one.
+ * @param [methods]
+ * @param [properties]
+ * @param [props]
+ * @param [refs]
+ * @param [initializers]
+ * @param [init]
+ * @param [deepProperties]
+ * @param [deepProps]
+ * @param [propertyDescriptors]
+ * @param [staticProperties]
+ * @param [statics]
+ * @param [staticDeepProperties]
+ * @param [deepStatics]
+ * @param [staticPropertyDescriptors]
+ * @param [configuration]
+ * @param [conf]
+ * @param [deepConfiguration]
+ * @param [deepConf]
+ * @returns {Descriptor}
+ */
 export default function ({
   methods,
 
