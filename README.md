@@ -46,7 +46,7 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 ## Install
 
-[![NPM](https://nodei.co/npm/stampit.png)](https://www.npmjs.com/package/stampit)
+[![NPM](https://nodei.co/npm/stampit.png?downloadRank=true)](https://www.npmjs.com/package/stampit)
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
 [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
