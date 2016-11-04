@@ -24,14 +24,14 @@ const MyStamp = stampit()       // create new empty stamp
 })
 .compose(AnotherStamp);         // add other stamp behaviours to your objects
 
-console.log(typeof MyStamp);                   // 'function'
-console.log(MyStamp());                        // { myProp: 'default value' }
+console.log(typeof MyStamp);                            // 'function'
+console.log(MyStamp());                                 // { myProp: 'default value' }
 
-console.log(typeof MyStamp().getMyProp);       // 'function'
-console.log(MyStamp().getMyProp());            // default value
+console.log(typeof MyStamp().getMyProp);                // 'function'
+console.log(MyStamp().getMyProp());                     // default value
 
-console.log(MyStamp('new value'));             // { myProp: 'new value' }
-console.log(MyStamp('new value').getMyProp()); // new value
+console.log(MyStamp({value: 'new value'}));             // { myProp: 'new value' }
+console.log(MyStamp({value: 'new value'}).getMyProp()); // new value
 ```
 
 Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
