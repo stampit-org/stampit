@@ -32,7 +32,7 @@
     "check-compose": "^3.2.0",
     "dependency-check": "^2.5.0",
     "eslint": "^3.7.0",
-    "eslint-config-airbnb-base": "^9.0.0",
+    "eslint-config-airbnb-base": "^10.0.0",
     "eslint-plugin-import": "^2.0.1",
     "isparta": "^4.0.0",
     "lodash": "^4.16.1",
