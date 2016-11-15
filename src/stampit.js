@@ -1,17 +1,15 @@
 import standardiseDescriptor from './standardise-descriptor';
-import extractFunctions from './extract-functions';
+import {isArray, isFunction, assign, extractFunctions} from './utils';
 import merge from './merge';
 import compose from './compose';
 import isComposable from './isComposable';
 import isStamp from './isStamp';
 
-const assign = Object.assign;
-
 function createUtilityFunction(propName, action) {
   return function composeUtil() {
-    const descriptor = {};
-    descriptor[propName] = action({}, ...arguments);
-    return ((this && this.compose) || stampit).call(this, descriptor);
+    return ((this && this.compose) || stampit).call(this, {
+      [`${propName}`]: action({}, ...arguments)
+    });
   };
 }
 
@@ -27,6 +25,12 @@ export function initializers(...args) {
   });
 }
 export {initializers as init};
+
+export function composers(...args) {
+  return ((this && this.compose) || stampit).call(this, {
+    composers: extractFunctions(...args)
+  });
+}
 
 export const deepProperties = createUtilityFunction('deepProperties', merge);
 export {deepProperties as deepProps};
@@ -56,6 +60,8 @@ const allUtilities = {
 
   initializers,
   init: initializers,
+
+  composers,
 
   deepProperties,
   deepProps: deepProperties,
@@ -100,11 +106,24 @@ const baseStampit = compose(
  * @return {Stamp}
  */
 function stampit(...args) {
-  args = args.filter(isComposable)
+  const composables = args.filter(isComposable)
     .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
 
   // Calling the standard pure compose function here.
-  return compose.apply(this || baseStampit, args);
+  let stamp = compose.apply(this || baseStampit, composables);
+
+  const composerFunctions = stamp.compose.deepConfiguration &&
+    stamp.compose.deepConfiguration.composers;
+  if (isArray(composerFunctions)) {
+    for (let i = 0; i < composerFunctions.length; i += 1) {
+      if (isFunction(composerFunctions[i])) {
+        const returnedValue = composerFunctions[i]({stamp, composables});
+        stamp = returnedValue === undefined ? stamp : returnedValue;
+      }
+    }
+  }
+
+  return stamp;
 }
 
 const exportedCompose = stampit.bind(); // bind to 'undefined'

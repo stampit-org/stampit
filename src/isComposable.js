@@ -1,3 +1,3 @@
-import isObject from './isObject';
+import {isObject} from './utils';
 
 export default isObject;

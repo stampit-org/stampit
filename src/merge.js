@@ -1,5 +1,4 @@
-import isObject from './isObject';
-import isPlainObject from './isPlainObject';
+import {isArray, isObject, isPlainObject} from './utils';
 
 /**
  * The 'src' argument plays the command role.
@@ -13,7 +12,7 @@ function mergeOne(dst, src) {
 
   // According to specification arrays must be concatenated.
   // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
-  if (Array.isArray(src)) return (Array.isArray(dst) ? dst : []).concat(src);
+  if (isArray(src)) return (isArray(dst) ? dst : []).concat(src);
 
   // Now deal with non plain 'src' object. 'src' overrides 'dst'
   // Note that functions are also assigned! We do not deep merge functions.
@@ -31,7 +30,7 @@ function mergeOne(dst, src) {
     if (srcValue !== undefined) {
       const dstValue = returnValue[key];
       // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
-      const newDst = isPlainObject(dstValue) || Array.isArray(srcValue) ? dstValue : {};
+      const newDst = isPlainObject(dstValue) || isArray(srcValue) ? dstValue : {};
 
       // deep merge each property. Recursion!
       returnValue[key] = mergeOne(newDst, srcValue);
