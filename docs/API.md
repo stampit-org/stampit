@@ -131,7 +131,7 @@ Returns a new factory function (called a stamp) that will produce new objects.
  * `@return {Function} stamp.initializers` Add an initializer which called on object instantiation. Returns a new stamp
  * `@return {Function} stamp.deepProps` Add deeply cloned properties to the produced objects. Returns a new stamp
  * `@return {Function} stamp.deepProperties` Same as `stamp.deepProps`
- * `@return {Function} stamp.static` Add properties to the factory object. Returns a new stamp
+ * `@return {Function} stamp.statics` Add properties to the factory object. Returns a new stamp
  * `@return {Function} stamp.staticProperties` Same as `stamp.statics`
  * `@return {Function} stamp.deepStatics` Add deeply cloned properties to the factory object. Returns a new stamp
  * `@return {Function} stamp.staticDeepProperties` Same as `stamp.deepStatics`
