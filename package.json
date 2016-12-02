@@ -36,7 +36,7 @@
     "eslint-plugin-import": "^2.0.1",
     "isparta": "^4.0.0",
     "lodash": "^4.16.1",
-    "magic-string": "^0.18.0",
+    "magic-string": "^0.19.0",
     "mkdirp": "^0.5.1",
     "nsp": "^2.1.0",
     "require-all": "^2.0.0",
