@@ -105,6 +105,7 @@ The arguments can be either another stamps, or the following structure:
  * `@param  {Object} [options.properties]` Same as `options.props`
  * `@param  {Object} [options.init]` A closure (function) used to create private data and privileged methods
  * `@param  {Object} [options.initializers]` Same as `options.init`
+ * `@param  {Object} [options.composers]` (EXPERIMENTAL) Similar to initializers, but executed at the composition time
  * `@param  {Object} [options.deepProps]` An object to be deeply cloned into each newly stamped object
  * `@param  {Object} [options.deepProperties]` Same as `options.deepProps`
  * `@param  {Object} [options.statics]` A map of property names and values to be mixed onto stamp itself
@@ -129,6 +130,7 @@ Returns a new factory function (called a stamp) that will produce new objects.
  * `@return {Function} stamp.properties` Same as `stamp.props`
  * `@return {Function} stamp.init` Add an initializer which called on object instantiation. Returns a new stamp
  * `@return {Function} stamp.initializers` Add an initializer which called on object instantiation. Returns a new stamp
+ * `@return {Function} stamp.composers` (EXPERIMENTAL) Add a composer function which is called on stamp composition. Returns a new stamp
  * `@return {Function} stamp.deepProps` Add deeply cloned properties to the produced objects. Returns a new stamp
  * `@return {Function} stamp.deepProperties` Same as `stamp.deepProps`
  * `@return {Function} stamp.static` Add properties to the factory object. Returns a new stamp
@@ -272,6 +274,79 @@ const Cloneable = stampit().init((opts, {instance, stamp, args}) => {
 
 const MyStamp = stampit().props({x: 42}).compose(Cloneable); // composing with the "Cloneable" behavior
 MyStamp().clone().clone().clone().x === 42; // true
+```
+
+
+### stamp.composers(...args)
+**(EXPERIMENTAL)**
+
+Take n functions or array(s) of functions and add the functions to the `deepConfiguration.composers` list of a new stamp. Creates new stamp. 
+* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+
+Functions passed into `.composers()` are executed on the spot and every other time the new stamp or its derivatives are being composed. They are sort of a after-composition callbacks.
+
+If a composer function returns a stamp then it becomes the resulting stamp.
+
+Each function receives an options object with two properties:
+```
+{
+  composables, // The list of composables being merged
+  stamp        // The resulting stamp
+}
+```
+
+#### Examples
+
+Collect every composable the stamp was created from.
+```js
+const ComponentsMonitoring = stampit().composers(({stamp, composables}) => {
+  const conf = stamp.compose.configuration || {};
+  conf._wasComposedOf = _.uniq(composables.concat(conf._wasComposedOf));
+  stamp.compose.configuration = conf;
+});
+
+const stamp = stampit().compose(ComponentsMonitoring)
+  .init(() => {})
+  .methods({foo() {}})
+  .props({a: 1});
+
+console.log(stamp.compose._wasComposedOf);
+```
+
+**NOTE:** The example below can be implemented using plain old higher order functions.
+
+Same time, make your stamps to produce functions instead of plain objects:
+```js
+const ProduceFunction = stampit({
+  statics: {
+    produceCloneOf(func) {
+      function FirstInitializer() {
+        function theClone() { return func.apply(this, arguments); };
+        Object.assign(theClone, Object.getPrototypeOf(this), this);
+        return theClone;
+      }
+      return this.conf({FirstInitializer});
+    }  
+  },
+  composers({stamp}) {
+    const conf = stamp.compose.configuration || {};
+    if (conf.FirstInitializer) {
+      let inits = stamp.compose.initializers || [];
+      // Make my initializer the first.
+      inits = _.uniq([conf.FirstInitializer].concat(inits));
+      stamp.compose.initializers = inits;
+    }
+  }
+});
+
+const stamp = stampit().compose(ProduceFunction, ComponentsMonitoring)
+  .produceCloneOf(function () {
+    console.log('A clone of this function was returned as a stamp result');
+  });
+
+console.log(stamp.compose._wasComposedOf);
+const producedFunction = stamp();
+producedFunction(); // prints "A clone of this function was returned as a stamp result"
 ```
 
 
@@ -445,6 +520,7 @@ All return a new stamp exactly as the `stamp.*` methods above.
 * stampit.properties()
 * stampit.init()
 * stampit.initializers()
+* stampit.composers()
 * stampit.deepProps()
 * stampit.deepProperties()
 * stampit.statics()
@@ -653,7 +729,7 @@ const AssignFirstArgument = stampit({ init(opts) {
   Object.assign(this, opts);
 }});
 Stamp = AssignFirstArgument.compose(Stamp);
-Stamp({foo: 'bar'}); // {foo: "bar"}ß
+Stamp({foo: 'bar'}); // {foo: "bar"}
 ```
 
 * A stamp's metadata is now stored in the `stamp.compose` object. Previously it was stored in `stamp.fixed` object.
@@ -674,7 +750,7 @@ Use `.deepProps()` instead.
   * `const {statics} = require('stampit')`
 * New utility function `isComposable`. Can be imported separately: `require('stampit/isComposable')`.
 * New utility function `compose`. It is the pure [standard](https://github.com/stampit-org/stamp-specification) `compose` function implementation. Can be imported separately: `require('stampit/compose')`.
-* New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *})`). They are: `initializers`, `init`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
+* New methods on stamps (`stamp.METHOD`), as well as new shortcut methods on stampit (`stampit.METHOD`), as well as new options to stampit (`stampit({OPTION: *})`). They are: `initializers`, `init`, `composers`, `props`, `properties`, `deepProps`, `deepProperties`, `statics`, `staticProperties`, `deepStatics`, `staticDeepProperties`, `conf`, `configuration`, `deepConf`, `deepConfiguration`, `propertyDescriptors`, `staticPropertyDescriptors` 
 
 **Other notable changes**
 * The `refs` are **deprecated** now.

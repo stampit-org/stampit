@@ -118,7 +118,7 @@ function stampit(...args) {
     for (let i = 0; i < composerFunctions.length; i += 1) {
       if (isFunction(composerFunctions[i])) {
         const returnedValue = composerFunctions[i]({stamp, composables});
-        stamp = returnedValue === undefined ? stamp : returnedValue;
+        stamp = isStamp(returnedValue) ? returnedValue : stamp;
       }
     }
   }

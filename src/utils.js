@@ -25,15 +25,15 @@ export function extractFunctions() {
 }
 
 export function concatAssignFunctions(dstObject, srcArray, propName) {
-  if (isArray(srcArray)) {
-    const length = srcArray.length;
-    dstObject[propName] = dstObject[propName] || [];
-    const dstArray = dstObject[propName];
-    for (let i = 0; i < length; i += 1) {
-      const fn = srcArray[i];
-      if (isFunction(fn) && dstArray.indexOf(fn) < 0) {
-        dstArray.push(fn);
-      }
+  if (!isArray(srcArray)) return;
+
+  const length = srcArray.length;
+  const dstArray = dstObject[propName] || [];
+  dstObject[propName] = dstArray;
+  for (let i = 0; i < length; i += 1) {
+    const fn = srcArray[i];
+    if (isFunction(fn) && dstArray.indexOf(fn) < 0) {
+      dstArray.push(fn);
     }
   }
 }

@@ -34,6 +34,8 @@ export default function ({
   initializers,
   init,
 
+  composers,
+
   deepProperties,
   deepProps,
 
@@ -51,9 +53,7 @@ export default function ({
   conf,
 
   deepConfiguration,
-  deepConf,
-
-  composers
+  deepConf
 } = {}) {
   const p = isObject(props) || isObject(refs) || isObject(properties) ?
     assign({}, props, refs, properties) : undefined;

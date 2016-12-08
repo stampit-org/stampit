@@ -6,12 +6,11 @@ import stampit from '../src/stampit';
 
 test('stampit({ composers() })', (t) => {
   let executed = 0;
-  let passedStamp = null;
+  let passedStamp;
   const stamp = stampit({
     composers() {
       t.equal(arguments.length, 1, 'have single argument');
       t.ok(_.isPlainObject(arguments[0]), 'argument is an object');
-      passedStamp = arguments[0].stamp;
       t.ok(_.isArray(arguments[0].composables), 'composables passed');
       t.equal(arguments[0].composables.length, 1, 'only one composable passed');
       t.ok(_.isPlainObject(arguments[0].composables[0]), 'the composable is a descriptor');
@@ -20,6 +19,7 @@ test('stampit({ composers() })', (t) => {
       t.ok(_.isArray(arguments[0].composables[0].deepConfiguration.composers),
         'first composable have the composers list');
       executed += 1;
+      passedStamp = arguments[0].stamp;
     }
   });
 
@@ -88,3 +88,46 @@ test('stampit({ composers() }).compose({ composers() })', (t) => {
   t.end();
 });
 
+test('stampit({ composers() }) returned value replaces stamp', (t) => {
+  const replacement = stampit();
+  const stamp = stampit({
+    composers() {
+      return replacement;
+    }
+  });
+
+  t.equal(stamp, replacement, 'composer returned value should replace original stamp');
+
+  t.end();
+});
+
+test('stampit({ composers() }) a non-stamp should be ignored', (t) => {
+  const replacement = stampit();
+  const stamp = stampit({
+    composers() {
+      return () => {}; // non-stamp
+    }
+  });
+
+  t.notEqual(stamp, replacement, 'composer returned value should not replace original stamp');
+
+  t.end();
+});
+
+test('stampit({ composers() }) returned value passed to the second composer', (t) => {
+  const replacement = stampit();
+  let stamp2;
+  stampit({
+    composers() {
+      return replacement;
+    }
+  }, {
+    composers() {
+      stamp2 = replacement;
+    }
+  });
+
+  t.equal(stamp2, replacement, 'second composer should get first composer return value');
+
+  t.end();
+});
