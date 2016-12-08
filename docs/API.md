@@ -310,7 +310,7 @@ const stamp = stampit().compose(ComponentsMonitoring)
   .methods({foo() {}})
   .props({a: 1});
 
-console.log(stamp.compose._wasComposedOf);
+console.log(stamp.compose.configuration._wasComposedOf);
 ```
 
 **NOTE:** The example below can be implemented using plain old higher order functions.
@@ -344,7 +344,7 @@ const stamp = stampit().compose(ProduceFunction, ComponentsMonitoring)
     console.log('A clone of this function was returned as a stamp result');
   });
 
-console.log(stamp.compose._wasComposedOf);
+console.log(stamp.compose.configuration._wasComposedOf);
 const producedFunction = stamp();
 producedFunction(); // prints "A clone of this function was returned as a stamp result"
 ```
