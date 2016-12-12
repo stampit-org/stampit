@@ -1,4 +1,4 @@
-import isFunction from './isFunction';
+import {isFunction} from './utils';
 
 /**
  * Returns true if argument is a stamp.

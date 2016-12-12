@@ -1,8 +1,5 @@
-import isObject from './isObject';
-import extractFunctions from './extract-functions';
+import {assign, isObject, extractFunctions, concatAssignFunctions} from './utils';
 import merge from './merge';
-
-const assign = Object.assign;
 
 /**
  * Converts stampit extended descriptor to a standard one.
@@ -24,6 +21,7 @@ const assign = Object.assign;
  * @param [conf]
  * @param [deepConfiguration]
  * @param [deepConf]
+ * @param [composers]
  * @returns {Descriptor}
  */
 export default function ({
@@ -35,6 +33,8 @@ export default function ({
 
   initializers,
   init,
+
+  composers,
 
   deepProperties,
   deepProps,
@@ -73,16 +73,26 @@ export default function ({
   let dc = isObject(deepConf) ? merge({}, deepConf) : undefined;
   dc = isObject(deepConfiguration) ? merge(dc, deepConfiguration) : dc;
 
-  return {
-    methods,
-    properties: p,
-    initializers: extractFunctions(init, initializers),
-    deepProperties: dp,
-    staticProperties: sp,
-    staticDeepProperties: dsp,
-    propertyDescriptors,
-    staticPropertyDescriptors,
-    configuration: c,
-    deepConfiguration: dc
-  };
+  const ii = extractFunctions(init, initializers);
+
+  const composerFunctions = extractFunctions(composers);
+  if (composerFunctions) {
+    dc = dc || {};
+    concatAssignFunctions(dc, composerFunctions, 'composers');
+  }
+
+  const descriptor = {};
+  if (methods) descriptor.methods = methods;
+  if (p) descriptor.properties = p;
+  if (ii) descriptor.initializers = ii;
+  if (dp) descriptor.deepProperties = dp;
+  if (sp) descriptor.staticProperties = sp;
+  if (methods) descriptor.methods = methods;
+  if (dsp) descriptor.staticDeepProperties = dsp;
+  if (propertyDescriptors) descriptor.propertyDescriptors = propertyDescriptors;
+  if (staticPropertyDescriptors) descriptor.staticPropertyDescriptors = staticPropertyDescriptors;
+  if (c) descriptor.configuration = c;
+  if (dc) descriptor.deepConfiguration = dc;
+
+  return descriptor;
 }

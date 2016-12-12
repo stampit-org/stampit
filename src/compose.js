@@ -1,9 +1,6 @@
-import isFunction from './isFunction';
-import isObject from './isObject';
 import isComposable from './isComposable';
 import merge from './merge';
-
-const assign = Object.assign;
+import {isFunction, isObject, assign, concatAssignFunctions, mergeAssign, deepMergeAssign} from './utils';
 
 /**
  * Creates new factory instance.
@@ -13,7 +10,7 @@ const assign = Object.assign;
 function createFactory(descriptor) {
   return function Stamp(options, ...args) {
     // Next line was optimized for most JS VMs. Please, be careful here!
-    const obj = Object.create(descriptor.methods || null);
+    let obj = Object.create(descriptor.methods || null);
 
     merge(obj, descriptor.deepProperties);
     assign(obj, descriptor.properties);
@@ -22,11 +19,18 @@ function createFactory(descriptor) {
     if (!descriptor.initializers || descriptor.initializers.length === 0) return obj;
 
     if (options === undefined) options = {};
-    return descriptor.initializers.filter(isFunction).reduce((resultingObj, initializer) => {
-      const returnedValue = initializer.call(resultingObj, options,
-        {instance: resultingObj, stamp: Stamp, args: [options].concat(args)});
-      return returnedValue === undefined ? resultingObj : returnedValue;
-    }, obj);
+    const inits = descriptor.initializers;
+    const length = inits.length;
+    for (let i = 0; i < length; i += 1) {
+      const initializer = inits[i];
+      if (isFunction(initializer)) {
+        const returnedValue = initializer.call(obj, options,
+          {instance: obj, stamp: Stamp, args: [options].concat(args)});
+        obj = returnedValue === undefined ? obj : returnedValue;
+      }
+    }
+
+    return obj;
   };
 }
 
@@ -63,29 +67,16 @@ function mergeComposable(dstDescriptor, srcComposable) {
   const srcDescriptor = (srcComposable && srcComposable.compose) || srcComposable;
   if (!isComposable(srcDescriptor)) return dstDescriptor;
 
-  const combineProperty = (propName, action) => {
-    if (!isObject(srcDescriptor[propName])) return;
-    if (!isObject(dstDescriptor[propName])) dstDescriptor[propName] = {};
-    action(dstDescriptor[propName], srcDescriptor[propName]);
-  };
-
-  combineProperty('methods', assign);
-  combineProperty('properties', assign);
-  combineProperty('deepProperties', merge);
-  combineProperty('propertyDescriptors', assign);
-  combineProperty('staticProperties', assign);
-  combineProperty('staticDeepProperties', merge);
-  combineProperty('staticPropertyDescriptors', assign);
-  combineProperty('configuration', assign);
-  combineProperty('deepConfiguration', merge);
-  if (Array.isArray(srcDescriptor.initializers)) {
-    dstDescriptor.initializers = srcDescriptor.initializers.reduce((result, init) => {
-      if (isFunction(init) && result.indexOf(init) < 0) {
-        result.push(init);
-      }
-      return result;
-    }, Array.isArray(dstDescriptor.initializers) ? dstDescriptor.initializers : []);
-  }
+  mergeAssign(dstDescriptor, srcDescriptor, 'methods');
+  mergeAssign(dstDescriptor, srcDescriptor, 'properties');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepProperties');
+  mergeAssign(dstDescriptor, srcDescriptor, 'propertyDescriptors');
+  mergeAssign(dstDescriptor, srcDescriptor, 'staticProperties');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'staticDeepProperties');
+  mergeAssign(dstDescriptor, srcDescriptor, 'staticPropertyDescriptors');
+  mergeAssign(dstDescriptor, srcDescriptor, 'configuration');
+  deepMergeAssign(dstDescriptor, srcDescriptor, 'deepConfiguration');
+  concatAssignFunctions(dstDescriptor, srcDescriptor.initializers, 'initializers');
 
   return dstDescriptor;
 }

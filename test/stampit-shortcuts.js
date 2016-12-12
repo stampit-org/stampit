@@ -25,9 +25,19 @@ test('stampit.refs shortcut', (t) => {
 });
 
 test('stampit.init shortcut', (t) => {
-  const init = {method1() {}};
+  const init = () => {};
   const stamp1 = stampit({init: init});
   const stamp2 = stampit.init(init);
+
+  t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+
+  t.end();
+});
+
+test('stampit.composers shortcut', (t) => {
+  const composer = () => {};
+  const stamp1 = stampit({composers: composer});
+  const stamp2 = stampit.composers(composer);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
 
@@ -93,7 +103,8 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+    .refs().props().init().composers().deepProps()
+    .statics().deepStatics().conf().deepConf();
 
   const PrintFoo = methods({
     printFoo() {
@@ -103,7 +114,8 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+    .refs().props().init().composers().deepProps()
+    .statics().deepStatics().conf().deepConf();
 
   const Init = init(function ({foo}) {
     this.foo = foo;
@@ -111,7 +123,8 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().deepProps().statics().deepStatics().conf().deepConf();
+    .refs().props().init().composers().deepProps()
+    .statics().deepStatics().conf().deepConf();
 
   const Foo = compose(HasFoo, PrintFoo, Init);
 
