@@ -8,7 +8,7 @@ import isStamp from './isStamp';
 function createUtilityFunction(propName, action) {
   return function composeUtil() {
     return ((this && this.compose) || stampit).call(this, {
-      [`${propName}`]: action({}, ...arguments)
+      [propName]: action({}, ...arguments)
     });
   };
 }
