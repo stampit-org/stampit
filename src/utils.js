@@ -1,16 +1,12 @@
 import merge from './merge';
+import isFunction from './is-function';
+import isObject from './is-object';
+
+export {isFunction};
+export {isObject};
 
 export const assign = Object.assign;
 export const isArray = Array.isArray;
-
-export function isFunction(obj) {
-  return typeof obj === 'function';
-}
-
-export function isObject(obj) {
-  const type = typeof obj;
-  return !!obj && (type === 'object' || type === 'function');
-}
 
 export function isPlainObject(value) {
   return !!value && typeof value === 'object' &&
