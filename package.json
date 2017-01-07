@@ -54,6 +54,7 @@
     "prepublish": "npm run check",
     "pretest": "npm run build",
     "test": "babel-node --presets=es2015 test && npm run lint",
+    "posttest": "node test/benchmark",
     "clean": "rimraf dist/*",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",

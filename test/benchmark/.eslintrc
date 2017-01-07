@@ -1,0 +1,6 @@
+// Add our overrides as necessary
+{
+  "rules": {
+    "global-require": 0
+  }
+}

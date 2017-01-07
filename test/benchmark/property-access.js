@@ -1,5 +1,5 @@
-import test from 'tape';
-import _ from 'lodash';
+const test = require('tape');
+const _ = require('lodash');
 
 const Benchmark = require('benchmark');
 const stampit = require('../..'); // Need to test the distributable
