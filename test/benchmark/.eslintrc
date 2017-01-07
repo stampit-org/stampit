@@ -1,6 +1,8 @@
 // Add our overrides as necessary
 {
   "rules": {
-    "global-require": 0
+    "global-require": 0,
+    "strict": 0,
+    "lines-around-directive": 0
   }
 }

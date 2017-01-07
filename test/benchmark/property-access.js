@@ -1,3 +1,4 @@
+'use strict'; // for node v4 and v5
 const test = require('tape');
 const _ = require('lodash');
 

@@ -64,7 +64,7 @@
     "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
     "audit": "nsp check",
     "precheck": "npm test",
-    "check": "npm run audit && npm run deps && npm outdated --depth 0",
+    "check": "npm run audit && npm run deps",
     "watch": "watch 'clear && npm -s test' test/ src/"
   },
   "license": "MIT",
