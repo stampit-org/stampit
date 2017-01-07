@@ -1,5 +1,6 @@
-import test from 'tape';
-import _ from 'lodash';
+'use strict'; // for node v4 and v5
+const test = require('tape');
+const _ = require('lodash');
 
 const Benchmark = require('benchmark');
 const stampit = require('../..'); // Need to test the distributable
