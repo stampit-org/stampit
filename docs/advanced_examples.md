@@ -1,7 +1,3 @@
-**NOTE! The examples are for stampit v2 which is not the latest. Feel free to contribute a PR to update this file. Just click "Edit" at the top. :)**
-  
-=====
-
 This is a set of handy **composable** stamps, as well as few tips and tricks.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -11,14 +7,11 @@ This is a set of handy **composable** stamps, as well as few tips and tricks.
 - [Self aware objects - `instance.getStamp()`. 2 ways.](#self-aware-objects---instancegetstamp-2-ways)
   - [Attach function to object](#attach-function-to-object)
   - [Attach function to prototype (memory efficient)](#attach-function-to-prototype-memory-efficient)
-- [Self cloneable objects - `instance.clone()`. 3 ways.](#self-cloneable-objects---instanceclone-3-ways)
+- [Self cloneable objects - `instance.clone()`. 2 ways.](#self-cloneable-objects---instanceclone-2-ways)
   - [Attach method to each object instance](#attach-method-to-each-object-instance)
-  - [Bind method to each object instance](#bind-method-to-each-object-instance)
-  - [Attach function to prototype (memory efficient)](#attach-function-to-prototype-memory-efficient)
-- [Delayed object instantiation using Promises](#delayed-object-instantiation-using-promises)
-- [Dependency injection tips](#dependency-injection-tips)
+  - [Attach function to prototype (memory efficient)](#attach-function-to-prototype-memory-efficient-1)
 - [Validate before a function call](#validate-before-a-function-call)
-- [EventEmitter without inheritance (`convertConstructor`)](#eventemitter-without-inheritance-convertconstructor)
+- [EventEmitter as a composable behavior](#eventemitter-as-a-composable-behavior)
 - [Mocking in the unit tests](#mocking-in-the-unit-tests)
 - [Hacking stamps](#hacking-stamps)
   - [Enforced default properties](#enforced-default-properties)
@@ -261,7 +254,7 @@ So, now you have a **composable** behavior to validate any function just before 
 
 ------------------------------
 
-## EventEmitter without inheritance (`convertConstructor`)
+## EventEmitter as a composable behavior
 
 > Run the examples below for yourself:
 ```sh
