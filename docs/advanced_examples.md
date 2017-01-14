@@ -30,9 +30,8 @@ This is a set of handy **composable** stamps, as well as few tips and tricks.
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/self-aware.js
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
+$ node advanced-examples/self-aware.js
 ```
 
 You can add `.getStamp()` function to each object with ease. 
@@ -45,7 +44,7 @@ const User = stampit();
 ### Attach function to object
 Just compose the following stamp to any other stamp.
 ```js
-const SelfAware = stampit.init(({ instance, stamp }) => {
+const SelfAware = stampit.init((opts, { instance, stamp }) => {
   instance.getStamp = () => stamp;
 });
 ```
@@ -63,19 +62,21 @@ So, now every object instance returns the exact stamp it was built with. Nice!
 ### Attach function to prototype (memory efficient)
 Another composable stamp which does the same but in a memory efficient way.
 It attaches the function to the `.prototype` of the objects, but not to each one.
+
+We'll use the `composers` feature of stampit as the simplest and safest way to implement that.
+The `methods` object of stamps becomes its objects prototype. So, we'll attach our method to it.
 ```js
-const SelfAware = stampit.init(({ instance, stamp }) => {
-  if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
-    stamp.fixed.methods.getStamp = () => stamp;
-  }
+const SelfAware2 = stampit.composers(({ stamp }) => {
+  stamp.compose.methods = stamp.compose.methods || {}; // make sure it exists 
+  stamp.compose.methods.getStamp = () => stamp;
 });
 ```
-The `stamp.fixed` property contains stamp's internal data.
-The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
+The `stamp.compose` property contains stamp's internal data.
+The `stamp.compose.methods` object is used as all objects instances' `.prototype`.
 
 Compose this new stamp with our `User` from above:
 ```js
-const SelfAwareUser = User.compose(SelfAware);
+const SelfAwareUser = User.compose(SelfAware2);
 ```
 Let's test it:
 ```js
@@ -86,22 +87,24 @@ And again, every new object instance knows which stamp it was made of. Brilliant
 
 ------------------------------
 
-## Self cloneable objects - `instance.clone()`. 3 ways.
+## Self cloneable objects - `instance.clone()`. 2 ways.
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/cloneable.js
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
+$ node advanced-examples/cloneable.js
 ```
 
-This is a simple stamp with a single method and a single state property `prefix`.
+This is a simple stamp with an initializer, a single method, and a single property `prefix`.
 ```js
-const PrependLogger = stampit.methods({
+const PrependLogger = stampit.init((opts, { instance }) => {
+  if (opts.prefix) instance.prefix = opts.prefix;
+})
+.methods({
   log(obj) {
     console.log(this.prefix, obj);
   }
-}).refs({
+}).props({
   prefix: 'STDOUT: '
 });
 ```
@@ -116,12 +119,12 @@ Prints `STDOUT: hello`
 
 Let's implement a stamp which allows **any** object to be safely cloned: 
 ```js
-const Cloneable = stampit.init(({ instance, stamp }) => {
-  instance.clone = () => stamp(instance);
+const Cloneable = stampit.init((opts, { instance, stamp }) => {  
+  instance.clone = () => Object.assign(stamp(), instance);
 });
 ```
 All the properties of the object `instance` will be copied by reference to the new object
-when calling the factory - `stamp(instance)`.
+using the - `Object.assign`.
 
 Compose it with our `PrependLogger` from above:
 ```js
@@ -141,51 +144,24 @@ OUT: hello
 ```
 The `logger` and `loggerClone` work exactly the same. Woah! 
 
-### Bind method to each object instance
-
-This is how you can implement self cloning different: 
-```js
-const Cloneable = stampit.init(({ instance, stamp }) => {
-  instance.clone = stamp.bind(null, instance);
-});
-```
-Stamp is a regular function, so we simply bound its first argument to the object instance.
-All the properties of the object instance will be copied by reference to the new object.
-
-Composing it with our `PrependLogger` from above:
-```js
-const CloneablePrependlogger = PrependLogger.compose(Cloneable);
-```
-Create an instance, then clone it, and see the result:
-```js
-const logger = CloneablePrependlogger({ prefix: 'OUT: ' }); // creating first object
-const loggerClone = logger.clone(); // cloning the object.
-logger.log('hello'); // OUT: hello
-loggerClone.log('hello'); // OUT: hello
-```
-Prints
-```
-OUT: hello
-OUT: hello
-```
-Objects have the same state again. Awesome!
-
 ### Attach function to prototype (memory efficient)
 
 Let's reimplement the `Cloneable` stamp so that the `clone()` function is not attached 
 to every object but to the prototype. This will save us a little bit of memory per object.
+
+We'll use the `composers` feature of stampit as the simplest and safest way to implement that.
+The `methods` object of stamps becomes its objects prototype. So, we'll attach our method to it.
 ```js
-const Cloneable = stampit.init(({ instance, stamp }) => {
-  if (!stamp.fixed.methods.clone) { // Avoid adding the same method to the prototype twice.
-    stamp.fixed.methods.clone = function () { return stamp(this); };
-  }
+const Cloneable2 = stampit.composers(({ stamp }) => {
+  stamp.compose.methods = stamp.compose.methods || {}; // make sure it exists 
+  stamp.compose.methods.clone = function () { return Object.assign(stamp(), this); };
 });
 ```
-The `stamp.fixed` property contains stamp's internal data.
-The `stamp.fixed.methods` object is used as all object instances' `.prototype`.
+The `stamp.compose` property contains stamp's internal data.
+The `stamp.compose.methods` object is used as all object instances' `.prototype`.
 Compose this new stamp with our `PrependLogger` from above:
 ```js
-const CloneablePrependlogger = PrependLogger.compose(Cloneable);
+const CloneablePrependlogger = PrependLogger.compose(Cloneable2);
 ```
 Let's see how it works:
 ```js
@@ -203,109 +179,44 @@ Memory efficient and safe cloning for each object. Yay!
 
 ------------------------------
 
-## Delayed object instantiation using Promises
-
-> Run the examples below for yourself:
-```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/delayed-instantiation.js
-```
-
-What if you can't create an object right now but have to retrieve data from a server or filesystem?
-
-To solve this we can make **any** stamp to return `Promise` instead of object itself.
-
-First, let's assume you have this stamp:
-```js
-const User = stampit.refs({ entityName: 'user' });
-```
-
-When combined the following stamp will make any existing stamp return a promise instead of an object instance.
-The promise will always resolve to an object instance.
-```js
-const AsyncInitializable = stampit.refs({
-  db: { user: { getById() { return Promise.resolve({ name: { first: 'John', last: 'Snow' }}) } } } // mocking a DB
-}).methods({
-  getEntity(id) { // Gets id and return Promise which resolves into DB entity.
-    return Promise.resolve(this.db[this.entityName].getById(id));
-  }
-}).init(function () {
-  // If we return anything from an .init() function it becomes our object instance.
-  return this.getEntity(this.id);
-});
-```
-Let's compose it with our `User` stamp:
-```js
-const AsyncInitializableUser = AsyncInitializable.compose(User); // The stamp produces promises now.
-```
-Create object (ES6):
-```js
-const userEntity = AsyncInitializableUser({ id: '42' }).then(console.log);
-```
-A random stamp received the behavior which creates objects asynchronously. OMG!
-
-------------------------------
-
-## Dependency injection tips
-
-Using the [node-dm](https://www.npmjs.com/package/node-dm) dependency management module you can
-receive preconfigured objects if you pass a stamp to it. It's possible because stamps are functions.
-
-Self printing behavior. An object will log itself after being created.
-```js
-const PrintSelf = stampit.init(({ instance }) => {
-  console.log(instance);
-});
-```
-Supply the self printing stamp to the dependency manager:
-```js
-dm.resolve({db: true, config: true, pi: true}).then(PrintSelf);
-```
-Will print all the properties passed to it by the dependency manager module:
-```
-{ db: ...
-  config: ...
-  pi: ... }
-```
-
-------------------------------
-
 ## Validate before a function call
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
 $ npm i joi
-$ babel-node advanced-examples/prevalidate.js
+$ node advanced-examples/prevalidate.js
 ```
 
 For example you can prevalidate an object instance before a function call.
 
 First, let's assume you have this stamp:
 ```js
-const User = stampit.methods({
+const User = stampit.init((opts, {instance}) => {
+  if (opts.user) instance.user = opts.user;
+})
+.methods({
   authorize() {
     // dummy implementation. Don't bother. :)
     return this.authorized = (this.user.name === 'john' && this.user.password === '123');
   }
 });
 ```
-It requires the user object to have both name and password set.
+It requires the `user` object to have both `name` and `password` set.
 
 Now, let's implement a stamp which validates a state just before a function call.
 ```js
 const JoiPrevalidator = stampit
-  .static({ // Adds properties to stamps, not object instances.
+  .statics({ // Adds properties to stamps, not object instances.
     prevalidate(methodName, schema) {
-      var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
+      this.compose.configuration = this.compose.configuration || {};
+      const prevalidations = this.compose.configuration.prevalidations || {}; // Taking existing validation schemas
       prevalidations[methodName] = schema; // Adding/overriding a validation schema.
-      return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
+      return this.conf({prevalidations}); // Cloning self and (re)assigning a reference.
     }
   })
-  .init(function () { // This will be called for each new object instance.
-    _.forOwn(this.prevalidations, (value, key) => { // overriding functions
+  .init(function (opts, {stamp}) { // This will be called for each new object instance.
+    _.forOwn(stamp.compose.configuration.prevalidations, (value, key) => { // overriding functions
       const actualFunc = this[key];
       this[key] = ( ...args ) => { // Overwrite a real function with ours.
         const result = joi.validate(this, value, {allowUnknown: true});
@@ -354,23 +265,35 @@ So, now you have a **composable** behavior to validate any function just before 
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/event-emitter.js
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
+$ node advanced-examples/event-emitter.js
 ```
 
 You can have a stamp which makes any object an `EventEmitter` without inheriting from it.
 
 ```js
 const EventEmitter = require('events').EventEmitter;
-const EventEmittable = stampit.convertConstructor(EventEmitter);
+```
+
+We'll use the `composers` feature of stampit as the simplest and safest way to implement that.
+The `methods` object of stamps becomes its objects prototype. So, we'll make it an event emitter.
+```js
+const EventEmittable = stampit.composers(({ stamp }) => {
+  stamp.compose.methods = stamp.compose.methods || {}; // make sure it exists
+  Object.setPrototypeOf(stamp.compose.methods, EventEmitter.prototype);
+});
 ```
 We have just used a special utility function `convertConstructor`.
 It converts classic JavaScript "classes" to a composable stamp.
 
 Let's compose it with any other stamp:
 ```js
-const User = stampit.refs({ name: { first: "(unnamed)", last: "(unnamed)" } });
+const User = stampit.init((opts, {instance}) => {
+  if (opts.name) instance.name = opts.name;
+})
+.props({
+  name: { first: "(unnamed)", last: "(unnamed)" }
+});
 const EmittableUser = User.compose(EventEmittable);
 const user = EmittableUser({ name: { first: "John", last: "Doe" } });
 ```
@@ -387,9 +310,8 @@ Will print `{ first: "John", last: "Doe" }`.
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/mocking.js
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
+$ node advanced-examples/mocking.js
 ```
 
 Consider the following stamp composition:
@@ -513,27 +435,27 @@ Do you see the idea? The reusable DB mock can be attached to any behavior. Fanta
 
 ## Hacking stamps
 
-Each stamp has the property `fixed`. It's an object with 4 properties. It's used by stampit in the following order:
-* `Stamp.fixed.methods` - plain object. Stampit uses it to set new objects' prototype: `Object.create(fixed.methods)`.
-* `Stamp.fixed.refs` - plain object. Stampit uses it to set new objects' state: `_.assign(obj, fixed.refs)`.
-* `Stamp.fixed.props` - plain object. Stampit deeply merges it into new objects: `_.merge(obj, fixed.props)`.
-* `Stamp.fixed.init` - array of functions. Stampit calls them sequentially: `fixed.init.forEach(fn => fn.call(obj))`.
+Each stamp has the property `compose`. It's an object with 10 properties. It's used by stampit in the following order:
+* `Stamp.compose.methods` - plain object. Stampit uses it to set new objects' prototype: `Object.create(compose.methods)`.
+* `Stamp.compose.properties` - plain object. Stampit uses it to set new objects' state: `_.assign(obj, compose.properties)`.
+* `Stamp.compose.deepProperties` - plain object. Stampit deeply merges it into new objects: `_.merge(obj, compose.deepProperties)`.
+* `Stamp.compose.initializers` - array of functions. Stampit calls them sequentially: `compose.initializers.forEach(fn => fn.call(obj))`.
+* See more in the [stamp specification](https://github.com/stampit-org/stamp-specification).
 
 > Run the examples below for yourself:
 ```sh
-$ git clone https://github.com/stampit-org/stampit.git
-$ cd stampit && npm i babel -g
-$ babel-node advanced-examples/hacking.js
+$ git clone https://github.com/stampit-org/stampit.git && cd stampit
+$ node advanced-examples/hacking.js
 ```
 
 ### Enforced default properties
 
-You can add **non-removable** "default" state by changing `Stamp.fixed.methods`.
+You can add **non-removable** "default" state by changing `Stamp.compose.methods`.
 I.e. you can modify object instances' `.prototype`.
 ```js
 const Stamp = stampit();
-Stamp.fixed.methods.data = 1; // fixed.methods is the prototype for each new object.
-const instance = Stamp(); // Creating object, it's prototype is set to fixed.methods. It has property 'data'.
+Stamp.compose.methods.data = 1; // compose.methods is the prototype for each new object.
+const instance = Stamp(); // Creating object, it's prototype is set to compose.methods. It has property 'data'.
 console.log(instance.data); // 1
 ```
 Will print `1`. But let's add some state:
