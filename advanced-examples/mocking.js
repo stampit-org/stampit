@@ -1,4 +1,4 @@
-const stampit = require('../src/stampit');
+const stampit = require('..');
 const _ = require('lodash');
 const assert = require('assert');
 

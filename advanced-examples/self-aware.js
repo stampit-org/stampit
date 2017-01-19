@@ -1,9 +1,9 @@
 const assert = require('assert');
-const stampit = require('../src/stampit');
+const stampit = require('..');
 const User = stampit();
 
 
-const SelfAware1 = stampit.init(({ instance, stamp }) => {
+const SelfAware1 = stampit.init((opts, { instance, stamp }) => {
   instance.getStamp = () => stamp;
 });
 const SelfAwareUser1 = User.compose(SelfAware1);
@@ -14,10 +14,9 @@ console.log('No worries');
 
 // -----
 
-const SelfAware2 = stampit.init(({ instance, stamp }) => {
-  if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
-    stamp.fixed.methods.getStamp = () => stamp;
-  }
+const SelfAware2 = stampit.composers(({ stamp }) => {
+  stamp.compose.methods = stamp.compose.methods || {}; // make sure it exists
+  stamp.compose.methods.getStamp = () => stamp;
 });
 const SelfAwareUser2 = User.compose(SelfAware2);
 const user2 = SelfAwareUser2();

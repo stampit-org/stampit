@@ -1,9 +1,12 @@
-var _ = require('lodash');
-var joi = require('joi'); // object validation module
-var stampit = require('../src/stampit');
+const _ = require('lodash');
+const joi = require('joi'); // object validation module
+const stampit = require('..');
 
 
-const User = stampit.methods({
+const User = stampit.init((opts, {instance}) => {
+  if (opts.user) instance.user = opts.user;
+})
+.methods({
   authorize() {
     // dummy implementation. Don't bother. :)
     return this.authorized = (this.user.name === 'john' && this.user.password === '123');
@@ -11,23 +14,24 @@ const User = stampit.methods({
 });
 
 const JoiPrevalidator = stampit
-  .static({ // Adding properties (this function) to stamps, not object instances.
+  .statics({ // Adds properties to stamps, not object instances.
     prevalidate(methodName, schema) {
-      var prevalidations = this.fixed.refs.prevalidations || {}; // Taking existing validation schemas
+      this.compose.configuration = this.compose.configuration || {};
+      const prevalidations = this.compose.configuration.prevalidations || {}; // Taking existing validation schemas
       prevalidations[methodName] = schema; // Adding/overriding a validation schema.
-      return this.refs({prevalidations}); // Cloning self and (re)assigning a reference.
+      return this.conf({prevalidations}); // Cloning self and (re)assigning a reference.
     }
   })
-  .init(function () { // This will be called for each new object instance.
-    _.forOwn(this.prevalidations, (value, key) => { // overriding functions
+  .init(function (opts, {stamp}) { // This will be called for each new object instance.
+    _.forOwn(stamp.compose.configuration.prevalidations, (value, key) => { // overriding functions
       const actualFunc = this[key];
-      this[key] = () => { // Overwrite a real function with our.
+      this[key] = ( ...args ) => { // Overwrite a real function with ours.
         const result = joi.validate(this, value, {allowUnknown: true});
         if (result.error) {
           throw new Error(`Can't call ${key}(), prevalidation failed: ${result.error}`);
         }
 
-        return actualFunc.apply(this, arguments);
+        return actualFunc.apply(this, args);
       }
     });
   });
