@@ -106,7 +106,6 @@ const baseStampit = compose(
  * @return {Stamp}
  */
 function stampit(...args) {
-  if (isStamp(this)) args.unshift(this);
   const composables = args.filter(isComposable)
     .map(arg => isStamp(arg) ? arg : standardiseDescriptor(arg));
 
@@ -125,6 +124,7 @@ function stampit(...args) {
     }
     stamp.compose.deepConfiguration.composers = uniqueComposers;
 
+    if (isStamp(this)) composables.unshift(this);
     for (let i = 0; i < uniqueComposers.length; i += 1) {
       const composer = uniqueComposers[i];
       const returnedValue = composer({stamp, composables});
