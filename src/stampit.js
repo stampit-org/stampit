@@ -114,12 +114,21 @@ function stampit(...args) {
 
   const composerFunctions = stamp.compose.deepConfiguration &&
     stamp.compose.deepConfiguration.composers;
-  if (isArray(composerFunctions)) {
+  if (isArray(composerFunctions) && composerFunctions.length > 0) {
+    const uniqueComposers = [];
     for (let i = 0; i < composerFunctions.length; i += 1) {
-      if (isFunction(composerFunctions[i])) {
-        const returnedValue = composerFunctions[i]({stamp, composables});
-        stamp = isStamp(returnedValue) ? returnedValue : stamp;
+      const composer = composerFunctions[i];
+      if (isFunction(composer) && !uniqueComposers.includes(composer)) {
+        uniqueComposers.push(composer);
       }
+    }
+    stamp.compose.deepConfiguration.composers = uniqueComposers;
+
+    if (isStamp(this)) composables.unshift(this);
+    for (let i = 0; i < uniqueComposers.length; i += 1) {
+      const composer = uniqueComposers[i];
+      const returnedValue = composer({stamp, composables});
+      stamp = isStamp(returnedValue) ? returnedValue : stamp;
     }
   }
 
