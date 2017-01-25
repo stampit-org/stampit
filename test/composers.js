@@ -131,3 +131,38 @@ test('stampit({ composers() }) returned value passed to the second composer', (t
 
   t.end();
 });
+
+test('composers should be deduped', (t) => {
+  const stamp2 = stampit();
+  const stamp = stampit({composers() {}});
+
+  const result = stamp.compose(stamp2).compose({}).compose(stamp);
+  const composers = result.compose.deepConfiguration.composers;
+  t.equal(composers.length, 1, 'should dedupe composers');
+
+  t.end();
+});
+
+test('stamp.compose({ composers() }) passes full composables array', (t) => {
+  let run = 0;
+  const stamp2 = stampit();
+  const stamp = stampit({
+    composers({composables}) {
+      run += 1;
+      if (run === 1) {
+        t.equal(composables.length, 1, 'creating stamp should pass one composable');
+      }
+      if (run === 2) {
+        t.equal(composables.length, 2, 'inheriting stamp should pass one composable');
+        t.equal(composables[0], stamp, 'first composable must be stamp itself');
+        t.equal(composables[1], stamp2, 'second composable must be passed');
+      }
+    }
+  });
+
+  stamp.compose(stamp2);
+
+  t.equal(run, 2, 'should invoke composer twice');
+
+  t.end();
+});
