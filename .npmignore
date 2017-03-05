@@ -8,3 +8,4 @@
 /coverage/
 /build/
 /src/
+.npmrc
