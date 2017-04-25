@@ -46,7 +46,17 @@ Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635
 
 ## Install
 
+Via NPM:
 [![NPM](https://nodei.co/npm/stampit.png?downloadRank=true)](https://www.npmjs.com/package/stampit)
+
+Via bower:
+```sh
+$ bower install stampit
+or
+$ bower install stampit=https://npmcdn.com/stampit@3/dist/stampit.umd.min.js
+or
+$ bower install stampit=https://unpkg.com/stampit@3.1.2/dist/stampit.umd.js
+```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
 [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
