@@ -1,14 +1,15 @@
-/* eslint-disable no-console */
-
-import pkg from '../package.json';
+/* eslint-disable no-console,import/no-extraneous-dependencies,import/extensions */
 
 import {rollup} from 'rollup';
 import buble from 'rollup-plugin-buble';
+import multiEntry from 'rollup-plugin-multi-entry';
+import nodeResolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
 import MagicString from 'magic-string';
 
-const moduleName = 'stampit';
+import pkg from '../package.json';
 
 function execute() {
   return Promise.all([
@@ -81,7 +82,22 @@ function execute() {
         dest: '.',
         moduleName: 'isComposable'
       }
-    )
+    ),
+
+    rollup({
+      entry: 'test/*.js',
+      plugins: [
+        multiEntry({exports: false}),
+        buble(),
+        nodeResolve(),
+        commonjs()
+      ]
+    })
+      .then(bundle => bundle.write({
+        moduleName: 'test',
+        format: 'cjs',
+        dest: './dist/test.js'
+      }))
   ]);
 }
 
@@ -95,14 +111,14 @@ function execute() {
 function defaultExport(opts = {}) {
   const sourceMap = opts.sourceMap !== false;
   return {
-    transformBundle (code) {
+    transformBundle(code) {
       const magicString = new MagicString(code);
       magicString.append("\nmodule.exports = exports['default'];");
       code = magicString.toString();
       const map = sourceMap ? magicString.generateMap() : null;
       return {code, map};
     }
-  }
+  };
 }
 
 function makeBundle(config) {

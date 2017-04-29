@@ -1,17 +1,6 @@
 /* eslint-disable */
 import test from 'tape';
 
-import stampit1 from '../';
-
-test('import is the same as require', (t) => {
-  const stampit2 = require('../');
-
-  t.equal(stampit1, stampit2,
-    'Should export same object for both ES6 and CommonJS');
-
-  t.end();
-});
-
 test('can import the stampit/compose', t => {
   const compose = require('../compose');
   t.equal(typeof compose, 'function', 'Must be a function');
