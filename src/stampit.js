@@ -118,7 +118,7 @@ function stampit(...args) {
     const uniqueComposers = [];
     for (let i = 0; i < composerFunctions.length; i += 1) {
       const composer = composerFunctions[i];
-      if (isFunction(composer) && !uniqueComposers.includes(composer)) {
+      if (isFunction(composer) && uniqueComposers.indexOf(composer) === -1) {
         uniqueComposers.push(composer);
       }
     }
