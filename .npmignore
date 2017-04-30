@@ -9,3 +9,4 @@
 /build/
 /src/
 .npmrc
+dist/test.js
