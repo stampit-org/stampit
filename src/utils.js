@@ -1,3 +1,4 @@
+import objectAssign from 'object-assign';
 import merge from './merge';
 import isFunction from './is-function';
 import isObject from './is-object';
@@ -5,7 +6,7 @@ import isObject from './is-object';
 export {isFunction};
 export {isObject};
 
-export const assign = Object.assign;
+export const assign = objectAssign;
 export const isArray = Array.isArray;
 
 export function isPlainObject(value) {
