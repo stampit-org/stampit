@@ -55,13 +55,15 @@ $ bower install stampit
 or
 $ bower install stampit=https://npmcdn.com/stampit@3/dist/stampit.umd.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@3.1.2/dist/stampit.umd.js
+$ bower install stampit=https://unpkg.com/stampit@3.1.3/dist/stampit.umd.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
 [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
 
-**WARNING!** If running in node.js <= v0.12 or IE <= 11 then you'd need to polyfill the `Object.assign`. Like [this](https://github.com/sindresorhus/object-assign), or [that](https://github.com/Financial-Times/polyfill-service/blob/master/polyfills/Object/assign/polyfill.js) ([autodetected](https://cdn.polyfill.io/v2/polyfill.min.js?features=Object.assign)). [More information](https://github.com/stampit-org/stampit/pull/320#issuecomment-325402058).
+## Compatibility
+
+Be ware. Stampit should run fine in any ES5 browser or any node.js. But we test only against node.js v4 and above. 
 
 ## API
 

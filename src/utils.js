@@ -5,7 +5,19 @@ import isObject from './is-object';
 export {isFunction};
 export {isObject};
 
-export const assign = Object.assign;
+export const assign = Object.assign || function assign(to) {
+  const args = arguments;
+  for (let s = 1; s < args.length; s += 1) {
+    const from = args[s];
+
+    for (const key in Object.keys(from)) { // eslint-disable-line
+      to[key] = from[key];
+    }
+  }
+
+  return to;
+};
+
 export const isArray = Array.isArray;
 
 export function isPlainObject(value) {
