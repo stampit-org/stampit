@@ -195,7 +195,7 @@ const stamp = stampit().props({
 });
 
 console.log(stamp().factor); // 1
-console.log(stamp({factor: 5}).factor); // 5
+console.log(stamp.props({factor: 5})().factor); // 5
 ```
 
 It's really important to know the difference between a reference and an actual value. [Primitive
@@ -369,7 +369,7 @@ const stamp = stampit().deepProps({
 
 console.log(stamp().effects.cutoff.min); // 0
 
-const effectMashup = stamp({effects: {cutoff: {min: 42}}});
+const effectMashup = stamp.deepProps({effects: {cutoff: {min: 42}}})();
 console.log(effectMashup.effects.cutoff.min); // 42
 console.log(effectMashup.effects.cutoff.max); // 255
 ```
