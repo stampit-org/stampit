@@ -50,13 +50,11 @@ var testObj = stampit({
   },
 
   // enclose in v1
-  init: {
-    function () {
-      var privateProp = 'private property';
+  init: function () {
+    var privateProp = 'private property';
 
-      this.getPrivate = function getPrivate() {
-        return privateProp;
-      }
+    this.getPrivate = function getPrivate() {
+      return privateProp;
     }
   }
 }).create();
@@ -82,6 +80,7 @@ test('Stampit options object', function () {
     'should support privileged methods');
 });
 ```
+
 Changes to the subsequent examples in Chapter 3 follow. The next example, which demonstrates method chaining, becomes
 
 ```js
