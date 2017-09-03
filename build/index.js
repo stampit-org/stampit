@@ -6,20 +6,20 @@ import {rollup} from 'rollup';
 import buble from 'rollup-plugin-buble';
 import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
-import MagicString from 'magic-string';
+import removeEsModuleFreeze from 'rollup-plugin-es3';
 
 function execute() {
   return Promise.all([
 
-    // The main stampit distributable bundle. Meaning no other files needed
-    makeBundle(
-      {
-        format: 'cjs',
-        ext: '.full.js',
-        dest: 'dist',
-        moduleName: 'stampit'
-      }
-    ),
+    // // The main stampit distributable bundle. Meaning no other files needed
+    // makeBundle(
+    //   {
+    //     format: 'cjs',
+    //     ext: '.esm.js',
+    //     dest: 'dist',
+    //     moduleName: 'stampit'
+    //   }
+    // ),
 
     // The UMD build for browsers
     makeBundle(
@@ -42,15 +42,6 @@ function execute() {
       }
     ),
 
-    // The experimental ES6 bundle
-    makeBundle(
-      {
-        format: 'es',
-        ext: '.mjs',
-        dest: 'dist',
-        moduleName: 'stampit'
-      }
-    ),
     //
     //
     // // The "stampit/compose" file for direct importing
@@ -83,26 +74,6 @@ function execute() {
   ]);
 }
 
-/**
- * Adds a `module.exports = exports.default` so Node users can
- * do `require('stampit')()`
- * @param {Object} [opts={}] Options
- * @param {boolean} [opts.sourceMap=true] Generate a source map
- * @returns {Object}
- */
-function defaultExport(opts = {}) {
-  const sourceMap = opts.sourceMap !== false;
-  return {
-    transformBundle (code) {
-      const magicString = new MagicString(code);
-      magicString.append("\nmodule.exports = exports['default'];");
-      code = magicString.toString();
-      const map = sourceMap ? magicString.generateMap() : null;
-      return {code, map};
-    }
-  }
-}
-
 function makeBundle(config) {
   const outputConfig = {
     dest: `${config.dest}/${config.moduleName}${config.ext}`,
@@ -113,16 +84,17 @@ function makeBundle(config) {
   };
 
   const isUMD = config.format === 'umd';
-  const isCJS = config.format === 'cjs';
 
   const inputConfig = {
     entry: `src/${config.moduleName}.js`,
     plugins: [
-      buble()
+      buble(),
     ]
   };
 
-  if (!isUMD) {
+  if (isUMD) {
+    inputConfig.plugins.push(removeEsModuleFreeze());
+  } else {
     inputConfig.external = Object.keys(pkg.dependencies);
   }
 
@@ -131,12 +103,6 @@ function makeBundle(config) {
     inputConfig.plugins.push(filesize({
       format: {exponent: 0},
       render: (opt, size, gzip) => `Estimating ${outputConfig.dest}: ${size}, GZIP : ${gzip}`
-    }));
-  }
-
-  if (isCJS) {
-    inputConfig.plugins.push(defaultExport({
-      sourceMap: !config.minify
     }));
   }
 

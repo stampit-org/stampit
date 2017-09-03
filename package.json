@@ -6,8 +6,7 @@
     "name": "Eric Elliott",
     "url": "https://ericelliottjs.com"
   },
-  "main": "dist/stampit.full.js",
-  "jsnext:main": "dist/stampit.mjs",
+  "main": "src/stampit.js",
   "keywords": [
     "object",
     "prototype",
@@ -37,12 +36,12 @@
     "eslint-plugin-import": "^2.0.1",
     "istanbul": "^1.1.0-alpha.1",
     "lodash": "^4.16.1",
-    "magic-string": "^0.19.0",
     "nsp": "^2.1.0",
     "require-all": "^2.2.0",
     "rimraf": "^2.3.4",
     "rollup": "^0.41.1",
     "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-es3": "^1.0.3",
     "rollup-plugin-filesize": "^1.0.0",
     "rollup-plugin-uglify": "^1.0.0",
     "tape": "^4.2.2",
