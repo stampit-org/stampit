@@ -8,8 +8,6 @@ import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
 import MagicString from 'magic-string';
 
-const moduleName = 'stampit';
-
 function execute() {
   return Promise.all([
 
@@ -53,35 +51,35 @@ function execute() {
         moduleName: 'stampit'
       }
     ),
-
-
-    // The "stampit/compose" file for direct importing
-    makeBundle(
-      {
-        format: 'cjs',
-        ext: '.js',
-        dest: '.',
-        moduleName: 'compose'
-      }
-    ),
-    // The "stampit/isStamp" file for direct importing
-    makeBundle(
-      {
-        format: 'cjs',
-        ext: '.js',
-        dest: '.',
-        moduleName: 'isStamp'
-      }
-    ),
-    // The "stampit/isComposable" file for direct importing
-    makeBundle(
-      {
-        format: 'cjs',
-        ext: '.js',
-        dest: '.',
-        moduleName: 'isComposable'
-      }
-    )
+    //
+    //
+    // // The "stampit/compose" file for direct importing
+    // makeBundle(
+    //   {
+    //     format: 'cjs',
+    //     ext: '.js',
+    //     dest: '.',
+    //     moduleName: 'compose'
+    //   }
+    // ),
+    // // The "stampit/isStamp" file for direct importing
+    // makeBundle(
+    //   {
+    //     format: 'cjs',
+    //     ext: '.js',
+    //     dest: '.',
+    //     moduleName: 'isStamp'
+    //   }
+    // ),
+    // // The "stampit/isComposable" file for direct importing
+    // makeBundle(
+    //   {
+    //     format: 'cjs',
+    //     ext: '.js',
+    //     dest: '.',
+    //     moduleName: 'isComposable'
+    //   }
+    // )
   ]);
 }
 
@@ -131,6 +129,7 @@ function makeBundle(config) {
   if (config.minify) {
     inputConfig.plugins.push(uglify());
     inputConfig.plugins.push(filesize({
+      format: {exponent: 0},
       render: (opt, size, gzip) => `Estimating ${outputConfig.dest}: ${size}, GZIP : ${gzip}`
     }));
   }

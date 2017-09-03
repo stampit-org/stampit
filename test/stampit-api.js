@@ -1,6 +1,6 @@
 import test from 'tape';
 import stampit from '../src/stampit';
-import isStamp from '../src/isStamp';
+import isStamp from '../isStamp';
 
 // Main API
 

@@ -1,6 +1,6 @@
 import test from 'tape';
 import stampit from '../src/stampit';
-import isComposable from '../src/isComposable';
+import isComposable from '../isComposable';
 
 // isComposable
 

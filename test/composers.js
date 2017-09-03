@@ -8,18 +8,18 @@ test('stampit({ composers() })', (t) => {
   let executed = 0;
   let passedStamp;
   const stamp = stampit({
-    composers() {
-      t.equal(arguments.length, 1, 'have single argument');
-      t.ok(_.isPlainObject(arguments[0]), 'argument is an object');
-      t.ok(_.isArray(arguments[0].composables), 'composables passed');
-      t.equal(arguments[0].composables.length, 1, 'only one composable passed');
-      t.ok(_.isPlainObject(arguments[0].composables[0]), 'the composable is a descriptor');
-      t.ok(_.isPlainObject(arguments[0].composables[0].deepConfiguration),
+    composers(...args) {
+      t.equal(args.length, 1, 'have single argument');
+      t.ok(_.isPlainObject(args[0]), 'argument is an object');
+      t.ok(_.isArray(args[0].composables), 'composables passed');
+      t.equal(args[0].composables.length, 1, 'only one composable passed');
+      t.ok(_.isPlainObject(args[0].composables[0]), 'the composable is a descriptor');
+      t.ok(_.isPlainObject(args[0].composables[0].deepConfiguration),
         'composable was converted to standard descriptor');
-      t.ok(_.isArray(arguments[0].composables[0].deepConfiguration.composers),
+      t.ok(_.isArray(args[0].composables[0].deepConfiguration.composers),
         'first composable have the composers list');
       executed += 1;
-      passedStamp = arguments[0].stamp;
+      passedStamp = args[0].stamp;
     }
   });
 
