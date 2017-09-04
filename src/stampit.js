@@ -104,11 +104,7 @@
   }
 
   function merge(dst) {
-    var i = 1, args = arguments;
-    for (; i < args[_length]; i++) {
-      dst = mergeOne(dst, args[i]);
-    }
-    return dst;
+    return slice.call(arguments, 1).reduce(mergeOne, dst);
   }
 
   function extractFunctions() {
@@ -281,9 +277,9 @@
       defineProperties(stamp, tmp);
     }
 
-    var composeImplementation = isFunction(stamp[_compose]) ? stamp[_compose] : compose;
+    tmp = isFunction(stamp[_compose]) ? stamp[_compose] : compose;
     stamp[_compose] = function() {
-      return composeImplementation.apply(this, arguments);
+      return tmp.apply(this, arguments);
     };
     assign(stamp[_compose], descriptor);
 
