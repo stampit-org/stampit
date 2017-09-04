@@ -55,7 +55,7 @@ $ bower install stampit
 or
 $ bower install stampit=https://npmcdn.com/stampit@3/dist/stampit.umd.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@3.2.0/dist/stampit.umd.js
+$ bower install stampit=https://unpkg.com/stampit@3.2.1/dist/stampit.umd.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
