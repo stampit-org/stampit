@@ -11,5 +11,6 @@
     "import/no-extraneous-dependencies": 0,
     "comma-dangle": "off",
     "object-curly-spacing": "off",
+    "no-param-reassign": "off"
   }
 }

@@ -58,14 +58,16 @@
     "clean": "rimraf dist/*",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
-    "build": "babel-node --presets=es2015 build",
+    "build": "npm run minify",
     "deps": "npm run deps:missing && npm run deps:extra",
     "deps:missing": "dependency-check package.json",
     "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
     "audit": "nsp check",
     "precheck": "npm test",
     "check": "npm run audit && npm run deps",
-    "watch": "watch 'clear && npm -s test' test/ src/"
+    "watch": "watch 'clear && npm -s test' test/ src/",
+    "minify": "uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js --source-map dist/stampit.min.js.map",
+    "postminify": "ls -l dist/ && gzip-size --raw dist/stampit.min.js"
   },
   "license": "MIT",
   "npmName": "stampit",

@@ -160,3 +160,19 @@ test('stamp.compose.initializers malformed object', (t) => {
 
   t.end();
 });
+
+test('changing second arg is not propagaded', (t) => {
+  const stamp = stampit().init((opts, arg2) => {
+    arg2.instance = null;
+    arg2.stamp = null;
+    arg2.args = null;
+  }).init((opts, arg2) => {
+    t.notEqual(arg2.instance, null, '.instance was mutates');
+    t.notEqual(arg2.stamp, null, '.stamp was mutates');
+    t.notEqual(arg2.args, null, '.args was mutates');
+  });
+
+  stamp();
+
+  t.end();
+});

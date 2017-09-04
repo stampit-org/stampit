@@ -5,7 +5,7 @@ const Benchmark = require('benchmark');
 const stampit = require('../..'); // Need to test the distributable
 
 
-test('benchmarking property access', (t) => {
+test('benchmarking object creation', (t) => {
   const Stamp = stampit({
     init() {
       this.x = 10;
@@ -83,8 +83,8 @@ test('benchmarking property access', (t) => {
     results.push(String(event.target));
   })
   .on('complete', function () {
-    t.ok(this[0].hz / this[1].hz >= 0.01,
-      'creating a stamp should be less than 100 times slower, not more');
+    t.ok(this[0].hz / this[1].hz >= 0.02,
+      'creating a stamp should be less than 50 times slower, not more');
     t.comment(results.join('. '));
     t.end();
   })
