@@ -9,9 +9,12 @@ export const assign = Object.assign || function assign(to) {
   const args = arguments;
   for (let s = 1; s < args.length; s += 1) {
     const from = args[s];
-
-    for (const key in Object.keys(from)) { // eslint-disable-line
-      to[key] = from[key];
+    if (from) {
+      const keys = Object.keys(from);
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        to[key] = from[key];
+      }
     }
   }
 
