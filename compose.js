@@ -61,13 +61,16 @@ function merge(dst) {
 }
 
 
-var assign = Object.assign || function assign(to) {
-  var args = arguments;
-  for (var s = 1; s < args.length; s++) {
-    var from = args[s];
+var assign = Object.assign || function(to) {
+  var args = arguments, s = 1, from, keys, i;
 
-    for (var key in Object.keys(from)) { // eslint-disable-line
-      to[key] = from[key];
+  for (; s < args.length; s++) {
+    from = args[s];
+    if (from) {
+      keys = Object.keys(from);
+      for (i = 0; i < keys.length; i++) {
+        to[keys[i]] = from[keys[i]];
+      }
     }
   }
 
