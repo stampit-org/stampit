@@ -35,8 +35,8 @@
   var assign = _Object.assign || function(to) {
     var args = arguments, s = 1, from, keys, i;
 
-    for (; s < args[_length]; s++) {
-      from = args[s];
+    for (; s < args[_length];) {
+      from = args[s++];
       if (from) {
         keys = objectKeys(from);
         for (i = 0; i < keys[_length]; i++) {
@@ -85,8 +85,8 @@
     var returnValue = isObject(dst) ? dst : {};
 
     var keys = objectKeys(src), i = 0, key, srcValue, dstValue, newDst;
-    for (; i < keys[_length]; i++) {
-      key = keys[i];
+    for (; i < keys[_length];) {
+      key = keys[i++];
 
       srcValue = src[key];
       // Do not merge properties with the '_undefined' value.
@@ -114,8 +114,8 @@
 
   function pushUniqueFuncs(dst, src) {
     var i = 0, fn;
-    for (; i < src[_length]; i++) {
-      fn = src[i];
+    for (; i < src[_length]; i) {
+      fn = src[i++];
       if (isFunction(fn) && dst.indexOf(fn) < 0) {
         dst.push(fn);
       }
@@ -231,6 +231,9 @@
       // Next line was optimized for most JS VMs. Please, be careful here!
       var obj = _Object.create(descriptor[_methods] || null);
 
+      var inits = descriptor[_initializers], args = slice.apply(arguments);
+      var i = 0, initializer, returnedValue;
+
       var tmp = descriptor[_deepProperties];
       if (tmp) merge(obj, tmp);
       tmp = descriptor[_properties];
@@ -238,13 +241,11 @@
       tmp = descriptor[_propertyDescriptors];
       if (tmp) defineProperties(obj, tmp);
 
-      if (!descriptor[_initializers] || descriptor[_initializers][_length] == 0) return obj;
+      if (!inits || inits[_length] == 0) return obj;
 
       if (options === _undefined) options = {};
-      var inits = descriptor[_initializers], args = slice.apply(arguments);
-      var length = inits[_length], i = 0, initializer, returnedValue;
-      for (; i < length; i++) {
-        initializer = inits[i];
+      for (; i < inits[_length];) {
+        initializer = inits[i++];
         if (isFunction(initializer)) {
           returnedValue = initializer.call(obj, options,
             {instance: obj, stamp: Stamp, args: args});
@@ -413,8 +414,8 @@
    */
   var _stampit = function stampit() {
     var i = 0, arg, composables = [], stamp, uniqueComposers, returnedValue, args = arguments;
-    for (; i < args[_length]; i++) {
-      arg = args[i];
+    for (; i < args[_length]; i) {
+      arg = args[i++];
       if (isObject(arg)) {
         composables.push(isStamp(arg) ? arg : standardiseDescriptor(arg));
       }
@@ -431,8 +432,8 @@
       if (isStamp(this)) {
         composables.unshift(this);
       }
-      for (i = 0; i < uniqueComposers[_length]; i++) {
-        returnedValue = uniqueComposers[i]({stamp: stamp, composables: composables});
+      for (i = 0; i < uniqueComposers[_length]; i) {
+        returnedValue = uniqueComposers[i++]({stamp: stamp, composables: composables});
         stamp = isStamp(returnedValue) ? returnedValue : stamp;
       }
     }
