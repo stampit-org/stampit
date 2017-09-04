@@ -1,6 +1,5 @@
 'use strict'; // for node v4 and v5
 const test = require('tape');
-const _ = require('lodash');
 
 const Benchmark = require('benchmark');
 const stampit = require('../..'); // Need to test the distributable
@@ -31,9 +30,8 @@ test('benchmarking property access', (t) => {
     }
   });
 
-  const COUNT = 5000;
-  const stampitEntities = _.range(COUNT).map(() => Entity());
-  const normalEntities = _.range(COUNT).map(() => ({
+  const stampitEntity = Entity();
+  const normalEntity = {
     components: {
       position: {
         x: 10,
@@ -44,26 +42,22 @@ test('benchmarking property access', (t) => {
         vx: 10,
       },
     },
-  }));
-
-  function runArray(arr) {
-    const DELTA = 16;
-    for (let i = 0; i < COUNT; i += 1) {
-      const entity = arr[i].components;
-
-      entity.position.x += (DELTA / 1000) * entity.velocity.vx;
-      entity.position.y += (DELTA / 1000) * entity.velocity.vy;
-    }
-  }
+  };
 
   const suite = new Benchmark.Suite();
   const results = [];
   suite
     .add('Stampit', () => {
-      runArray(stampitEntities);
+      const entity = stampitEntity.components;
+
+      entity.position.x += entity.velocity.vx;
+      entity.position.y += entity.velocity.vy;
     })
     .add('Plain object', () => {
-      runArray(normalEntities);
+      const entity = normalEntity.components;
+
+      entity.position.x += entity.velocity.vx;
+      entity.position.y += entity.velocity.vy;
     })
     .on('cycle', (event) => {
       results.push(String(event.target));
