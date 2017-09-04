@@ -29,11 +29,15 @@
 
   var assign = _Object.assign || function(to) {
     var args = arguments, s = 1, from, key;
+
     for (; s < args[_length]; s++) {
       from = args[s];
-
-      for (key in objectKeys(from)) { // eslint-disable-line
-        to[key] = from[key];
+      if (from) {
+        var keys = objectKeys(from), i = 0;
+        for (; i < keys[_length]; i++) {
+          key = keys[i];
+          to[key] = from[key];
+        }
       }
     }
 
