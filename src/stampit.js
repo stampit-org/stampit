@@ -59,7 +59,7 @@
 
   function isPlainObject(value) {
     return value && typeof value == _object &&
-      _Object.getPrototypeOf(value) === _Object.prototype;
+      _Object.getPrototypeOf(value) == _Object.prototype;
   }
 
   /**
@@ -113,7 +113,7 @@
 
   function extractFunctions() {
     var fns = concat.apply([], arguments).filter(isFunction);
-    return fns[_length] === 0 ? _undefined : fns;
+    return fns[_length] == 0 ? _undefined : fns;
   }
 
   function pushUniqueFuncs(dst, src) {
@@ -242,7 +242,7 @@
       tmp = descriptor[_propertyDescriptors];
       if (tmp) defineProperties(obj, tmp);
 
-      if (!descriptor[_initializers] || descriptor[_initializers][_length] === 0) return obj;
+      if (!descriptor[_initializers] || descriptor[_initializers][_length] == 0) return obj;
 
       if (options === _undefined) options = {};
       var inits = descriptor[_initializers], args = slice.apply(arguments);
@@ -370,7 +370,7 @@
   }
 
   function createUtilityFunction(propName, action) {
-    return function composeUtil() {
+    return function() {
       var obj = {};
       var args = concat.apply([{}], arguments);
       obj[propName] = action.apply(_undefined, args);
@@ -446,7 +446,7 @@
 
   _static = {};
   _static[_staticProperties] = assign({}, allUtilities, {
-    create: function create() {
+    create: function() {
       return this.apply(_undefined, arguments);
     },
     compose: _stampit // infecting
