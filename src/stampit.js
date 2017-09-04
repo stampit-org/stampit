@@ -4,17 +4,22 @@
 
   var _object = 'object';
   var _methods = 'methods';
-  var _properties = 'properties';
-  var _deepProperties = 'deepProperties';
-  var _deepProps = 'deepProps';
-  var _propertyDescriptors = 'propertyDescriptors';
-  var _staticProperties = 'staticProperties';
-  var _staticDeepProperties = 'staticDeepProperties';
-  var _deepStatics = 'deepStatics';
-  var _staticPropertyDescriptors = 'staticPropertyDescriptors';
-  var _configuration = 'configuration';
-  var _deepConfiguration = 'deepConfiguration';
-  var _deepConf = 'deepConf';
+  var _roperties = 'roperties';
+  var _properties = 'p' + _roperties;
+  var _deep = 'deep';
+  var _deepProperties = _deep + 'P' + _roperties;
+  var _deepProps = _deep + 'Props';
+  var _ropertyDescriptors = 'ropertyDescriptors';
+  var _propertyDescriptors = 'p' + _ropertyDescriptors;
+  var _static = 'static';
+  var _staticProperties = _static + 'P' + _roperties;
+  var _staticDeepProperties = _static + 'DeepP' + _roperties;
+  var _deepStatics = _deep + 'Statics';
+  var _staticPropertyDescriptors = _static + 'P' + _ropertyDescriptors;
+  var _onfiguration = 'onfiguration';
+  var _configuration = 'c' + _onfiguration;
+  var _deepConfiguration = _deep + 'C' + _onfiguration;
+  var _deepConf = _deep + 'Conf';
   var _initializers = 'initializers';
   var _composers = 'composers';
   var _compose = 'compose';
@@ -28,15 +33,14 @@
   var objectKeys = _Object.keys;
 
   var assign = _Object.assign || function(to) {
-    var args = arguments, s = 1, from, key;
+    var args = arguments, s = 1, from, keys, i;
 
     for (; s < args[_length]; s++) {
       from = args[s];
       if (from) {
-        var keys = objectKeys(from), i = 0;
-        for (; i < keys[_length]; i++) {
-          key = keys[i];
-          to[key] = from[key];
+        keys = objectKeys(from);
+        for (i = 0; i < keys[_length]; i++) {
+          to[keys[i]] = from[keys[i]];
         }
       }
     }
@@ -440,22 +444,20 @@
     return stamp;
   };
 
+  _static = {};
+  _static[_staticProperties] = assign({}, allUtilities, {
+    create: function create() {
+      return this.apply(_undefined, arguments);
+    },
+    compose: _stampit // infecting
+  });
+
   /**
    * Infected stamp. Used as a storage of the infection metadata
    * @type {Function}
    * @return {Stamp}
    */
-  var baseStampit = compose(
-    {staticProperties: allUtilities},
-    {
-      staticProperties: {
-        create: function create() {
-          return this.apply(_undefined, arguments);
-        },
-        compose: _stampit // infecting
-      }
-    }
-  );
+  var baseStampit = compose(_static);
 
   // Setting up the shortcut functions
   assign(_stampit, allUtilities);
