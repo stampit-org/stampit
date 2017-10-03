@@ -22,6 +22,7 @@
   var _compose = 'compose';
   var _object = 'object';
   var _length = 'length';
+  var _create = 'create';
   var _Object = Object;
   var isArray = Array.isArray;
   var defineProperties = _Object.defineProperties;
@@ -121,11 +122,9 @@
   }
 
   function concatAssignFunctions(dstObject, srcArray, propName) {
-    if (!isArray(srcArray)) {
-      return;
+    if (isArray(srcArray)) {
+      pushUniqueFuncs(dstObject[propName] = dstObject[propName] || [], srcArray);
     }
-
-    pushUniqueFuncs(dstObject[propName] = dstObject[propName] || [], srcArray);
   }
 
 
@@ -227,7 +226,7 @@
     return function Stamp(options) {
       var i = Stamp[_compose] || {};
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = _Object.create(i[_methods] || null);
+      var obj = _Object[_create](i[_methods] || null);
 
       var inits = i[_initializers], args = slice.apply(arguments);
       var initializer, returnedValue;
@@ -264,23 +263,18 @@
     var1 = createFactory();
 
     var2 = descriptor[_staticDeepProperties];
-    if (var2) {
-      merge(var1, var2);
-    }
+    var2 && merge(var1, var2);
+
     var2 = descriptor[_staticProperties];
-    if (var2) {
-      assign(var1, var2);
-    }
+    var2 && assign(var1, var2);
+
     var2 = descriptor[_staticPropertyDescriptors];
-    if (var2) {
-      defineProperties(var1, var2);
-    }
+    var2 && defineProperties(var1, var2);
 
     var2 = isFunction(var1[_compose]) ? var1[_compose] : compose;
-    var1[_compose] = function() {
+    assign(var1[_compose] = function() {
       return var2.apply(this, arguments);
-    };
-    assign(var1[_compose], descriptor);
+    }, descriptor);
 
     return var1;
   }
@@ -294,20 +288,18 @@
    */
   function mergeComposable(dstDescriptor, srcComposable) {
     var4 = (srcComposable && srcComposable[_compose]) || srcComposable;
-    if (!isObject(var4)) {
-      return dstDescriptor;
+    if (isObject(var4)) {
+      mergeAssign(dstDescriptor, var4, _methods);
+      mergeAssign(dstDescriptor, var4, _properties);
+      deepMergeAssign(dstDescriptor, var4, _deepProperties);
+      mergeAssign(dstDescriptor, var4, _propertyDescriptors);
+      mergeAssign(dstDescriptor, var4, _staticProperties);
+      deepMergeAssign(dstDescriptor, var4, _staticDeepProperties);
+      mergeAssign(dstDescriptor, var4, _staticPropertyDescriptors);
+      mergeAssign(dstDescriptor, var4, _configuration);
+      deepMergeAssign(dstDescriptor, var4, _deepConfiguration);
+      concatAssignFunctions(dstDescriptor, var4[_initializers], _initializers);
     }
-
-    mergeAssign(dstDescriptor, var4, _methods);
-    mergeAssign(dstDescriptor, var4, _properties);
-    deepMergeAssign(dstDescriptor, var4, _deepProperties);
-    mergeAssign(dstDescriptor, var4, _propertyDescriptors);
-    mergeAssign(dstDescriptor, var4, _staticProperties);
-    deepMergeAssign(dstDescriptor, var4, _staticDeepProperties);
-    mergeAssign(dstDescriptor, var4, _staticPropertyDescriptors);
-    mergeAssign(dstDescriptor, var4, _configuration);
-    deepMergeAssign(dstDescriptor, var4, _deepConfiguration);
-    concatAssignFunctions(dstDescriptor, var4[_initializers], _initializers);
 
     return dstDescriptor;
   }
@@ -411,7 +403,7 @@
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  var _stampit = function stampit() {
+  var _stampit = assign(function stampit() {
     var i = 0, tmp1, composables = [], uniqueComposers, tmp2 = arguments, tmp3;
     for (; i < tmp2[_length]; i) {
       tmp1 = tmp2[i++];
@@ -438,13 +430,10 @@
     }
 
     return tmp1;
-  };
-
-  // Setting up the shortcut functions
-  assign(_stampit, allUtilities);
+  }, allUtilities); // Setting up the shortcut functions
 
   var4 = {};
-  allUtilities.create = function() {
+  allUtilities[_create] = function() {
     return this.apply(_undefined, arguments);
   };
   allUtilities[_compose] = _stampit;
