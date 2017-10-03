@@ -37,6 +37,7 @@
     "gzip-size-cli": "^2.1.0",
     "istanbul": "^1.1.0-alpha.1",
     "lodash": "^4.16.1",
+    "mkdirp": "^0.5.1",
     "nsp": "^2.1.0",
     "require-all": "^2.2.0",
     "rimraf": "^2.3.4",
@@ -68,7 +69,7 @@
     "precheck": "npm test",
     "check": "npm run audit && npm run deps",
     "watch": "watch 'clear && npm -s test' test/ src/",
-    "minify": "uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
+    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
   },
   "license": "MIT",
