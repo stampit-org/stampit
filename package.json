@@ -68,7 +68,7 @@
     "precheck": "npm test",
     "check": "npm run audit && npm run deps",
     "watch": "watch 'clear && npm -s test' test/ src/",
-    "minify": "uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js --source-map dist/stampit.min.js.map",
+    "minify": "uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
   },
   "license": "MIT",
