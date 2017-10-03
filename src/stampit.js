@@ -128,24 +128,6 @@
   }
 
 
-  function combineProperties(dstObject, srcObject, propName, action) {
-    if (!isObject(srcObject[propName])) {
-      return;
-    }
-    if (!isObject(dstObject[propName])) {
-      dstObject[propName] = {};
-    }
-    action(dstObject[propName], srcObject[propName]);
-  }
-
-  function deepMergeAssign(dstObject, srcObject, propName) {
-    combineProperties(dstObject, srcObject, propName, merge);
-  }
-
-  function mergeAssign(dstObject, srcObject, propName) {
-    combineProperties(dstObject, srcObject, propName, assign);
-  }
-
   /**
    * Converts stampit extended descriptor to a standard one.
    * @param {Object|*} descr
@@ -289,15 +271,25 @@
   function mergeComposable(dstDescriptor, srcComposable) {
     var4 = (srcComposable && srcComposable[_compose]) || srcComposable;
     if (isObject(var4)) {
-      mergeAssign(dstDescriptor, var4, _methods);
-      mergeAssign(dstDescriptor, var4, _properties);
-      deepMergeAssign(dstDescriptor, var4, _deepProperties);
-      mergeAssign(dstDescriptor, var4, _propertyDescriptors);
-      mergeAssign(dstDescriptor, var4, _staticProperties);
-      deepMergeAssign(dstDescriptor, var4, _staticDeepProperties);
-      mergeAssign(dstDescriptor, var4, _staticPropertyDescriptors);
-      mergeAssign(dstDescriptor, var4, _configuration);
-      deepMergeAssign(dstDescriptor, var4, _deepConfiguration);
+      function mergeAssign(propName, deep) {
+        if (!isObject(var4[propName])) {
+          return;
+        }
+        if (!isObject(dstDescriptor[propName])) {
+          dstDescriptor[propName] = {};
+        }
+        (deep || assign)(dstDescriptor[propName], var4[propName]);
+      }
+
+      mergeAssign(_methods);
+      mergeAssign(_properties);
+      mergeAssign(_deepProperties, merge);
+      mergeAssign(_propertyDescriptors);
+      mergeAssign(_staticProperties);
+      mergeAssign(_staticDeepProperties, merge);
+      mergeAssign(_staticPropertyDescriptors, merge);
+      mergeAssign(_configuration);
+      mergeAssign(_deepConfiguration, merge);
       concatAssignFunctions(dstDescriptor, var4[_initializers], _initializers);
     }
 
