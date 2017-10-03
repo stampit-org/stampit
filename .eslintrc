@@ -10,6 +10,7 @@
     "prefer-rest-params": 0,
     "no-use-before-define": 0,
     "wrap-iife": 0,
-    "eqeqeq": 0
+    "eqeqeq": 0,
+    "no-proto": 0
   }
 }
