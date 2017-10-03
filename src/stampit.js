@@ -1,5 +1,4 @@
 !function() {
-  'use strict';
   var _undefined;
 
   var var1 = 'roperties';
@@ -226,24 +225,24 @@
    */
   function createFactory() {
     return function Stamp(options) {
-      var descriptor = Stamp[_compose] || {};
+      var i = Stamp[_compose] || {};
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = _Object.create(descriptor[_methods] || null);
+      var obj = _Object.create(i[_methods] || null);
 
-      var inits = descriptor[_initializers], args = slice.apply(arguments);
-      var i = 0, initializer, returnedValue;
+      var inits = i[_initializers], args = slice.apply(arguments);
+      var initializer, returnedValue;
 
-      var tmp = descriptor[_deepProperties];
+      var tmp = i[_deepProperties];
       if (tmp) merge(obj, tmp);
-      tmp = descriptor[_properties];
+      tmp = i[_properties];
       if (tmp) assign(obj, tmp);
-      tmp = descriptor[_propertyDescriptors];
+      tmp = i[_propertyDescriptors];
       if (tmp) defineProperties(obj, tmp);
 
       if (!inits || inits[_length] == 0) return obj;
 
       if (options === _undefined) options = {};
-      for (; i < inits[_length];) {
+      for (i = 0; i < inits[_length];) {
         initializer = inits[i++];
         if (isFunction(initializer)) {
           returnedValue = initializer.call(obj, options,
@@ -413,41 +412,43 @@
    * @return {Stamp} The Stampit-flavoured stamp
    */
   var _stampit = function stampit() {
-    var i = 0, arg, composables = [], uniqueComposers, returnedValue, args = arguments;
-    for (; i < args[_length]; i) {
-      arg = args[i++];
-      if (isObject(arg)) {
-        composables.push(isStamp(arg) ? arg : standardiseDescriptor(arg));
+    var i = 0, tmp1, composables = [], uniqueComposers, tmp2 = arguments, tmp3;
+    for (; i < tmp2[_length]; i) {
+      tmp1 = tmp2[i++];
+      if (isObject(tmp1)) {
+        composables.push(isStamp(tmp1) ? tmp1 : standardiseDescriptor(tmp1));
       }
     }
 
     // Calling the standard pure compose function here.
-    arg = compose.apply(this || baseStampit, composables);
+    tmp1 = compose.apply(this || baseStampit, composables);
 
-    args = arg[_compose][_deepConfiguration];
-    var composerFunctions = args && args[_composers];
-    if (composerFunctions && composerFunctions[_length] > 0) {
-      pushUniqueFuncs(args[_composers] = uniqueComposers = [], composerFunctions);
+    tmp2 = tmp1[_compose][_deepConfiguration];
+    tmp3 = tmp2 && tmp2[_composers];
+    if (tmp3 && tmp3[_length] > 0) {
+      pushUniqueFuncs(tmp2[_composers] = uniqueComposers = [], tmp3);
 
       if (isStamp(this)) {
         composables.unshift(this);
       }
       for (i = 0; i < uniqueComposers[_length]; i) {
-        returnedValue = uniqueComposers[i++]({stamp: arg, composables: composables});
-        arg = isStamp(returnedValue) ? returnedValue : arg;
+        tmp3 = uniqueComposers[i++]({stamp: tmp1, composables: composables});
+        tmp1 = isStamp(tmp3) ? tmp3 : tmp1;
       }
     }
 
-    return arg;
+    return tmp1;
   };
 
+  // Setting up the shortcut functions
+  assign(_stampit, allUtilities);
+
   var4 = {};
-  var4[_staticProperties] = assign({}, allUtilities, {
-    create: function() {
-      return this.apply(_undefined, arguments);
-    },
-    compose: _stampit // infecting
-  });
+  allUtilities.create = function() {
+    return this.apply(_undefined, arguments);
+  };
+  allUtilities[_compose] = _stampit;
+  var4[_staticProperties] = allUtilities;
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
@@ -455,9 +456,6 @@
    * @return {Stamp}
    */
   var baseStampit = compose(var4);
-
-  // Setting up the shortcut functions
-  assign(_stampit, allUtilities);
 
   _stampit[_compose] = _stampit.bind(); // bind to undefined
 
