@@ -27,9 +27,9 @@
   var isArray = Array.isArray;
   var defineProperties = _Object.defineProperties;
   var objectKeys = _Object.keys;
-  var3 = Array.prototype;
-  var concat = var3.concat;
-  var slice = var3.slice;
+  var1 = Array.prototype;
+  var concat = var1.concat;
+  var slice = var1.slice;
 
   var assign = _Object.assign || function(to) {
     var args = arguments, s = 1, from, keys, i;
@@ -269,18 +269,18 @@
    * @returns {Descriptor} Returns the dstDescriptor argument.
    */
   function mergeComposable(dstDescriptor, srcComposable) {
+    function mergeAssign(propName, deep) {
+      if (!isObject(var4[propName])) {
+        return;
+      }
+      if (!isObject(dstDescriptor[propName])) {
+        dstDescriptor[propName] = {};
+      }
+      (deep || assign)(dstDescriptor[propName], var4[propName]);
+    }
+
     var4 = (srcComposable && srcComposable[_compose]) || srcComposable;
     if (isObject(var4)) {
-      function mergeAssign(propName, deep) {
-        if (!isObject(var4[propName])) {
-          return;
-        }
-        if (!isObject(dstDescriptor[propName])) {
-          dstDescriptor[propName] = {};
-        }
-        (deep || assign)(dstDescriptor[propName], var4[propName]);
-      }
-
       mergeAssign(_methods);
       mergeAssign(_properties);
       mergeAssign(_deepProperties, merge);
@@ -351,11 +351,10 @@
   function createUtilityFunction(propName, action) {
     return function() {
       var4 = {};
-      var3 = concat.apply([{}], arguments);
-      var4[propName] = action.apply(_undefined, var3);
+      var4[propName] = action.apply(_undefined, concat.apply([{}], arguments));
       var1 = this;
 
-      return ((var1 && var1[_compose]) || _stampit).call(var1, var4);
+      return ((var1 && var1[_compose]) || var2).call(var1, var4);
     };
   }
 
@@ -395,7 +394,7 @@
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  var _stampit = assign(function stampit() {
+  var2 = allUtilities[_compose] = assign(function stampit() {
     var i = 0, tmp1, composables = [], uniqueComposers, tmp2 = arguments, tmp3;
     for (; i < tmp2[_length]; i) {
       tmp1 = tmp2[i++];
@@ -424,11 +423,11 @@
     return tmp1;
   }, allUtilities); // Setting up the shortcut functions
 
-  var4 = {};
   allUtilities[_create] = function() {
     return this.apply(_undefined, arguments);
   };
-  allUtilities[_compose] = _stampit;
+
+  var4 = {};
   var4[_staticProperties] = allUtilities;
 
   /**
@@ -438,7 +437,7 @@
    */
   var baseStampit = compose(var4);
 
-  _stampit[_compose] = _stampit.bind(); // bind to undefined
+  var2[_compose] = var2.bind(); // bind to undefined
 
-  if (typeof _undefined != typeof module) module.exports = _stampit; else self.stampit = _stampit;
+  if (typeof _undefined != typeof module) module.exports = var2; else self.stampit = var2;
 }();
