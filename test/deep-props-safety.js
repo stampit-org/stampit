@@ -27,12 +27,12 @@ test('Stamp deepProps deep cloned for object created', (t) => {
 
 test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
   const stamp = stampit()
-    .deepProps({deep: {foo: 'foo', bar: 'bar'}, foo: 'foo', bar: 'bar'})
-    .deepProps({
-      deep: {foo: 'override', baz: 'baz'},
-      foo: 'override',
-      baz: 'baz'
-    });
+  .deepProps({deep: {foo: 'foo', bar: 'bar'}, foo: 'foo', bar: 'bar'})
+  .deepProps({
+    deep: {foo: 'override', baz: 'baz'},
+    foo: 'override',
+    baz: 'baz'
+  });
   const o = stamp();
 
   t.equal(o.foo, 'override');
@@ -48,18 +48,18 @@ test('stampit.deepProps(deepProps) deep merge into stamp', (t) => {
 test('stamp.compose() deep merge deepProps', (t) => {
   const stamp = stampit({
     deepProps: {
-      deep: {foo: 'foo', bar: 'bar'},
+      deep: {foo: 'foo', bar: 'bar', NULL: null, ZERO: 0},
       foo: 'foo',
       bar: 'bar'
     }
   })
-    .compose(stampit({
-      deepProps: {
-        deep: {foo: 'override', baz: 'baz'},
-        foo: 'override',
-        baz: 'baz'
-      }
-    }));
+  .compose(stampit({
+    deepProps: {
+      deep: {foo: 'override', baz: 'baz', NULL: 'STRING', ZERO: 'STRING'},
+      foo: 'override',
+      baz: 'baz'
+    }
+  }));
   const o = stamp();
 
   t.equal(o.foo, 'override');
@@ -68,6 +68,30 @@ test('stamp.compose() deep merge deepProps', (t) => {
   t.equal(o.deep.foo, 'override');
   t.equal(o.deep.bar, 'bar');
   t.equal(o.deep.baz, 'baz');
+  t.equal(o.deep.NULL, 'STRING');
+  t.equal(o.deep.ZERO, 'STRING');
+
+  t.end();
+});
+
+test('stamp.compose() deep merge bad deepProps', (t) => {
+  const stamp = stampit.compose({
+    deepProperties: null,
+  }, {
+    deepProps: {
+      deep: {foo: 'override', baz: 'baz', NULL: 'STRING', ZERO: 'STRING'},
+      foo: 'override',
+      baz: 'baz'
+    }
+  });
+  const o = stamp();
+
+  t.equal(o.foo, 'override');
+  t.equal(o.baz, 'baz');
+  t.equal(o.deep.foo, 'override');
+  t.equal(o.deep.baz, 'baz');
+  t.equal(o.deep.NULL, 'STRING');
+  t.equal(o.deep.ZERO, 'STRING');
 
   t.end();
 });

@@ -79,27 +79,22 @@
     // Note that functions are also assigned! We do not deep merge functions.
     if (!isPlainObject(src)) return src;
 
-    // See if 'dst' is allowed to be mutated.
-    // If not - it's overridden with a new plain object.
-    var returnValue = isObject(dst) ? dst : {};
-
-    var keys = objectKeys(src), i = 0, key, srcValue;
+    var keys = objectKeys(src), i = 0, key;
     for (; i < keys[_length];) {
       key = keys[i++];
 
-      srcValue = src[key];
       // Do not merge properties with the '_undefined' value.
-      if (srcValue !== _undefined) {
+      if (src[key] !== _undefined) {
         // deep merge each property. Recursion!
-        returnValue[key] = mergeOne(
+        dst[key] = mergeOne(
           // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
-          isPlainObject(returnValue[key]) || isArray(srcValue) ? returnValue[key] : {},
-          srcValue
+          isPlainObject(dst[key]) || isArray(src[key]) ? dst[key] : {},
+          src[key]
         );
       }
     }
 
-    return returnValue;
+    return dst;
   }
 
   function merge(dst) {
@@ -113,7 +108,7 @@
 
   function pushUniqueFuncs(dst, src) {
     var i = 0, fn;
-    for (; i < src[_length]; i) {
+    for (; i < src[_length];) {
       fn = src[i++];
       if (isFunction(fn) && dst.indexOf(fn) < 0) {
         dst.push(fn);
@@ -153,7 +148,6 @@
    * @returns {Descriptor} Standardised descriptor
    */
   function standardiseDescriptor(descr) {
-    if (!isObject(descr)) return descr;
     var4 = {};
 
     var4[_methods] = descr[_methods] || _undefined;
@@ -270,17 +264,16 @@
    */
   function mergeComposable(dstDescriptor, srcComposable) {
     function mergeAssign(propName, deep) {
-      if (!isObject(var4[propName])) {
+      if (!isObject(srcComposable[propName])) {
         return;
       }
       if (!isObject(dstDescriptor[propName])) {
         dstDescriptor[propName] = {};
       }
-      (deep || assign)(dstDescriptor[propName], var4[propName]);
+      (deep || assign)(dstDescriptor[propName], srcComposable[propName]);
     }
 
-    var4 = srcComposable[_compose] || srcComposable;
-    if (isObject(var4)) {
+    if (srcComposable && isObject(srcComposable = srcComposable[_compose] || srcComposable)) {
       mergeAssign(_methods);
       mergeAssign(_properties);
       mergeAssign(_deepProperties, merge);
@@ -290,7 +283,7 @@
       mergeAssign(_staticPropertyDescriptors, merge);
       mergeAssign(_configuration);
       mergeAssign(_deepConfiguration, merge);
-      concatAssignFunctions(dstDescriptor, var4[_initializers], _initializers);
+      concatAssignFunctions(dstDescriptor, srcComposable[_initializers], _initializers);
     }
 
     return dstDescriptor;
@@ -305,7 +298,6 @@
    */
   function compose() {
     var descriptor = concat.apply([this], arguments)
-    .filter(isObject)
     .reduce(mergeComposable, {});
     return createStamp(descriptor);
   }
@@ -348,16 +340,6 @@
     return isFunction(obj) && isFunction(obj[_compose]);
   }
 
-  function createUtilityFunction(propName, action) {
-    return function() {
-      var4 = {};
-      var4[propName] = action.apply(_undefined, concat.apply([{}], arguments));
-      var1 = this;
-
-      return ((var1 && var1[_compose]) || var2).call(var1, var4);
-    };
-  }
-
   var allUtilities = {};
 
   allUtilities[_methods] = createUtilityFunction(_methods, assign);
@@ -388,6 +370,16 @@
   allUtilities[_propertyDescriptors] = createUtilityFunction(_propertyDescriptors, assign);
 
   allUtilities[_staticPropertyDescriptors] = createUtilityFunction(_staticPropertyDescriptors, assign);
+
+  function createUtilityFunction(propName, action) {
+    return function() {
+      var4 = {};
+      var4[propName] = action.apply(_undefined, concat.apply([{}], arguments));
+      var1 = this;
+
+      return ((var1 && var1[_compose]) || var2).call(var1, var4);
+    };
+  }
 
   /**
    * Infected compose
