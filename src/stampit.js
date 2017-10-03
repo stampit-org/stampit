@@ -83,19 +83,19 @@
     // If not - it's overridden with a new plain object.
     var returnValue = isObject(dst) ? dst : {};
 
-    var keys = objectKeys(src), i = 0, key, srcValue, dstValue, newDst;
+    var keys = objectKeys(src), i = 0, key, srcValue;
     for (; i < keys[_length];) {
       key = keys[i++];
 
       srcValue = src[key];
       // Do not merge properties with the '_undefined' value.
       if (srcValue !== _undefined) {
-        dstValue = returnValue[key];
-        // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
-        newDst = isPlainObject(dstValue) || isArray(srcValue) ? dstValue : {};
-
         // deep merge each property. Recursion!
-        returnValue[key] = mergeOne(newDst, srcValue);
+        returnValue[key] = mergeOne(
+          // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
+          isPlainObject(returnValue[key]) || isArray(srcValue) ? returnValue[key] : {},
+          srcValue
+        );
       }
     }
 
@@ -108,7 +108,7 @@
 
   function extractFunctions() {
     var1 = concat.apply([], arguments).filter(isFunction);
-    return var1[_length] == 0 ? _undefined : var1;
+    return var1[_length] ? var1 : _undefined;
   }
 
   function pushUniqueFuncs(dst, src) {
@@ -220,7 +220,7 @@
       tmp = i[_propertyDescriptors];
       if (tmp) defineProperties(obj, tmp);
 
-      if (!inits || inits[_length] == 0) return obj;
+      if (!inits || !inits[_length]) return obj;
 
       if (options === _undefined) options = {};
       for (i = 0; i < inits[_length];) {
@@ -279,7 +279,7 @@
       (deep || assign)(dstDescriptor[propName], var4[propName]);
     }
 
-    var4 = (srcComposable && srcComposable[_compose]) || srcComposable;
+    var4 = srcComposable[_compose] || srcComposable;
     if (isObject(var4)) {
       mergeAssign(_methods);
       mergeAssign(_properties);
@@ -408,7 +408,7 @@
 
     tmp2 = tmp1[_compose][_deepConfiguration];
     tmp3 = tmp2 && tmp2[_composers];
-    if (tmp3 && tmp3[_length] > 0) {
+    if (tmp3 && tmp3[_length]) {
       pushUniqueFuncs(tmp2[_composers] = uniqueComposers = [], tmp3);
 
       if (isStamp(this)) {
