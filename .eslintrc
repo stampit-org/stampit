@@ -11,6 +11,8 @@
     "no-use-before-define": 0,
     "wrap-iife": 0,
     "eqeqeq": 0,
-    "no-proto": 0
+    "no-proto": 0,
+    "no-cond-assign": 0,
+    "func-names": 0
   }
 }
