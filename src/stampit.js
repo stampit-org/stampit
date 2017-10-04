@@ -31,29 +31,28 @@
   var concat = var1.concat;
   var slice = var1.slice;
 
-  var assign = _Object.assign || function(to) {
-    var args = arguments, s = 1, from, keys, i;
+  function _mergeOrAssign(action, dst) {
+    return slice.call(arguments, 2).reduce(action, dst);
+  }
 
-    for (; s < args[_length];) {
-      from = args[s++];
-      if (from) {
-        keys = objectKeys(from);
-        for (i = 0; i < keys[_length]; i++) {
-          to[keys[i]] = from[keys[i]];
-        }
+  function assignOne(dst, src) {
+    if (src) {
+      var keys = objectKeys(src);
+      for (var i = 0; i < keys[_length]; i++) {
+        dst[keys[i]] = src[keys[i]];
       }
     }
+    return dst;
+  }
 
-    return to;
-  };
-
+  var assign = _Object.assign || _mergeOrAssign.bind(0, assignOne);
 
   function isFunction(obj) {
     return typeof obj == 'function';
   }
 
   function isObject(obj) {
-    return obj && (typeof obj == _object || isFunction(obj));
+    return obj && typeof obj == _object || isFunction(obj);
   }
 
   function isPlainObject(value) {
@@ -97,9 +96,7 @@
     return dst;
   }
 
-  function merge(dst) {
-    return slice.call(arguments, 1).reduce(mergeOne, dst);
-  }
+  var merge = _mergeOrAssign.bind(0, mergeOne);
 
   function extractFunctions() {
     var1 = concat.apply([], arguments).filter(isFunction);
