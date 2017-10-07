@@ -27,9 +27,9 @@
   var isArray = Array.isArray;
   var defineProperties = _Object.defineProperties;
   var objectKeys = _Object.keys;
-  var1 = Array.prototype;
-  var concat = var1.concat;
-  var slice = var1.slice;
+  var tmp5 = Array.prototype;
+  var concat = tmp5.concat;
+  var slice = tmp5.slice;
 
   function _mergeOrAssign(action, dst) {
     return slice.call(arguments, 2).reduce(action, dst);
@@ -393,7 +393,7 @@
     }
 
     // Calling the standard pure compose function here.
-    tmp1 = compose.apply(this || baseStampit, composables);
+    tmp1 = compose.apply(this || tmp5, composables);
 
     tmp2 = tmp1[_compose][_deepConfiguration];
     tmp3 = tmp2 && tmp2[_composers];
@@ -424,7 +424,7 @@
    * @type {Function}
    * @return {Stamp}
    */
-  var baseStampit = compose(var4);
+  tmp5 = compose(var4);
 
   var2[_compose] = var2.bind(); // bind to undefined
 
