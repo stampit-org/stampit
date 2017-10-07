@@ -277,7 +277,7 @@
       mergeAssign(_propertyDescriptors);
       mergeAssign(_staticProperties);
       mergeAssign(_staticDeepProperties, merge);
-      mergeAssign(_staticPropertyDescriptors, merge);
+      mergeAssign(_staticPropertyDescriptors);
       mergeAssign(_configuration);
       mergeAssign(_deepConfiguration, merge);
       concatAssignFunctions(dstDescriptor, srcComposable[_initializers], _initializers);
