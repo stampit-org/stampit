@@ -1,6 +1,13 @@
 import test from 'tape';
 import stampit from '../src/stampit';
-import isStamp from '../isStamp';
+
+function isFunction(obj) {
+  return typeof obj === 'function';
+}
+function isStamp(obj) {
+  return isFunction(obj) && isFunction(obj.compose);
+}
+
 
 // Main API
 

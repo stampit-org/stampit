@@ -7,6 +7,8 @@
     "url": "https://ericelliottjs.com"
   },
   "main": "src/stampit.js",
+  "minified:main": "dist/stampit.min.js",
+  "typings": "./src/stampit.d.ts",
   "keywords": [
     "object",
     "prototype",
@@ -27,7 +29,9 @@
   "devDependencies": {
     "babel-cli": "^6.10.1",
     "babel-preset-env": "^1.6.0",
+    "babelify": "^7.3.0",
     "benchmark": "^2.1.1",
+    "browserify": "^14.4.0",
     "check-compose": "^3.2.0",
     "dependency-check": "^2.5.0",
     "eslint": "^3.7.0",
@@ -41,11 +45,6 @@
     "nsp": "^2.1.0",
     "require-all": "^2.2.0",
     "rimraf": "^2.3.4",
-    "rollup": "^0.41.1",
-    "rollup-plugin-buble": "^0.15.0",
-    "rollup-plugin-es3": "^1.0.3",
-    "rollup-plugin-filesize": "^1.0.0",
-    "rollup-plugin-uglify": "^1.0.0",
     "tape": "^4.2.2",
     "uglify-js": "^2.8.29",
     "watch": "^1.0.1"
@@ -58,6 +57,7 @@
     "pretest": "npm run build",
     "test": "babel-node --presets=env test && npm run lint",
     "posttest": "node test/benchmark",
+    "browsertest": "browserify ./test/index.js -t [ babelify --presets [ env ] ] > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
     "clean": "rimraf dist/*",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
@@ -76,10 +76,9 @@
   "npmName": "stampit",
   "npmFileMap": [
     {
-      "basePath": "/dist/",
       "files": [
-        "stampit.full.js",
-        "stampit.full.min.js"
+        "/src/stampit.js",
+        "/dist/stampit.min.js"
       ]
     }
   ]
