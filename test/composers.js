@@ -14,20 +14,16 @@ test('stampit({ composers() })', (t) => {
       t.ok(_.isArray(args[0].composables), 'composables passed');
       t.equal(args[0].composables.length, 1, 'only one composable passed');
       t.ok(_.isPlainObject(args[0].composables[0]), 'the composable is a descriptor');
-      t.ok(_.isPlainObject(args[0].composables[0].deepConfiguration),
-        'composable was converted to standard descriptor');
-      t.ok(_.isArray(args[0].composables[0].deepConfiguration.composers),
+      t.ok(_.isArray(args[0].composables[0].composers),
         'first composable have the composers list');
       executed += 1;
       passedStamp = args[0].stamp;
     }
   });
 
-  t.ok(stamp.compose.deepConfiguration,
-    'should add deepConfiguration');
-  t.ok(stamp.compose.deepConfiguration.composers,
-    'should add deepConfiguratuin.composers');
-  t.equal(stamp.compose.deepConfiguration.composers.length, 1,
+  t.ok(stamp.compose.composers,
+    'should add composers');
+  t.equal(stamp.compose.composers.length, 1,
     'should be single composer');
   t.equal(executed, 1,
     'should be executed while composing');
@@ -137,7 +133,7 @@ test('composers should be deduped', (t) => {
   const stamp = stampit({composers() {}});
 
   const result = stamp.compose(stamp2).compose({}).compose(stamp);
-  const composers = result.compose.deepConfiguration.composers;
+  const composers = result.compose.composers;
   t.equal(composers.length, 1, 'should dedupe composers');
 
   t.end();
@@ -153,7 +149,7 @@ test('stamp.compose({ composers() }) passes full composables array', (t) => {
         t.equal(composables.length, 1, 'creating stamp should pass one composable');
       }
       if (run === 2) {
-        t.equal(composables.length, 2, 'inheriting stamp should pass one composable');
+        t.equal(composables.length, 2, 'inheriting stamp should pass two composables');
         t.equal(composables[0], stamp, 'first composable must be stamp itself');
         t.equal(composables[1], stamp2, 'second composable must be passed');
       }

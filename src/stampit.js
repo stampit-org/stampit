@@ -27,9 +27,9 @@
   var isArray = Array.isArray;
   var defineProperties = _Object.defineProperties;
   var objectKeys = _Object.keys;
-  var tmp5 = Array.prototype;
-  var concat = tmp5.concat;
-  var slice = tmp5.slice;
+  var baseStampit = Array.prototype; // temporary reusing the variable
+  var concat = baseStampit.concat;
+  var slice = baseStampit.slice;
 
   function _mergeOrAssign(action, dst) {
     return slice.call(arguments, 2).reduce(action, dst);
@@ -103,22 +103,6 @@
     return var1[_length] ? var1 : _undefined;
   }
 
-  function pushUniqueFuncs(dst, src) {
-    var i = 0, fn;
-    for (; i < src[_length];) {
-      fn = src[i++];
-      if (isFunction(fn) && dst.indexOf(fn) < 0) {
-        dst.push(fn);
-      }
-    }
-  }
-
-  function concatAssignFunctions(dstObject, srcArray, propName) {
-    if (isArray(srcArray)) {
-      pushUniqueFuncs(dstObject[propName] = dstObject[propName] || [], srcArray);
-    }
-  }
-
 
   /**
    * Converts stampit extended descriptor to a standard one.
@@ -180,11 +164,7 @@
     var2 = descr[_deepConf];
     var3 = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var1 = extractFunctions(descr[_composers]);
-    if (var1) {
-      var3 = var3 || {};
-      concatAssignFunctions(var3, var1, _composers);
-    }
+    var4[_composers] = extractFunctions(descr[_composers]);
 
     var4[_deepConfiguration] = var3;
 
@@ -270,6 +250,19 @@
       (deep || assign)(dstDescriptor[propName], srcComposable[propName]);
     }
 
+    function concatAssignFunctions(propName) {
+      if (isArray(srcComposable[propName])) {
+        var src = srcComposable[propName], i = 0, fn,
+          dst = dstDescriptor[propName] = dstDescriptor[propName] || [];
+        for (; i < src[_length];) {
+          fn = src[i++];
+          if (isFunction(fn) && dst.indexOf(fn) < 0) {
+            dst.push(fn);
+          }
+        }
+      }
+    }
+
     if (srcComposable && isObject(srcComposable = srcComposable[_compose] || srcComposable)) {
       mergeAssign(_methods);
       mergeAssign(_properties);
@@ -280,7 +273,8 @@
       mergeAssign(_staticPropertyDescriptors);
       mergeAssign(_configuration);
       mergeAssign(_deepConfiguration, merge);
-      concatAssignFunctions(dstDescriptor, srcComposable[_initializers], _initializers);
+      concatAssignFunctions(_initializers);
+      concatAssignFunctions(_composers);
     }
 
     return dstDescriptor;
@@ -384,32 +378,27 @@
    * @return {Stamp} The Stampit-flavoured stamp
    */
   var2 = allUtilities[_compose] = assign(function stampit() {
-    var i = 0, tmp1, composables = [], uniqueComposers, tmp2 = arguments, tmp3;
-    for (; i < tmp2[_length]; i) {
-      tmp1 = tmp2[i++];
-      if (isObject(tmp1)) {
-        composables.push(isStamp(tmp1) ? tmp1 : standardiseDescriptor(tmp1));
+    var i = 0, composable, composables = [], array = arguments, composerResult = this;
+    for (; i < array[_length];) {
+      composable = array[i++];
+      if (isObject(composable)) {
+        composables.push(isStamp(composable) ? composable : standardiseDescriptor(composable));
       }
     }
 
     // Calling the standard pure compose function here.
-    tmp1 = compose.apply(this || tmp5, composables);
+    composable = compose.apply(composerResult || baseStampit, composables);
+    if (composerResult) composables.unshift(composerResult);
 
-    tmp2 = tmp1[_compose][_deepConfiguration];
-    tmp3 = tmp2 && tmp2[_composers];
-    if (tmp3 && tmp3[_length]) {
-      pushUniqueFuncs(tmp2[_composers] = uniqueComposers = [], tmp3);
-
-      if (isStamp(this)) {
-        composables.unshift(this);
-      }
-      for (i = 0; i < uniqueComposers[_length]; i) {
-        tmp3 = uniqueComposers[i++]({stamp: tmp1, composables: composables});
-        tmp1 = isStamp(tmp3) ? tmp3 : tmp1;
+    array = composable[_compose][_composers];
+    if (isArray(array)) {
+      for (i = 0; i < array[_length];) {
+        composerResult = array[i++]({stamp: composable, composables: composables});
+        composable = isStamp(composerResult) ? composerResult : composable;
       }
     }
 
-    return tmp1;
+    return composable;
   }, allUtilities); // Setting up the shortcut functions
 
   allUtilities[_create] = function() {
@@ -424,7 +413,7 @@
    * @type {Function}
    * @return {Stamp}
    */
-  tmp5 = compose(var4);
+  baseStampit = compose(var4);
 
   var2[_compose] = var2.bind(); // bind to undefined
 

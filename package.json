@@ -57,7 +57,7 @@
     "pretest": "npm run build",
     "test": "babel-node --presets=env test && npm run lint",
     "posttest": "node test/benchmark",
-    "browsertest": "browserify ./test/index.js -t [ babelify --presets [ env ] ] > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
+    "browsertest": "mkdirp ./dist/ && browserify ./test/index.js -t [ babelify --presets [ env ] ] > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
     "clean": "rimraf dist/*",
     "lint": "eslint src && eslint test",
     "prebuild": "npm run clean",
