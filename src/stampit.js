@@ -140,6 +140,8 @@
 
     var4[_initializers] = extractFunctions(descr.init, descr[_initializers]);
 
+    var4[_composers] = extractFunctions(descr[_composers]);
+
     var1 = descr[_deepProperties];
     var2 = descr[_deepProps];
     var4[_deepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
@@ -164,8 +166,6 @@
     var2 = descr[_deepConf];
     var3 = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var4[_composers] = extractFunctions(descr[_composers]);
-
     var4[_deepConfiguration] = var3;
 
     return var4;
@@ -179,7 +179,7 @@
     return function Stamp(options) {
       var i = Stamp[_compose] || {};
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = _Object[_create](i[_methods] || null);
+      var obj = i[_methods] ? {__proto__: i[_methods]} : {};
 
       var inits = i[_initializers], args = slice.apply(arguments);
       var initializer, returnedValue;
