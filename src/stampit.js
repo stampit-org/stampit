@@ -179,7 +179,7 @@
     return function Stamp(options) {
       var i = Stamp[_compose] || {};
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = i[_methods] ? {__proto__: i[_methods]} : {};
+      var obj = {__proto__: i[_methods]};
 
       var inits = i[_initializers], args = slice.apply(arguments);
       var initializer, returnedValue;

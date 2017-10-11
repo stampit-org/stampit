@@ -7,6 +7,7 @@ const stampit = require('../..'); // Need to test the distributable
 
 test('benchmarking property access', (t) => {
   const Position = stampit({
+    methods: {a() {}},
     init() {
       this.x = 10;
       this.y = 10;
@@ -14,6 +15,7 @@ test('benchmarking property access', (t) => {
   });
 
   const Velocity = stampit({
+    methods: {a() {}},
     init() {
       this.vx = 10;
       this.vy = 10;
@@ -21,6 +23,7 @@ test('benchmarking property access', (t) => {
   });
 
   const Entity = stampit({
+    methods: {a() {}},
     deepProps: {
       components: {}
     },
