@@ -98,8 +98,10 @@
 
   var merge = _mergeOrAssign.bind(0, mergeOne);
 
-  function extractFunctions() {
-    var1 = concat.apply([], arguments).filter(isFunction);
+  function extractUniqueFunctions() {
+    var1 = concat.apply([], arguments).filter(function(elem, index, array) {
+      return isFunction(elem) && array.indexOf(elem) === index;
+    });
     return var1[_length] ? var1 : _undefined;
   }
 
@@ -138,9 +140,9 @@
     var3 = descr.refs;
     var4[_properties] = isObject(var1 || var2 || var3) ? assign({}, var3, var2, var1) : _undefined;
 
-    var4[_initializers] = extractFunctions(descr.init, descr[_initializers]);
+    var4[_initializers] = extractUniqueFunctions(descr.init, descr[_initializers]);
 
-    var4[_composers] = extractFunctions(descr[_composers]);
+    var4[_composers] = extractUniqueFunctions(descr[_composers]);
 
     var1 = descr[_deepProperties];
     var2 = descr[_deepProps];
@@ -216,13 +218,13 @@
     var1 = createFactory();
 
     var2 = descriptor[_staticDeepProperties];
-    var2 && merge(var1, var2);
+    if (var2) merge(var1, var2);
 
     var2 = descriptor[_staticProperties];
-    var2 && assign(var1, var2);
+    if (var2) assign(var1, var2);
 
     var2 = descriptor[_staticPropertyDescriptors];
-    var2 && defineProperties(var1, var2);
+    if (var2) defineProperties(var1, var2);
 
     var2 = isFunction(var1[_compose]) ? var1[_compose] : compose;
     assign(var1[_compose] = function() {
@@ -251,16 +253,8 @@
     }
 
     function concatAssignFunctions(propName) {
-      if (isArray(srcComposable[propName])) {
-        var src = srcComposable[propName], i = 0, fn,
-          dst = dstDescriptor[propName] = dstDescriptor[propName] || [];
-        for (; i < src[_length];) {
-          fn = src[i++];
-          if (isFunction(fn) && dst.indexOf(fn) < 0) {
-            dst.push(fn);
-          }
-        }
-      }
+      var1 = extractUniqueFunctions(dstDescriptor[propName], srcComposable[propName]);
+      if (var1) dstDescriptor[propName] = var1;
     }
 
     if (srcComposable && isObject(srcComposable = srcComposable[_compose] || srcComposable)) {
@@ -339,9 +333,9 @@
     createUtilityFunction(_properties, assign);
 
   allUtilities[_initializers] = allUtilities.init =
-    createUtilityFunction(_initializers, extractFunctions);
+    createUtilityFunction(_initializers, extractUniqueFunctions);
 
-  allUtilities[_composers] = createUtilityFunction(_composers, extractFunctions);
+  allUtilities[_composers] = createUtilityFunction(_composers, extractUniqueFunctions);
 
   allUtilities[_deepProperties] = allUtilities[_deepProps] =
     createUtilityFunction(_deepProperties, merge);
