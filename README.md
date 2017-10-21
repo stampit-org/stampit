@@ -169,3 +169,24 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 
 **React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
 
+
+# Development
+
+### Unit tests
+```
+npm t
+```
+
+### Unit and benchmark tests
+```
+env CI=1 npm t
+```
+
+### Unit tests in a browser
+To run unit tests in a default browser:
+```
+npm run browsertest
+```
+To run tests in a different browser:
+* Open the `./test/index.html` in your browser, and
+* open developer's console. The logs should indicate success.
