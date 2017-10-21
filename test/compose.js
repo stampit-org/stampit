@@ -11,7 +11,6 @@ test('stampit().compose()', (t) => {
         return false;
       }
     },
-    refs: {ref: false},
     init() {
       closuresCalled += 1;
     },
@@ -23,7 +22,6 @@ test('stampit().compose()', (t) => {
         return true;
       }
     },
-    refs: {ref: true},
     init() {
       closuresCalled += 1;
     },
@@ -31,7 +29,7 @@ test('stampit().compose()', (t) => {
   });
   const d = a.compose(b).create();
 
-  t.ok(d.method() && d.ref && d.prop, 'Last stamp must win.');
+  t.ok(d.method() && d.prop, 'Last stamp must win.');
   t.equal(closuresCalled, 2, 'Each stamp closure must be called.');
 
   t.end();
@@ -44,7 +42,6 @@ test('stampit.compose()', (t) => {
         return true;
       }
     },
-    refs: {refA: true},
     init() {
       const secret = 'a';
       this.getA = () => {
@@ -59,7 +56,6 @@ test('stampit.compose()', (t) => {
         return true;
       }
     },
-    refs: {refB: true},
     init() {
       const secret = true;
       this.getB = () => {
@@ -74,7 +70,6 @@ test('stampit.compose()', (t) => {
         return true;
       }
     },
-    refs: {refC: true},
     init() {
       const secret = true;
       this.getC = () => {
@@ -85,9 +80,9 @@ test('stampit.compose()', (t) => {
   });
   const d = stampit.compose(a, b, c).create();
 
-  t.ok(d.methodA && d.refA && d.getA && d.propA &&
-    d.methodB && d.refB && d.getB && d.propB &&
-    d.methodC && d.refC && d.getC && d.propC,
+  t.ok(d.methodA && d.getA && d.propA &&
+    d.methodB && d.getB && d.propB &&
+    d.methodC && d.getC && d.propC,
     'Should compose all factory prototypes');
 
   t.end();
@@ -96,7 +91,6 @@ test('stampit.compose()', (t) => {
 test('stampit().compose() with extended descriptors', (t) => {
   const stamp = stampit().compose({
     props: {a: 1},
-    refs: {b: 1},
     init() {},
     deepProps: {a: 1},
     statics: {a: 1},
@@ -106,8 +100,8 @@ test('stampit().compose() with extended descriptors', (t) => {
   });
   const d = stamp.compose;
 
-  t.deepEqual(d.properties, {a: 1, b: 1},
-    'should compose "props" and "refs"');
+  t.deepEqual(d.properties, {a: 1},
+    'should compose "props"');
   t.deepEqual(d.deepProperties, {a: 1},
     'should compose "deepProps"');
   t.equal(d.staticProperties.a, 1,
@@ -127,7 +121,6 @@ test('stampit().compose() with extended descriptors', (t) => {
 test('stampit().compose() with extended stamps', (t) => {
   const stamp = stampit().compose({
     props: {a: 1},
-    refs: {b: 1},
     init() {},
     deepProps: {a: 1},
     statics: {a: 1},
@@ -137,8 +130,8 @@ test('stampit().compose() with extended stamps', (t) => {
   });
   const d = stampit().compose(stamp).compose;
 
-  t.deepEqual(d.properties, {a: 1, b: 1},
-    'should compose "props" and "refs"');
+  t.deepEqual(d.properties, {a: 1},
+    'should compose "props"');
   t.deepEqual(d.deepProperties, {a: 1},
     'should compose "deepProps"');
   t.equal(d.staticProperties.a, 1,
@@ -160,7 +153,7 @@ test('stampit().compose() with extended stamps and descriptors', (t) => {
     props: {a: 1}
   });
   const stamp2 = stampit().compose({
-    refs: {b: 1}
+    props: {b: 1}
   });
   const descriptor1 = {
     init() {}
@@ -175,7 +168,7 @@ test('stampit().compose() with extended stamps and descriptors', (t) => {
   const d = stampit().compose(stamp1, descriptor1, stamp2, descriptor2).compose;
 
   t.deepEqual(d.properties, {a: 1, b: 1},
-    'should compose "props" and "refs"');
+    'should compose "props"');
   t.deepEqual(d.deepProperties, {a: 1},
     'should compose "deepProps"');
   t.equal(d.staticProperties.a, 1,

@@ -112,7 +112,6 @@
    * methods
    * properties
    * props
-   * refs
    * initializers
    * [init
    * deepProperties
@@ -137,8 +136,7 @@
 
     var1 = descr[_properties];
     var2 = descr.props;
-    var3 = descr.refs;
-    var4[_properties] = isObject(var1 || var2 || var3) ? assign({}, var3, var2, var1) : _undefined;
+    var4[_properties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
     var4[_initializers] = extractUniqueFunctions(descr.init, descr[_initializers]);
 
@@ -329,7 +327,7 @@
 
   allUtilities[_methods] = createUtilityFunction(_methods, assign);
 
-  allUtilities[_properties] = allUtilities.refs = allUtilities.props =
+  allUtilities[_properties] = allUtilities.props =
     createUtilityFunction(_properties, assign);
 
   allUtilities[_initializers] = allUtilities.init =

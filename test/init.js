@@ -148,7 +148,7 @@ test('explicit push wrong object to stamp.compose.initializers[]', (t) => {
 });
 
 test('stamp.compose.initializers malformed object', (t) => {
-  const stamp = stampit.refs({ref: 42}).init(function () {
+  const stamp = stampit.props({ref: 42}).init(function () {
     const secret = 'foo';
     this.getSecret = () => { return secret; };
   });

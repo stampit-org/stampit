@@ -2,22 +2,12 @@ import test from 'tape';
 import _ from 'lodash';
 import stampit from '../src/stampit';
 
-// stampit.methods, stampit.refs, stampit.init, stampit.props, etc.
+// stampit.methods, stampit.init, stampit.props, etc.
 
 test('stampit.methods shortcut', (t) => {
   const methods = {method1() {}};
   const stamp1 = stampit({methods: methods});
   const stamp2 = stampit.methods(methods);
-
-  t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
-});
-
-test('stampit.refs shortcut', (t) => {
-  const refs = {method1() {}};
-  const stamp1 = stampit({refs: refs});
-  const stamp2 = stampit.refs(refs);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
 
@@ -103,7 +93,7 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().composers().deepProps()
+    .props().init().composers().deepProps()
     .statics().deepStatics().conf().deepConf();
 
   const PrintFoo = methods({
@@ -114,7 +104,7 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().composers().deepProps()
+    .props().init().composers().deepProps()
     .statics().deepStatics().conf().deepConf();
 
   const Init = init(function ({foo}) {
@@ -123,7 +113,7 @@ test('all shortcuts combined', (t) => {
     .staticProperties().staticDeepProperties()
     .configuration().deepConfiguration()
     .propertyDescriptors().staticPropertyDescriptors()
-    .refs().props().init().composers().deepProps()
+    .props().init().composers().deepProps()
     .statics().deepStatics().conf().deepConf();
 
   const Foo = compose(HasFoo, PrintFoo, Init);

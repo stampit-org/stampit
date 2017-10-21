@@ -5,25 +5,15 @@ import stampit from '../src/stampit';
 
 test('Basic stamp immutability', (t) => {
   const methods = {f() {}};
-  const refs = {s: {deep: 1}};
-  const props = {p: {deep: 1}};
+  const props = {s: {deep: 1}};
+  const deepProps = {p: {deep: 1}};
   const init = () => {};
-  const stamp1 = stampit({
-    methods: methods,
-    refs: refs,
-    deepProps: props,
-    init
-  });
+  const stamp1 = stampit({methods, props, deepProps, init});
 
   methods.f = () => {};
-  refs.s.deep = 2;
-  props.p.deep = 2;
-  const stamp2 = stampit({
-    methods: methods,
-    refs: refs,
-    deepProps: props,
-    init
-  });
+  props.s.deep = 2;
+  deepProps.p.deep = 2;
+  const stamp2 = stampit({methods, props, deepProps, init});
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.methods.f, stamp2.compose.methods.f);
@@ -40,21 +30,11 @@ test('Basic stamp immutability', (t) => {
 
 test('Stamp immutability made of same source', (t) => {
   const methods = {f() {}};
-  const refs = {s: {deep: 1}};
-  const props = {p: {deep: 1}};
+  const props = {s: {deep: 1}};
+  const deepProps = {p: {deep: 1}};
   const init = () => {};
-  const stamp1 = stampit({
-    methods: methods,
-    refs: refs,
-    deepProps: props,
-    init
-  });
-  const stamp2 = stampit({
-    methods: methods,
-    refs: refs,
-    deepProps: props,
-    init
-  });
+  const stamp1 = stampit({methods, props, deepProps, init});
+  const stamp2 = stampit({methods, props, deepProps, init});
 
   t.notEqual(stamp1.compose.methods, stamp2.compose.methods);
   t.notEqual(stamp1.compose.properties, stamp2.compose.properties);
@@ -68,14 +48,14 @@ test('Stamp immutability made of same source', (t) => {
 
 test('Basic object immutability', (t) => {
   const methods = {f() {}};
-  const refs = {s: {deep: 1}};
-  const props = {p: {deep: 1}};
-  const o1 = stampit({methods: methods, refs: refs, deepProps: props})();
+  const props = {s: {deep: 1}};
+  const deepProps = {p: {deep: 1}};
+  const o1 = stampit({methods, props, deepProps})();
 
   methods.f = () => {};
-  refs.s.deep = 2;
-  props.p.deep = 2;
-  const o2 = stampit({methods: methods, refs: refs, deepProps: props})();
+  props.s.deep = 2;
+  deepProps.p.deep = 2;
+  const o2 = stampit({methods, props, deepProps})();
 
   t.notEqual(o1, o2);
   t.notEqual(o1.f, o2.f);
