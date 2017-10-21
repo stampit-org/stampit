@@ -24,10 +24,6 @@
   - [stamp.compose(...args)](#stampcomposeargs)
   - [stamp.create(...args)](#stampcreateargs)
 - [Shortcut methods](#shortcut-methods)
-- [Utility functions](#utility-functions)
-  - [stampit/compose](#stampitcompose)
-  - [stampit/isStamp](#stampitisstamp)
-  - [stampit/isComposable](#stampitiscomposable)
 - [Chaining methods](#chaining-methods)
   - [Pass multiple objects into all methods and functions](#pass-multiple-objects-into-all-methods-and-functions)
 - [Breaking changes](#breaking-changes)
@@ -103,11 +99,10 @@ The arguments can be either another stamps, or the following structure:
  * `@param  {Object} [options]` Options to build stamp from
  * `@param  {Object} [options.methods]` A map of method names and bodies for delegation
  * `@param  {Object} [options.props]` A map of property names and values to be mixed into each new object
- * `@param  {Object} [options.refs]` Same as `options.props`. *DEPRECATED*
  * `@param  {Object} [options.properties]` Same as `options.props`
  * `@param  {Object} [options.init]` A closure (function) used to create private data and privileged methods
  * `@param  {Object} [options.initializers]` Same as `options.init`
- * `@param  {Object} [options.composers]` (EXPERIMENTAL) Similar to initializers, but executed at the composition time
+ * `@param  {Object} [options.composers]` Similar to initializers, but executed at the composition time
  * `@param  {Object} [options.deepProps]` An object to be deeply cloned into each newly stamped object
  * `@param  {Object} [options.deepProperties]` Same as `options.deepProps`
  * `@param  {Object} [options.statics]` A map of property names and values to be mixed onto stamp itself
@@ -128,11 +123,10 @@ Returns a new factory function (called a stamp) that will produce new objects.
  * `@return {Function} stamp.compose` An object map containing the stamp metadata, also composes arguments and creates new stamps based on the current
  * `@return {Function} stamp.methods` Add methods to the stamp. Returns a new stamp
  * `@return {Function} stamp.props` Add properties by assignment to the stamp. Returns a new stamp
- * `@return {Function} stamp.refs` Same as `stamp.props`. *DEPRECATED*
  * `@return {Function} stamp.properties` Same as `stamp.props`
  * `@return {Function} stamp.init` Add an initializer which called on object instantiation. Returns a new stamp
  * `@return {Function} stamp.initializers` Add an initializer which called on object instantiation. Returns a new stamp
- * `@return {Function} stamp.composers` (EXPERIMENTAL) Add a composer function which is called on stamp composition. Returns a new stamp
+ * `@return {Function} stamp.composers` Add a composer function which is called on stamp composition. Returns a new stamp
  * `@return {Function} stamp.deepProps` Add deeply cloned properties to the produced objects. Returns a new stamp
  * `@return {Function} stamp.deepProperties` Same as `stamp.deepProps`
  * `@return {Function} stamp.statics` Add properties to the factory object. Returns a new stamp
@@ -170,7 +164,7 @@ const objectInstance = stamp({factor: 1.1});
 ### stamp.methods(...args)
 
 Take n objects and add them to the methods list of a new stamp. Creates new stamp.
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 ```js
 const stamp = stampit().methods({
@@ -187,7 +181,7 @@ stamp().amplify('BADF00D'); // value BADF00D is incorrect
 ### stamp.props(...args) and stamp.properties(...args)
 
 Take n objects and add them to the references list of a new stamp. Creates new stamp.
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 ```js
 const stamp = stampit().props({
@@ -237,7 +231,7 @@ secondInstance.salaries.push(200); // [200]
 
 Take n functions or array(s) of functions and add
 the functions to the initializers list of a new stamp. Creates new stamp.
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 Functions passed into `.init()` are called any time an
 object is instantiated. That happens when the stamp function
@@ -280,10 +274,9 @@ MyStamp().clone().clone().clone().x === 42; // true
 
 
 ### stamp.composers(...args)
-**(EXPERIMENTAL)**
 
 Take n functions or array(s) of functions and add the functions to the `deepConfiguration.composers` list of a new stamp. Creates new stamp. 
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 Functions passed into `.composers()` are executed on the spot and every other time the new stamp or its derivatives are being composed. They are sort of a after-composition callbacks.
 
@@ -346,7 +339,7 @@ const stamp = stampit().compose(ProduceFunction, ComponentsMonitoring)
     console.log('A clone of this function was returned as a stamp result');
   });
 
-console.log(stamp.compose.configuration._wasComposedOf);
+console.log(stamp.compose.configuration.FirstInitializer);
 const producedFunction = stamp();
 producedFunction(); // prints "A clone of this function was returned as a stamp result"
 ```
@@ -356,7 +349,7 @@ producedFunction(); // prints "A clone of this function was returned as a stamp 
 
 Take n objects and deep merge them safely to the properties. Creates new stamp.
 Note: the merge algorithm will not change any existing `props` data of a resulting object instance.
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 
 ```js
@@ -379,7 +372,7 @@ console.log(effectMashup.effects.cutoff.max); // 255
 
 Take n objects and add all its properties to the stamp (aka factory object).
 
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 ```js
 const stamp = stampit().statics({
@@ -414,7 +407,7 @@ provided objects.
 
 Take n objects and add all its properties to the stamp's metadata. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 NOTE: Accessible as `stamp.compose.configuration`. Do not confuse with the `stamp.compose.deepConfiguration`.
 
@@ -466,7 +459,7 @@ console.log(stamp2().setFactor(5).getFactor()); // 5
 Same as `stamp.conf()` and `stamp.configuration()` but deeply merges the
 provided objects. This arbitrary data could be used in initializers and static methods for your needs. Not used by stampit.
 
-* `@return {Object} stamp` The new stamp based on the original `this` stamp.
+* `@return {Object} stamp` The new stamp is based on the original `this` stamp.
 
 NOTE: Accessible as `stamp.compose.deepConfiguration`. Do not confuse with the `stamp.compose.configuration`.
 
@@ -536,36 +529,6 @@ All return a new stamp exactly as the `stamp.*` methods above.
 * stampit.propertyDescriptors()
 * stampit.deepPropertyDescriptors()
 * stampit.compose()
-
-
-## Utility functions
-
-### stampit/compose
-
-```js
-import compose from 'stampit/compose'; // or
-const compose = require('stampit/compose');
-```
-
-It's a pure clean standard `compose` function implementation. See [specification](https://github.com/stampit-org/stamp-specification).
-
-### stampit/isStamp
-
-```js
-import isStamp from 'stampit/isStamp'; // or
-const isStamp = require('stampit/isStamp');
-```
-
-Take an object and return `true` if it's a stamp, `false` otherwise.
-
-### stampit/isComposable
-
-```js
-import isComposable from 'stampit/isComposable'; // or
-const isComposable = require('stampit/isComposable');
-```
-
-Take an object and return `true` if it's a stamp or a stamp descriptor.
 
 
 ## Chaining methods
@@ -756,3 +719,12 @@ Use `.deepProps()` instead.
 
 **Other notable changes**
 * The `refs` are **deprecated** now.
+
+
+### Stampit v4
+
+Differences with Stampit v3.
+
+* Removed utility functions `stampit/isStamp`, `stampit/isComposable`, and `stampit/compose`. Use [`@stamp/is/stamp`](https://www.npmjs.com/package/@stamp/is#isstamparg), [`@stamp/is/composable`](https://www.npmjs.com/package/@stamp/is#iscomposablearg), [`@stamp/compose`](https://www.npmjs.com/package/@stamp/compose) modules instead.
+* The composers array is now stored in `stamp.compose.composers` instead of the (temporary) experimental place `stamp.compose.deepConfiguration.composers`.
+* Removed the earlier deprecated `refs` from the API entirely.

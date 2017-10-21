@@ -6,42 +6,63 @@
  
 Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
- 
-## Simplest Example
+Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
+
+
+## Example
 
 ```js
-const MyStamp = stampit()       // create new empty stamp
-.props({                        // add properties to your future objects
-  myProp: 'default value'
-})
-.methods({                      // add methods to your future objects
-  getMyProp() {
-    return this.myProp;
+import stampit from 'stampit'
+
+const Character = stampit({
+  props: {
+    name: null,
+    health: 100
+  },
+  init({ name = this.name }) {
+    this.name = name
   }
 })
-.init(function ({value}) {      // add initializers to your future objects
-  this.myProp = value || this.myProp;
+
+const Fighter = stampit(Character, {
+  props: {
+    stamina: 100
+  },
+  methods: {
+    fight() {
+      console.log(`${this.name} takes a mighty swing!`)
+      this.stamina--
+    }
+  }
 })
-.compose(AnotherStamp);         // add other stamp behaviours to your objects
 
-console.log(typeof MyStamp);                            // 'function'
-console.log(MyStamp());                                 // { myProp: 'default value' }
+const Mage = stampit(Character, {
+  props: {
+    mana: 100
+  },
+  methods: {
+    cast() {
+      console.log(`${this.name} casts a fireball!`)
+      this.mana--
+    }
+  }
+})
 
-console.log(typeof MyStamp().getMyProp);                // 'function'
-console.log(MyStamp().getMyProp());                     // default value
+const Paladin = stampit(Mage, Fighter) // as simple as that!
 
-console.log(MyStamp({value: 'new value'}));             // { myProp: 'new value' }
-console.log(MyStamp({value: 'new value'}).getMyProp()); // new value
+const fighter = Fighter({ name: 'Thumper' })
+const mage = Mage({ name: 'Zapper' })
+const paladin = Paladin({ name: 'Roland' })
 ```
-
-Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
 
 ## Status
 
 * **v1**. `npm i stampit@1`
 * **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
-* **v3**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification)
+* **v3**. `npm i stampit@3` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) <= 1.4
+* **v4**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v4.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) v1.5
+* **next**. `npm i @stamp/it` The [new ecosystem](https://www.npmjs.com/~stamp/) of useful stamps like collision control, etc.
 
 
 ## Install
@@ -53,9 +74,9 @@ Via bower:
 ```sh
 $ bower install stampit
 or
-$ bower install stampit=https://npmcdn.com/stampit@3/dist/stampit.umd.min.js
+$ bower install stampit=https://npmcdn.com/stampit@4/dist/stampit.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@3.2.0/dist/stampit.umd.js
+$ bower install stampit=https://unpkg.com/stampit@4.0.0/src/stampit.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
@@ -63,7 +84,7 @@ Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.c
 
 ## Compatibility
 
-Be ware. Stampit should run fine in any ES5 browser or any node.js. But we test only against node.js v4 and above. 
+Stampit should run fine in any ES5 browser or any node.js.
 
 ## API
 
@@ -99,6 +120,9 @@ const Availability = stampit().init(function() {
 
 // Here's a stamp with public methods, and some state:
 const Membership = stampit({
+  props: {
+    members: {}
+  },
   methods: {
     add(member) {
       this.members[member.name] = member;
@@ -107,21 +131,18 @@ const Membership = stampit({
     getMember(name) {
       return this.members[name];
     }
-  },
-  properties: {
-    members: {}
   }
 });
 
 // Let's set some defaults:
 const Defaults = stampit({
+  props: {
+    name: 'The Saloon',
+    specials: 'Whisky, Gin, Tequila'
+  },
   init({name, specials}) {
     this.name = name || this.name;
     this.specials = specials || this.specials;
-  },
-  properties: {
-    name: 'The Saloon',
-    specials: 'Whisky, Gin, Tequila'
   }
 });
 
