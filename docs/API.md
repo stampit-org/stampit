@@ -728,3 +728,10 @@ Differences with Stampit v3.
 * Removed utility functions `stampit/isStamp`, `stampit/isComposable`, and `stampit/compose`. Use [`@stamp/is/stamp`](https://www.npmjs.com/package/@stamp/is#isstamparg), [`@stamp/is/composable`](https://www.npmjs.com/package/@stamp/is#iscomposablearg), [`@stamp/compose`](https://www.npmjs.com/package/@stamp/compose) modules instead.
 * The composers array is now stored in `stamp.compose.composers` instead of the (temporary) experimental place `stamp.compose.deepConfiguration.composers`.
 * Removed the earlier deprecated `refs` from the API entirely.
+
+**New features**
+* The composers feature is not experimental any more.
+* Stampit is now fully compatible with the [stamp modules ecosystem](https://www.npmjs.com/~stamp/).
+
+**Other notable changes**
+* The `.min.js` UMD bundle size got 50% smaller: 5.3 KB -> 2.7 KB. The gzipped size was reduced by 40%: 1.84 KB -> 1.29 KB 
