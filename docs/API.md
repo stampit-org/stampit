@@ -734,4 +734,4 @@ Differences with Stampit v3.
 * Stampit is now fully compatible with the [stamp modules ecosystem](https://www.npmjs.com/~stamp/).
 
 **Other notable changes**
-* The `.min.js` UMD bundle size got 50% smaller: 5.3 KB -> 2.7 KB. The gzipped size was reduced by 40%: 1.84 KB -> 1.29 KB 
+* The `.min.js` bundle size got 50% smaller: 5.3 KB -> 2.7 KB. The gzipped size was reduced by 40%: 1.84 KB -> 1.29 KB 

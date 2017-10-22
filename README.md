@@ -1,12 +1,14 @@
+<p align="center">
 <img src="https://raw.githubusercontent.com/stampit-org/stampit-logo/master/stampit-logo.png" alt="stampit" width="160" />
+</p>
 
-# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) ![Greenkeeper Badge](https://badges.greenkeeper.io/stampit-org/stampit.svg) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org)
+# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit) [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 **Create objects from reusable, composable behaviors** 
- 
-Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
-Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
+Stampit is a **1.3KB** module which uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+
+ Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
 
 ## Example
@@ -24,9 +26,12 @@ const Character = stampit({
   }
 })
 
-const Fighter = stampit(Character, {
+const Fighter = stampit(Character, { // inheriting
   props: {
     stamina: 100
+  },
+  init({ stamina = this.stamina }) {
+    this.stamina = stamina;    
   },
   methods: {
     fight() {
@@ -36,9 +41,12 @@ const Fighter = stampit(Character, {
   }
 })
 
-const Mage = stampit(Character, {
+const Mage = stampit(Character, { // inheriting
   props: {
     mana: 100
+  },
+  init({ mana = this.mana }) {
+    this.mana = mana;    
   },
   methods: {
     cast() {
@@ -51,8 +59,15 @@ const Mage = stampit(Character, {
 const Paladin = stampit(Mage, Fighter) // as simple as that!
 
 const fighter = Fighter({ name: 'Thumper' })
+fighter.fight()
 const mage = Mage({ name: 'Zapper' })
-const paladin = Paladin({ name: 'Roland' })
+mage.cast()
+const paladin = Paladin({ name: 'Roland', stamina: 50, mana: 50 })
+paladin.fight()
+paladin.cast()
+
+console.log(Paladin.compose.properties) // { name: null, health: 100, stamina: 100, mana: 100 }
+console.log(Paladin.compose.methods) // { fight: [Function: fight], cast: [Function: cast] }
 ```
 
 
@@ -80,7 +95,7 @@ $ bower install stampit=https://unpkg.com/stampit@4.0.0/src/stampit.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
-[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
+[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 ## Compatibility
 

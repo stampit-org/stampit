@@ -113,7 +113,7 @@
    * properties
    * props
    * initializers
-   * [init
+   * init
    * deepProperties
    * deepProps
    * propertyDescriptors
