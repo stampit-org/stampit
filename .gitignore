@@ -1,7 +1,3 @@
-##### Dev-only source code
-/*.js
-/*.js.map
-
 ##### SouceLab
 buildconfig.env
 server.js

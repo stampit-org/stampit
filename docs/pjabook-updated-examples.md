@@ -16,7 +16,7 @@ The book's sample code uses Stampit 1.X. To load the examples in your browser, y
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
   <script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/stampit/1.2.0/stampit.min.js"></script>
+  <script src="//unpkg.com/stampit@4/src/stampit.js"></script>
   <script src="example.js"></script>
 </body>
 </html>
@@ -24,16 +24,16 @@ The book's sample code uses Stampit 1.X. To load the examples in your browser, y
 
 Type or copy the example into `example.js`, and load the HTML in your browser for QUnit to display the test results.
 
-## Stampit 2.X
+## Stampit 4.X
 
-In order to run the book's examples with Stampit 2.X, you must
+In order to run the book's examples with Stampit 4.X, you must
 
-1. Change the Stampit script source from `src="//cdnjs.cloudflare.com/ajax/libs/stampit/1.2.0/stampit.min.js"` to `src="//cdnjs.cloudflare.com/ajax/libs/stampit/2.1.0/stampit.min.js"`.
-2. Modify the sample code to reflect the [breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0) between Stampit 1.X and 2.X. These modifications are shown below.
+1. Change the Stampit script source from `src="//cdnjs.cloudflare.com/ajax/libs/stampit/1.2.0/stampit.min.js"` to `src="//unpkg.com/stampit@4.0.0/src/stampit.js"`.
+2. Modify the sample code to reflect the [breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0) between Stampit 1.X and 4.X. These modifications are shown below.
 
 ## Chapter 3 Examples
 
-`stampit()` now receives options object `({methods,refs,init,props,static})` instead of multiple arguments. Additionally, `state` deprecated in favor of `refs` and `enclose` is deprecated in favor of `init`. Taking these changes into account, the first `stampit()` example from the book is now:
+`stampit()` now receives options object `({methods,init,props,deepProps,statics})` instead of multiple arguments. Additionally, `state` deprecated in favor of `props` and `enclose` is deprecated in favor of `init`. Taking these changes into account, the first `stampit()` example from the book is now:
 
 ```js
 var testObj = stampit({
@@ -45,7 +45,7 @@ var testObj = stampit({
   },
 
   // state in v1
-  refs: {
+  props: {
     instanceProp: 'instance property'
   },
 
@@ -89,7 +89,7 @@ var testObj = stampit().methods({
       return 'shared property';
     }
   })
-  .refs({
+  .props({
     instanceProp: 'instance property'
   })
   .init(function () {
@@ -100,7 +100,7 @@ var testObj = stampit().methods({
     }
   }).create();
 
-test('Stampit 2 methods', function () {
+test('Stampit 4 methods', function () {
   equal(testObj.delegateMethod(), 'shared property',
     'delegate methods should be reachable');
 
@@ -136,10 +136,10 @@ test('Prototype mutation', function () {
 });
 ```
 
-The `state()` concatenative inheritance example becomes `refs()`:
+The `state()` concatenative inheritance example becomes `props()`:
 
 ```js
-var person = stampit().refs({name: ''}),
+var person = stampit().props({name: ''}),
   jimi = person({name: 'Jimi Hendrix'});
 
 test('Initialization', function () {
@@ -177,9 +177,9 @@ test('Init method', function () {
 
 equal(jimi.getName(), 'Jimi Hendrix',
   'Object should be initialized.');
-
 });
 ```
+
 Finally (for Chapter 3), the `stampit.compose()` example becomes
 
 ```js

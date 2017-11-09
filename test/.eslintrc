@@ -1,5 +1,6 @@
 // Add our overrides as necessary
 {
+  "extends": "airbnb-base",
   "rules": {
     "object-shorthand": 0,
     "arrow-body-style": 0,
@@ -7,6 +8,9 @@
     "newline-per-chained-call": 0,
     "no-prototype-builtins": 0,
     "import/no-named-as-default-member": 0,
-    "import/no-extraneous-dependencies": 0
+    "import/no-extraneous-dependencies": 0,
+    "comma-dangle": "off",
+    "object-curly-spacing": "off",
+    "no-param-reassign": "off"
   }
 }

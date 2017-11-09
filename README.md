@@ -1,47 +1,83 @@
+<p align="center">
 <img src="https://raw.githubusercontent.com/stampit-org/stampit-logo/master/stampit-logo.png" alt="stampit" width="160" />
+</p>
 
-# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) ![Greenkeeper Badge](https://badges.greenkeeper.io/stampit-org/stampit.svg) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org)
+# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit) [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 **Create objects from reusable, composable behaviors** 
- 
-Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
- 
-## Simplest Example
+Stampit is a **1.3KB** module which uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+
+ Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
+
+
+## Example
 
 ```js
-const MyStamp = stampit()       // create new empty stamp
-.props({                        // add properties to your future objects
-  myProp: 'default value'
-})
-.methods({                      // add methods to your future objects
-  getMyProp() {
-    return this.myProp;
+import stampit from 'stampit'
+
+const Character = stampit({
+  props: {
+    name: null,
+    health: 100
+  },
+  init({ name = this.name }) {
+    this.name = name
   }
 })
-.init(function ({value}) {      // add initializers to your future objects
-  this.myProp = value || this.myProp;
+
+const Fighter = stampit(Character, { // inheriting
+  props: {
+    stamina: 100
+  },
+  init({ stamina = this.stamina }) {
+    this.stamina = stamina;    
+  },
+  methods: {
+    fight() {
+      console.log(`${this.name} takes a mighty swing!`)
+      this.stamina--
+    }
+  }
 })
-.compose(AnotherStamp);         // add other stamp behaviours to your objects
 
-console.log(typeof MyStamp);                            // 'function'
-console.log(MyStamp());                                 // { myProp: 'default value' }
+const Mage = stampit(Character, { // inheriting
+  props: {
+    mana: 100
+  },
+  init({ mana = this.mana }) {
+    this.mana = mana;    
+  },
+  methods: {
+    cast() {
+      console.log(`${this.name} casts a fireball!`)
+      this.mana--
+    }
+  }
+})
 
-console.log(typeof MyStamp().getMyProp);                // 'function'
-console.log(MyStamp().getMyProp());                     // default value
+const Paladin = stampit(Mage, Fighter) // as simple as that!
 
-console.log(MyStamp({value: 'new value'}));             // { myProp: 'new value' }
-console.log(MyStamp({value: 'new value'}).getMyProp()); // new value
+const fighter = Fighter({ name: 'Thumper' })
+fighter.fight()
+const mage = Mage({ name: 'Zapper' })
+mage.cast()
+const paladin = Paladin({ name: 'Roland', stamina: 50, mana: 50 })
+paladin.fight()
+paladin.cast()
+
+console.log(Paladin.compose.properties) // { name: null, health: 100, stamina: 100, mana: 100 }
+console.log(Paladin.compose.methods) // { fight: [Function: fight], cast: [Function: cast] }
 ```
-
-Stampit uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than classical OO.
 
 
 ## Status
 
 * **v1**. `npm i stampit@1`
 * **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
-* **v3**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification)
+* **v3**. `npm i stampit@3` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) <= 1.4
+* **v4**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v4.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) v1.5
+* **next**. `npm i @stamp/it` The [new ecosystem](https://www.npmjs.com/~stamp/) of useful stamps like collision control, etc.
 
 
 ## Install
@@ -53,17 +89,17 @@ Via bower:
 ```sh
 $ bower install stampit
 or
-$ bower install stampit=https://npmcdn.com/stampit@3/dist/stampit.umd.min.js
+$ bower install stampit=https://npmcdn.com/stampit@4/dist/stampit.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@3.2.1/dist/stampit.umd.js
+$ bower install stampit=https://unpkg.com/stampit@4.0.0/src/stampit.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
-[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.umd.min.js)
+[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 ## Compatibility
 
-Be ware. Stampit should run fine in any ES5 browser or any node.js. But we test only against node.js v4 and above. 
+Stampit should run fine in any ES5 browser or any node.js.
 
 ## API
 
@@ -99,6 +135,9 @@ const Availability = stampit().init(function() {
 
 // Here's a stamp with public methods, and some state:
 const Membership = stampit({
+  props: {
+    members: {}
+  },
   methods: {
     add(member) {
       this.members[member.name] = member;
@@ -107,21 +146,18 @@ const Membership = stampit({
     getMember(name) {
       return this.members[name];
     }
-  },
-  properties: {
-    members: {}
   }
 });
 
 // Let's set some defaults:
 const Defaults = stampit({
+  props: {
+    name: 'The Saloon',
+    specials: 'Whisky, Gin, Tequila'
+  },
   init({name, specials}) {
     this.name = name || this.name;
     this.specials = specials || this.specials;
-  },
-  properties: {
-    name: 'The Saloon',
-    specials: 'Whisky, Gin, Tequila'
   }
 });
 
@@ -148,3 +184,24 @@ Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaS
 
 **React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
 
+
+# Development
+
+### Unit tests
+```
+npm t
+```
+
+### Unit and benchmark tests
+```
+env CI=1 npm t
+```
+
+### Unit tests in a browser
+To run unit tests in a default browser:
+```
+npm run browsertest
+```
+To run tests in a different browser:
+* Open the `./test/index.html` in your browser, and
+* open developer's console. The logs should indicate success.

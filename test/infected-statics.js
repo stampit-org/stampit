@@ -2,22 +2,10 @@ import test from 'tape';
 import _ from 'lodash';
 import stampit from '../src/stampit';
 
-// stampit().methods, stampit.refs, stampit.init, stampit.props, etc
-
 test('stampit().methods static method', (t) => {
   const methods = {method1() {}};
   const stamp1 = stampit({methods: methods});
   const stamp2 = stampit().methods(methods);
-
-  t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
-
-  t.end();
-});
-
-test('stampit().refs static method', (t) => {
-  const refs = {method1() {}};
-  const stamp1 = stampit({refs: refs});
-  const stamp2 = stampit().refs(refs);
 
   t.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
 

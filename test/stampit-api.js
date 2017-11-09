@@ -1,6 +1,13 @@
 import test from 'tape';
 import stampit from '../src/stampit';
-import isStamp from '../src/isStamp';
+
+function isFunction(obj) {
+  return typeof obj === 'function';
+}
+function isStamp(obj) {
+  return isFunction(obj) && isFunction(obj.compose);
+}
+
 
 // Main API
 
@@ -24,9 +31,9 @@ test('incorrect stampit({ methods }) args', (t) => {
   t.end();
 });
 
-test('incorrect stampit({ refs }) args', (t) => {
-  t.same(stampit({refs: 42}).compose.properties, undefined);
-  t.same(stampit({refs: null}).compose.properties, undefined);
+test('incorrect stampit({ props }) args', (t) => {
+  t.same(stampit({props: 42}).compose.properties, undefined);
+  t.same(stampit({props: null}).compose.properties, undefined);
 
   t.end();
 });
@@ -54,8 +61,6 @@ test('multiple arguments stampit(arg1, arg2, ...)', (t) => {
     'must recognize init from second argument');
   t.equal(stampit(null, {props: {x: 2}}).compose.properties.x, 2,
     'must recognize props from second argument');
-  t.equal(stampit(null, {refs: {x: 2}}).compose.properties.x, 2,
-    'must recognize refs from second argument');
   t.equal(stampit(null, {deepProps: {x: 2}}).compose.deepProperties.x, 2,
     'must recognize deepProps from second argument');
   t.equal(stampit(null, {statics: {x: 2}}).compose.staticProperties.x, 2,

@@ -1,4 +1,19 @@
-require('require-all')({
-  dirname: __dirname,
-  excludeDirs: /^\.|benchmark/
-});
+import './_standard-compliance-tests';
+import './basics-init';
+import './basics-methods';
+import './basics-props';
+import './basics-static';
+import './basics';
+import './compose';
+import './composers';
+import './convert-constructor';
+import './corner-cases';
+import './deep-props-safety';
+import './immutability';
+import './import';
+import './index';
+import './infected-statics';
+import './init';
+import './props';
+import './stampit-api';
+import './stampit-shortcuts';
