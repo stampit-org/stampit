@@ -6,10 +6,11 @@
 
 **Create objects from reusable, composable behaviors** 
 
-Stampit is a **1.3KB** module which uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+Stampit is a **1.3KB** gzipped (or 2.7K minified) JavaScript module which uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
  Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
+Find many more examples in [this series of mini blog posts](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0). 
 
 ## Example
 
