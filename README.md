@@ -92,7 +92,7 @@ $ bower install stampit
 or
 $ bower install stampit=https://npmcdn.com/stampit@4/dist/stampit.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@4.0.0/src/stampit.js
+$ bower install stampit=https://unpkg.com/stampit@4.0.1/src/stampit.js
 ```
 
 Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)

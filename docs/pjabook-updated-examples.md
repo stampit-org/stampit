@@ -28,7 +28,7 @@ Type or copy the example into `example.js`, and load the HTML in your browser fo
 
 In order to run the book's examples with Stampit 4.X, you must
 
-1. Change the Stampit script source from `src="//cdnjs.cloudflare.com/ajax/libs/stampit/1.2.0/stampit.min.js"` to `src="//unpkg.com/stampit@4.0.0/src/stampit.js"`.
+1. Change the Stampit script source from `src="//cdnjs.cloudflare.com/ajax/libs/stampit/1.2.0/stampit.min.js"` to `src="//unpkg.com/stampit@4.0.1/src/stampit.js"`.
 2. Modify the sample code to reflect the [breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0) between Stampit 1.X and 4.X. These modifications are shown below.
 
 ## Chapter 3 Examples
