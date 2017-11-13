@@ -6,7 +6,7 @@
 
 **Create objects from reusable, composable behaviors** 
 
-Stampit is a **1.3KB** gzipped (or 2.7K minified) JavaScript module which uses [three different kinds of prototypal OO](https://vimeo.com/69255635) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+Stampit is a **1.3KB** gzipped (or 2.7K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
  Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
@@ -175,13 +175,6 @@ myBar.add({name: 'Homer'}).open().getMember('Homer');
 ```
 
 For more examples see the [API](docs/API.md).
-
-
-# More info
-
-Stampit was written as an example for the book, ["Programming JavaScript Applications" (O'Reilly)](http://pjabook.com). See [this page](https://github.com/stampit-org/stampit/blob/master/docs/pjabook-updated-examples.md) to make book examples work with the latest stampit.
-
-Looking for a deep dive into prototypal OO, stamps, and the Two Pillars of JavaScript? [Learn JavaScript with Eric Elliott](https://ericelliottjs.com).
 
 **React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
 
