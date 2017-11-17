@@ -1,4 +1,5 @@
 !function() {
+  'use strict';
   var _undefined;
 
   var var1 = 'roperties';
