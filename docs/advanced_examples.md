@@ -276,8 +276,6 @@ const EventEmittable = stampit.composers(({ stamp }) => {
   Object.setPrototypeOf(stamp.compose.methods, EventEmitter.prototype);
 });
 ```
-We have just used a special utility function `convertConstructor`.
-It converts classic JavaScript "classes" to a composable stamp.
 
 Let's compose it with any other stamp:
 ```js
