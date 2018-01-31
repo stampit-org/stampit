@@ -421,8 +421,9 @@ const stamp = stampit()
   let factor = opts.factor || 1;
   instance.getFactor = () => factor;
   
-  if (stamp.compose.configuration.addFactorSetter) {
-    instance.setFactor = f => factor = f;    
+  const {configuration} = stamp.compose;
+  if (configuration && configuration.addFactorSetter) {
+    instance.setFactor = f => factor = f;
   }
 });
 
@@ -436,21 +437,25 @@ Use metadata in static functions:
 const stamp = stampit()
 .statics({
   allowFactorSetter(allow) {
-    return this.conf({addFactorSetter: !!allow})
+    return this.conf({addFactorSetter: !!allow});
   }
 })
 .init((opts, {instance, stamp}) => {
   let factor = opts.factor || 1;
   instance.getFactor = () => factor;
-  
-  if (stamp.compose.configuration.addFactorSetter) {
-    instance.setFactor = f => factor = f;    
+
+  const {configuration} = stamp.compose;
+  if (configuration && configuration.addFactorSetter) {
+    instance.setFactor = f => factor = f;
   }
 });
 
 console.log(stamp().setFactor); // undefined
-const stamp2 = stamp.allowFactorSetter(true); 
-console.log(stamp2().setFactor(5).getFactor()); // 5
+
+const stamp2 = stamp.allowFactorSetter(true);
+const instance2 = stamp2()
+instance2.setFactor(5);
+console.log(instance2.getFactor()); // 5
 ```
 
 
