@@ -15,7 +15,7 @@
     - [Examples](#examples-1)
   - [stamp.deepProps(...args) and stamp.deepProperties(...args)](#stampdeeppropsargs-and-stampdeeppropertiesargs)
   - [stamp.statics(...args) and stamp.staticProperties(...args)](#stampstaticsargs-and-stampstaticpropertiesargs)
-  - [stamp.deepStatics(...args) and stamp.deepStaticProperties(...args)](#stampdeepstaticsargs-and-stampdeepstaticpropertiesargs)
+  - [stamp.deepStatics(...args) and stamp.staticDeepProperties(...args)](#stampdeepstaticsargs-and-stampstaticdeeppropertiesargs)
   - [stamp.conf(...args) and stamp.configuration(...args)](#stampconfargs-and-stampconfigurationargs)
     - [Examples](#examples-2)
   - [stamp.deepConf(...args) and stamp.deepConfiguration(...args)](#stampdeepconfargs-and-stampdeepconfigurationargs)
@@ -29,6 +29,7 @@
 - [Breaking changes](#breaking-changes)
   - [Stampit v2](#stampit-v2)
   - [Stampit v3](#stampit-v3)
+  - [Stampit v4](#stampit-v4)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -397,7 +398,7 @@ stamp = stamp.statics({
 ```
 
 
-### stamp.deepStatics(...args) and stamp.deepStaticProperties(...args)
+### stamp.deepStatics(...args) and stamp.staticDeepProperties(...args)
 
 Same as `stamp.statics()` and `stamp.staticProperties()` but deeply merges the
 provided objects.
@@ -526,7 +527,7 @@ All return a new stamp exactly as the `stamp.*` methods above.
 * stampit.statics()
 * stampit.staticProperties()
 * stampit.deepStatics()
-* stampit.deepStaticProperties()
+* stampit.staticDeepProperties()
 * stampit.conf()
 * stampit.configuration()
 * stampit.deepConf()
