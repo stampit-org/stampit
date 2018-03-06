@@ -2,6 +2,8 @@
   'use strict';
   var _undefined;
 
+  var version = '4.1.0';
+
   var var1 = 'roperties';
   var var2 = 'ropertyDescriptors';
   var var3 = 'static';
@@ -409,6 +411,13 @@
   baseStampit = compose(var4);
 
   var2[_compose] = var2.bind(); // bind to undefined
+
+  /**
+   * The semantic version number.
+   * @static
+   * @type {string}
+   */
+  var2.version = version;
 
   if (typeof _undefined != typeof module) module.exports = var2; else self.stampit = var2;
 }();
