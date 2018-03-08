@@ -53,7 +53,6 @@
     "cov": "npm run cov:clean && npm run cov:generate",
     "cov:clean": "rimraf ./coverage/",
     "cov:generate": "babel-node --presets=env ./node_modules/.bin/istanbul cover test",
-    "prepublish": "npm run check",
     "pretest": "npm run build",
     "test": "babel-node --presets=env test && npm run lint",
     "posttest": "node test/benchmark",
@@ -70,6 +69,7 @@
     "check": "npm run audit && npm run deps",
     "watch": "watch 'clear && npm -s test' test/ src/",
     "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
+    "preversion": "npm run check",
     "postversion": "V=`node -e \"process.stdout.write(require('./package.json').version)\"` && sed s/VERSION/$V/g dist/stampit.min.js > dist/tmp && rm dist/stampit.min.js && mv dist/tmp dist/stampit.min.js",
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
   },
