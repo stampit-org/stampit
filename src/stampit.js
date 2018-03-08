@@ -409,6 +409,7 @@
   baseStampit = compose(var4);
 
   var2[_compose] = var2.bind(); // bind to undefined
+  var2.version = 'VERSION';
 
   if (typeof _undefined != typeof module) module.exports = var2; else self.stampit = var2;
 }();
