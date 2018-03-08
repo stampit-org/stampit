@@ -197,3 +197,9 @@ npm run browsertest
 To run tests in a different browser:
 * Open the `./test/index.html` in your browser, and
 * open developer's console. The logs should indicate success.
+
+### Publishing to NPM registry
+```bash
+npx cut-release
+```
+It will run the `cut-release` utility which would ask you if you're publishing patch, minor, or major version. Then it will execute `npm version`, `git push` and `npm publish` with proper arguments for you.
