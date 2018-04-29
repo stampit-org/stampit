@@ -102,7 +102,7 @@ Stampit should run fine in any ES5 browser or any node.js.
 
 ## API
 
-See the [API](docs/API.md).
+See https://stampit.js.org
 
 
 # What's the Point?
@@ -172,10 +172,7 @@ const myBar = Bar({name: 'Moe\'s'});
 myBar.add({name: 'Homer'}).open().getMember('Homer');
 ```
 
-For more examples see the [API](docs/API.md).
-
-**React Users.** Stampit *loves* React. Check out [react-stamp](https://github.com/stampit-org/react-stamp) for composable components.
-
+For more examples see the [API](https://stampit.js.org) or the [Fun With Stamps](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0) mini-blog series.
 
 # Development
 

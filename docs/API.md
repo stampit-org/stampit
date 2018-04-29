@@ -1,5 +1,12 @@
 # Stampit API
 
+> **NOTE! THE NEW HOME FOR THIS PAGE IS https://stampit.js.org**
+
+> **NOTE! This page is not maintained since May 2018**
+
+
+-----
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
