@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/stampit-org/stampit-logo/master/stampit-logo.png" alt="stampit" width="160" />
 </p>
 
-# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit) [![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
+# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![UNPKG](https://img.shields.io/badge/gzip%20size-1.35%20kB-brightgreen.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 **Create objects from reusable, composable behaviors** 
 
@@ -88,13 +88,10 @@ Via NPM:
 
 Via bower:
 ```sh
-$ bower install stampit=https://npmcdn.com/stampit@4/dist/stampit.min.js
+$ bower install stampit=https://npmcdn.com/stampit@4.1.1/dist/stampit.min.js
 or
-$ bower install stampit=https://unpkg.com/stampit@4.0.2/src/stampit.js
+$ bower install stampit=https://unpkg.com/stampit@4.1.1/dist/stampit.min.js
 ```
-
-Browsers: [![CDNJS](https://img.shields.io/cdnjs/v/stampit.svg)](https://cdnjs.com/libraries/stampit)
-[![UNPKG](https://img.shields.io/badge/unpkg.com--green.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
 
 ## Compatibility
 
