@@ -6,6 +6,7 @@
     "name": "Eric Elliott",
     "url": "https://ericelliottjs.com"
   },
+  "homepage": "https://stampit.js.org",
   "main": "dist/stampit.min.js",
   "minified:main": "dist/stampit.min.js",
   "typings": "./src/stampit.d.ts",
