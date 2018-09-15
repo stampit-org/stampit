@@ -47,6 +47,6 @@ try {
       t.end();
     });
   }
-} catch(e) {
+} catch (e) {
   // skip these tests in this environment
 }
