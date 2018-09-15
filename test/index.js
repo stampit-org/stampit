@@ -14,6 +14,7 @@ import './import';
 import './index';
 import './infected-statics';
 import './init';
+import './name';
 import './props';
 import './stampit-api';
 import './stampit-shortcuts';
