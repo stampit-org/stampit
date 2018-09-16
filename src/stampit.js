@@ -157,7 +157,9 @@
     var2 = descr[_deepStatics];
     var4[_staticDeepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var4[_staticPropertyDescriptors] = descr[_staticPropertyDescriptors];
+    var1 = descr[_staticPropertyDescriptors];
+    var2 = descr.name && {name: {value: descr.name}};
+    var4[_staticPropertyDescriptors] = isObject(var2 || var1) ? assign({}, var1, var2) : _undefined;
 
     var1 = descr[_configuration];
     var2 = descr.conf;
@@ -165,9 +167,7 @@
 
     var1 = descr[_deepConfiguration];
     var2 = descr[_deepConf];
-    var3 = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
-
-    var4[_deepConfiguration] = var3;
+    var4[_deepConfiguration] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
     return var4;
   }
