@@ -2,15 +2,15 @@
 <img src="https://raw.githubusercontent.com/stampit-org/stampit-logo/master/stampit-logo.png" alt="stampit" width="160" />
 </p>
 
-# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![UNPKG](https://img.shields.io/badge/gzip%20size-1.35%20kB-brightgreen.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
+# Stampit [![Build Status](https://travis-ci.org/stampit-org/stampit.svg?branch=master)](https://travis-ci.org/stampit-org/stampit) [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![UNPKG](https://img.shields.io/badge/gzip%20size-1.35%20kB-brightgreen.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js) [![Open Source Helpers](https://www.codetriage.com/stampit-org/stampit/badges/users.svg)](https://www.codetriage.com/stampit-org/stampit)
 
-**Create objects from reusable, composable behaviors** 
+**Create objects from reusable, composable behaviors**
 
 Stampit is a **1.3KB** gzipped (or 2.7K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
  Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
 
-Find many more examples in [this series of mini blog posts](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0). 
+Find many more examples in [this series of mini blog posts](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0).
 
 ## Example
 
@@ -32,7 +32,7 @@ const Fighter = stampit(Character, { // inheriting
     stamina: 100
   },
   init({ stamina = this.stamina }) {
-    this.stamina = stamina;    
+    this.stamina = stamina;
   },
   methods: {
     fight() {
@@ -47,7 +47,7 @@ const Mage = stampit(Character, { // inheriting
     mana: 100
   },
   init({ mana = this.mana }) {
-    this.mana = mana;    
+    this.mana = mana;
   },
   methods: {
     cast() {
@@ -106,7 +106,7 @@ See https://stampit.js.org
 
 Prototypal OO is great, and JavaScript's capabilities give us some really powerful tools to explore it, but it could be easier to use.
 
-Basic questions like "how do I inherit privileged methods and private data?" and 
+Basic questions like "how do I inherit privileged methods and private data?" and
 "what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
 
 Let's answer both of these questions at the same time.
