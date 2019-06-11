@@ -44,7 +44,6 @@
   }
 
   var assign = _mergeOrAssign.bind(0, assignOne);
- 
 
   function isFunction(obj) {
     return typeof obj == 'function';
