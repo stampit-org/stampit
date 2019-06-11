@@ -46,7 +46,16 @@
     return dst;
   }
 
-  var assign = _Object.assign || _mergeOrAssign.bind(0, assignOne);
+ // var assign = _Object.assign || _mergeOrAssign.bind(0, assignOne);
+ var assign = (ob, ...o) => {
+  o.forEach((obj) => {
+    if (typeof obj !== 'undefined') {
+      Object.defineProperties(ob, Object.getOwnPropertyDescriptors(obj));
+    }
+  });
+
+  return ob;
+};
 
   function isFunction(obj) {
     return typeof obj == 'function';
