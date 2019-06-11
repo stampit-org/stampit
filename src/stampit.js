@@ -38,25 +38,13 @@
 
   function assignOne(dst, src) {
     if (src) {
-      // var keys = objectKeys(src);
-      // for (var i = 0; i < keys[_length]; i++) {
-      //   dst[keys[i]] = src[keys[i]];
-      // }
       Object.defineProperties(dst, Object.getOwnPropertyDescriptors(src));
     }
     return dst;
   }
 
   var assign = _mergeOrAssign.bind(0, assignOne);
-  //  var assign = (ob, ...o) => {
-  //   o.forEach((obj) => {
-  //     if (typeof obj !== 'undefined') {
-  //       Object.defineProperties(ob, Object.getOwnPropertyDescriptors(obj));
-  //     }
-  //   });
-
-  //   return ob;
-  // };
+ 
 
   function isFunction(obj) {
     return typeof obj == 'function';
