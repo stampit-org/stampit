@@ -27,10 +27,16 @@
   var _Object = Object;
   var isArray = Array.isArray;
   var defineProperties = _Object.defineProperties;
-  var objectKeys = _Object.keys;
+  var defineProperty = _Object.defineProperty;
+  var getOwnPropertyDescriptor = _Object.getOwnPropertyDescriptor;
+  var getOwnPropertySymbols = _Object.getOwnPropertySymbols;
   var baseStampit = Array.prototype; // temporary reusing the variable
   var concat = baseStampit.concat;
   var slice = baseStampit.slice;
+
+  function getOwnPropertyKeys(obj) {
+    return _Object.getOwnPropertyNames(obj).concat(getOwnPropertySymbols ? getOwnPropertySymbols(obj) : []);
+  }
 
   function _mergeOrAssign(action, dst) {
     return slice.call(arguments, 2).reduce(action, dst);
@@ -38,15 +44,19 @@
 
   function assignOne(dst, src) {
     if (src) {
-      var keys = objectKeys(src);
-      for (var i = 0; i < keys[_length]; i++) {
-        dst[keys[i]] = src[keys[i]];
+      // We need to copy regular props, symbols, getters and setters.
+      var keys = getOwnPropertyKeys(src), i = 0, desc;
+      for (; i < keys.length; i += 1) {
+        desc = getOwnPropertyDescriptor(src, keys[i]);
+        // Make it rewritable because two stamps can have same named getter/setter
+        desc.configurable = true;
+        defineProperty(dst, keys[i], desc);
       }
     }
     return dst;
   }
 
-  var assign = _Object.assign || _mergeOrAssign.bind(0, assignOne);
+  var assign = _mergeOrAssign.bind(0, assignOne);
 
   function isFunction(obj) {
     return typeof obj == 'function';
@@ -79,18 +89,20 @@
     // Note that functions are also assigned! We do not deep merge functions.
     if (!isPlainObject(src)) return src;
 
-    var keys = objectKeys(src), i = 0, key;
+    var keys = getOwnPropertyKeys(src), i = 0, key, desc;
     for (; i < keys[_length];) {
       key = keys[i++];
-
-      // Do not merge properties with the '_undefined' value.
-      if (src[key] !== _undefined) {
-        // deep merge each property. Recursion!
-        dst[key] = mergeOne(
-          // Recursive calls to mergeOne() must allow only plain objects or arrays in dst
-          isPlainObject(dst[key]) || isArray(src[key]) ? dst[key] : {},
-          src[key]
-        );
+      desc = getOwnPropertyDescriptor(src, key);
+      if (desc.hasOwnProperty('value')) { // is this a regular property?
+        // Do not merge properties with the 'undefined' value.
+        if (desc.value !== _undefined) {
+          // deep merge each property. Recursion!
+          dst[key] = mergeOne(isPlainObject(dst[key]) || isArray(src[key]) ? dst[key] : {}, src[key]);
+        }
+      } else { // nope, it looks like a getter/setter
+        // Make it rewritable because two stamps can have same named getter/setter
+        desc.configurable = true;
+        defineProperty(dst, key, desc);
       }
     }
 

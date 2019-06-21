@@ -1,5 +1,5 @@
-import test from 'tape';
-import stampit from '../src/stampit';
+const test = require('tape');
+const stampit = require('../src/stampit');
 
 // Closure arguments
 
