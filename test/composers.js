@@ -1,6 +1,6 @@
-import test from 'tape';
-import _ from 'lodash';
-import stampit from '../src/stampit';
+const test = require('tape');
+const _ = require('lodash');
+const stampit = require('../src/stampit');
 
 // composers
 

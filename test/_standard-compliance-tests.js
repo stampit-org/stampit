@@ -1,5 +1,5 @@
-import checkCompose from 'check-compose';
+const checkCompose = require('check-compose');
 
-import stampit from '../src/stampit';
+const stampit = require('../src/stampit');
 
 checkCompose(stampit);

@@ -1,19 +1,7 @@
-/* eslint-disable */
-import test from 'tape';
+const test = require('tape');
 
-import stampit1 from '../';
-
-test('import is the same as require', (t) => {
-  const stampit2 = require('../');
-
-  t.equal(stampit1, stampit2,
-    'Should export same object for both ES6 and CommonJS');
-
-  t.end();
-});
-
-test('infection works using the require("src/stampit")', t => {
-  const obj = require('../src/stampit')
+test('infection works using the require("src/stampit")', (t) => {
+  const obj = require('../src/stampit') // eslint-disable-line global-require
     .init(function () {
       const secret = 'foo';
       this.getSecret = () => { return secret; };

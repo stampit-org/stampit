@@ -11,3 +11,5 @@
 /docs/
 /src/
 .npmrc
+package-lock.json
+.nyc_output
