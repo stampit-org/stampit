@@ -49,6 +49,7 @@
     "lint": "eslint ./src/ ./test/",
     "prebuild": "rm -rf ./dist/*",
     "build": "npm run minify",
+    "ci": "npm run test",
     "check": "npm run test && npm run lint",
     "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
     "preversion": "npm run check",
