@@ -47,7 +47,7 @@ build/Release
 node_modules
 .npmrc
 package-lock.json
-
+.nyc_output
 
 ##### Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion
 *.iml

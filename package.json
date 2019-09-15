@@ -31,16 +31,11 @@
     "benchmark": "^2.1.1",
     "browserify": "^14.4.0",
     "check-compose": "^5.0.0",
-    "dependency-check": "^2.5.0",
-    "eslint": "^3.7.0",
-    "eslint-config-airbnb-base": "^11.0.0",
-    "eslint-config-es5": "^0.5.0",
-    "eslint-plugin-import": "^2.0.1",
+    "eslint": "^6.4.0",
     "gzip-size-cli": "^2.1.0",
-    "istanbul": "^1.1.0-alpha.1",
     "lodash": "^4.16.1",
     "mkdirp": "^0.5.1",
-    "nsp": "^2.1.0",
+    "nyc": "^14.1.1",
     "require-all": "^2.2.0",
     "rimraf": "^2.3.4",
     "tape": "^4.2.2",
@@ -48,23 +43,16 @@
     "watch": "^1.0.1"
   },
   "scripts": {
-    "cov": "npm run cov:clean && npm run cov:generate",
-    "cov:clean": "rimraf ./coverage/",
-    "cov:generate": "istanbul cover test",
+    "cov": "nyc npm run test",
     "pretest": "npm run build",
-    "test": "node test && npm run lint",
+    "test": "node test",
     "posttest": "node test/benchmark",
     "browsertest": "mkdirp ./dist/ && browserify ./test/index.js -t [ babelify --presets [ env ] ] > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
     "clean": "rimraf dist/*",
-    "lint": "eslint src && eslint test",
+    "lint": "eslint ./src/ ./test/",
     "prebuild": "npm run clean",
     "build": "npm run minify",
-    "deps": "npm run deps:missing && npm run deps:extra",
-    "deps:missing": "dependency-check package.json",
-    "deps:extra": "dependency-check package.json --extra --no-dev --ignore",
-    "audit": "nsp check",
-    "precheck": "npm test",
-    "check": "npm run audit && npm run deps",
+    "check": "npm run test && npm run lint",
     "watch": "watch 'clear && npm -s test' test/ src/",
     "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
     "preversion": "npm run check",
@@ -80,5 +68,24 @@
         "/dist/stampit.min.js"
       ]
     }
-  ]
+  ],
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018
+    },
+    "rules": {
+      "no-prototype-builtins": 0
+    }
+  }
 }
