@@ -49,7 +49,6 @@
       for (; i < keys.length; i += 1) {
         desc = getOwnPropertyDescriptor(src, keys[i]);
         // Make it rewritable because two stamps can have same named getter/setter
-        desc.configurable = true;
         defineProperty(dst, keys[i], desc);
       }
     }
@@ -101,7 +100,6 @@
         }
       } else { // nope, it looks like a getter/setter
         // Make it rewritable because two stamps can have same named getter/setter
-        desc.configurable = true;
         defineProperty(dst, key, desc);
       }
     }
