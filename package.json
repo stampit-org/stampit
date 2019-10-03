@@ -9,7 +9,7 @@
   "homepage": "https://stampit.js.org",
   "main": "dist/stampit.min.js",
   "minified:main": "dist/stampit.min.js",
-  "typings": "./src/stampit.d.ts",
+  "types": "./types/index.d.ts",
   "keywords": [
     "object",
     "prototype",
@@ -38,6 +38,7 @@
     "nyc": "^14.1.1",
     "require-all": "^2.2.0",
     "tape": "^4.2.2",
+    "typescript": "^3.6.3",
     "uglify-js": "^2.8.29"
   },
   "scripts": {
