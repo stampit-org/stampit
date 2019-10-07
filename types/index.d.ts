@@ -12,25 +12,32 @@
  * @param options Stampit options object containing methods,
  * init, props, statics, configurations, and property descriptors.
  */
-declare function stampit<I = any>(...composables: Array<stampit.StampitComposable<I>>): stampit.Stamp<I>;
+declare function stampit<I = any>(...composables: Array<stampit.Composable<I>>): stampit.Stamp<I>;
 
 declare namespace stampit {
-    // TODO: Add description
-    const version: string;
-    /** The stamp Descriptor */
-    interface Descriptor<I, F extends Specification.Stamp<any> = Specification.Stamp<I>> extends Specification.Descriptor<I, F> {
-        /** Create a new stamp based on this descriptor */
-        // ? is this function signature trully needed?
-        (...composables: Array<StampitComposable<I>>): Stamp<I>;
-    }
+    /**
+     * Extract the type of the object defined by `Stamp`, `Descriptor` (or `POJO`) types.
+     * @param {type} I Type definition to extract the object type from.
+     * @returns {type} The object type.
+     */
+    type StampType<I> = I extends Stamp<infer I> ? I
+                      : I extends Descriptor<infer I> ? I
+                      : I extends Specification.POJO ? I
+                      : never;
 
     /** Any composable object (stamp or descriptor) */
-    // ! should have been StampitComposable
-    // type Composable<I> = Stamp<I> | Descriptor<I>;
+    /** Stampit Composable for main stampit() function */
+    type Composable<I, U = StampType<I>> = Stamp<U> | Descriptor<U>;
 
-    // TODO: Add description
-    // ? shouldn't stampit.Option be stampit.(Extended)Descriptor really?
-    interface Options<I, F extends Specification.Stamp<any> = Specification.Stamp<I>> extends Omit<Specification.Descriptor<I, F>, 'initializers'> {
+    /** Version of the NPM `stampit` package */
+    const version: string;
+
+    /** The `stampit` Descriptor */
+    interface Descriptor<I, F extends Specification.Stamp<any> = Specification.Stamp<I>> extends Omit<Specification.Descriptor<I, F>, 'initializers'> {
+        /** Create a new stamp based on this descriptor */
+        // ? is this function signature trully needed?
+        // (...composables: Array<Composable<I>>): Stamp<I>;
+
         /** Properties which will shallowly copied into any future created instance. */
         props?: Specification.PropertyMap;
         /** Deeply merged properties of object instances */
@@ -51,15 +58,11 @@ declare namespace stampit {
         name: string;
     }
 
-    /** Stampit Composable for main stampit() function */
-    // TODO: simplify after factorizing interfaces
-    type StampitComposable<I, U = Specification.StampType<I>> = Specification.Composable<I, U> | Stamp<I> | Descriptor<U> | Options<U>;
-
     /**
      * A factory function that will produce new objects using the
      * prototypes that are passed in or composed.
      */
-    interface Stamp<I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>> extends Specification.Stamp<I> {
+    interface Stamp<I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>> extends Omit<Specification.Stamp<I>, 'compose'> {
         /**
          * Just like calling stamp(), stamp.create() invokes the stamp and returns a new instance.
          * @param state Properties you wish to set on the new objects.
@@ -82,7 +85,7 @@ declare namespace stampit {
          * @param methods Object(s) containing map of method names and bodies for delegation.
          * @return A new Stamp.
          */
-        methods(...methods: Array<{}>): Stamp<I>;
+        methods(...methods: Array<Specification.MethodMap>): Stamp<I>;
 
         /**
          * Take a variable number of objects and shallow assign them to any future
@@ -90,7 +93,7 @@ declare namespace stampit {
          * @param objects Object(s) to shallow assign for each new object.
          * @return A new Stamp.
          */
-        props(...objects: Array<{}>): Stamp<I>;
+        props(...objects: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Take a variable number of objects and shallow assign them to any future
@@ -98,7 +101,7 @@ declare namespace stampit {
          * @param objects Object(s) to shallow assign for each new object.
          * @return A new Stamp.
          */
-        properties(...objects: Array<{}>): Stamp<I>;
+        properties(...objects: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Take a variable number of objects and deeply merge them to any future
@@ -107,7 +110,7 @@ declare namespace stampit {
          * @param deepObjects The object(s) to deeply merge for each new object
          * @returns A new Stamp
          */
-        deepProps(...deepObjects: Array<{}>): Stamp<I>;
+        deepProps(...deepObjects: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Take a variable number of objects and deeply merge them to any future
@@ -116,7 +119,7 @@ declare namespace stampit {
          * @param deepObjects The object(s) to deeply merge for each new object
          * @returns A new Stamp
          */
-        deepProperties(...deepObjects: Array<{}>): Stamp<I>;
+        deepProperties(...deepObjects: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Take in a variable number of functions and add them to the init
@@ -152,7 +155,7 @@ declare namespace stampit {
          * @param statics Object(s) containing map of property names and values to mixin into each new stamp.
          * @return A new Stamp.
          */
-        statics(...statics: Array<{}>): Stamp<I>;
+        statics(...statics: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Take n objects and add them to a new stamp and any future stamp it composes with.
@@ -160,7 +163,7 @@ declare namespace stampit {
          * @param statics Object(s) containing map of property names and values to mixin into each new stamp.
          * @return A new Stamp.
          */
-        staticProperties(...statics: Array<{}>): Stamp<I>;
+        staticProperties(...statics: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Deeply merge a variable number of objects and add them to a new stamp and
@@ -169,7 +172,7 @@ declare namespace stampit {
          * merged
          * @returns A new stamp
          */
-        deepStatics(...deepStatics: Array<{}>): Stamp<I>;
+        deepStatics(...deepStatics: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Deeply merge a variable number of objects and add them to a new stamp and
@@ -178,7 +181,7 @@ declare namespace stampit {
          * merged
          * @returns A new stamp
          */
-        staticDeepProperties(...deepStatics: Array<{}>): Stamp<I>;
+        staticDeepProperties(...deepStatics: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Shallowly assign properties of Stamp arbitrary metadata and add them to
@@ -187,7 +190,7 @@ declare namespace stampit {
          * @param confs The object(s) containing metadata properties
          * @returns A new Stamp
          */
-        conf(...confs: Array<{}>): Stamp<I>;
+        conf(...confs: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Shallowly assign properties of Stamp arbitrary metadata and add them to
@@ -196,7 +199,7 @@ declare namespace stampit {
          * @param confs The object(s) containing metadata properties
          * @returns A new Stamp
          */
-        configuration(...confs: Array<{}>): Stamp<I>;
+        configuration(...confs: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Deeply merge properties of Stamp arbitrary metadata and add them to a new
@@ -205,7 +208,7 @@ declare namespace stampit {
          * @param deepConfs The object(s) containing metadata properties
          * @returns A new Stamp
          */
-        deepConf(...deepConfs: Array<{}>): Stamp<I>;
+        deepConf(...deepConfs: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Deeply merge properties of Stamp arbitrary metadata and add them to a new
@@ -214,7 +217,7 @@ declare namespace stampit {
          * @param deepConfs The object(s) containing metadata properties
          * @returns A new Stamp
          */
-        deepConfiguration(...deepConfs: Array<{}>): Stamp<I>;
+        deepConfiguration(...deepConfs: Array<Specification.PropertyMap>): Stamp<I>;
 
         /**
          * Apply ES5 property descriptors to object instances created by the new
@@ -223,7 +226,7 @@ declare namespace stampit {
          * @param descriptors
          * @returns A new Stamp
          */
-        propertyDescriptors(...descriptors: Array<{}>): Stamp<I>;
+        propertyDescriptors(...descriptors: Array<PropertyDescriptorMap>): Stamp<I>;
 
         /**
          * Apply ES5 property descriptors to a Stamp and any future Stamp it
@@ -231,16 +234,13 @@ declare namespace stampit {
          * @param descriptors
          * @returns A new Stamp
          */
-        staticPropertyDescriptors(...descriptors: Array<{}>): Stamp<I>;
+        staticPropertyDescriptors(...descriptors: Array<PropertyDescriptorMap>): Stamp<I>;
     }
     /**
      * A shortcut methods for stampit().methods()
      * @param methods Object(s) containing map of method names and bodies for delegation.
      * @return A new Stamp.
      */
-    function methods
-    <I = any>
-    (...methods: Array<{}>): Stamp<I>;
     function methods
         <I = any>
         (...methods: Array<Specification.MethodMap>): Stamp<I>;
@@ -312,7 +312,7 @@ declare namespace stampit {
      * @return A new Stamp.
      */
     function staticProperties
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...statics: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -321,7 +321,7 @@ declare namespace stampit {
      * @return A new Stamp.
      */
     function staticProperties
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...statics: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -330,7 +330,7 @@ declare namespace stampit {
      * @returns A new stamp
      */
     function deepStatics
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepStatics: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -339,7 +339,7 @@ declare namespace stampit {
      * @returns A new stamp
      */
     function staticDeepProperties
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepStatics: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -348,7 +348,7 @@ declare namespace stampit {
      * @returns A new Stamp
      */
     function conf
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepConfs: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -357,7 +357,7 @@ declare namespace stampit {
      * @returns A new Stamp
      */
     function configuration
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepConfs: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -366,7 +366,7 @@ declare namespace stampit {
      * @returns A new Stamp
      */
     function deepConf
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepConfs: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -375,7 +375,7 @@ declare namespace stampit {
      * @returns A new Stamp
      */
     function deepConfiguration
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...deepConfs: Array<Specification.PropertyMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -393,7 +393,7 @@ declare namespace stampit {
      * @returns A new Stamp
      */
     function staticPropertyDescriptors
-        <I = any, F extends Specification.Stamp<any> = Specification.Stamp<I>>
+        <I = any, F extends Stamp<any> = Stamp<I>>
         (...descriptors: Array<PropertyDescriptorMap> & ThisType<F>): Stamp<I>;
 
     /**
@@ -404,7 +404,7 @@ declare namespace stampit {
      */
     function compose
         <I = any>
-        (...composables: Array<StampitComposable<I>>): Stamp<I>;
+        (...composables: Array<Composable<I>>): Stamp<I>;
 }
 
 // export = stampit;
