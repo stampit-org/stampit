@@ -131,7 +131,7 @@ interface Chainables<Obj, S̤t̤a̤m̤p̤ extends StampSignature>  {
   deepProps(...deepObjects: Array<_propertyMap>): S̤t̤a̤m̤p̤;
 
   /**
-   * Take in a variable number of functions and add them to the init
+   * Take in a variable number of functions and add them to the initializers
    * prototype as initializers. **Chainable**.
    * @param functions Initializer functions used to create private data and
    * privileged methods.
@@ -141,7 +141,7 @@ interface Chainables<Obj, S̤t̤a̤m̤p̤ extends StampSignature>  {
   initializers(functions: Array<stampit.Initializer<Obj, S̤t̤a̤m̤p̤>>): S̤t̤a̤m̤p̤;
 
   /**
-   * Take in a variable number of functions and add them to the init
+   * Take in a variable number of functions and add them to the initializers
    * prototype as initializers. **Chainable**.
    * @param functions Initializer functions used to create private data and
    * privileged methods.
@@ -183,6 +183,18 @@ interface Chainables<Obj, S̤t̤a̤m̤p̤ extends StampSignature>  {
    * @return {Stamp} A new Stamp.
    */
   deepStatics(...deepStatics: Array<_propertyMap>): S̤t̤a̤m̤p̤;
+
+  /**
+   * Take in a variable number of functions and add them to the composers
+   * prototype as composers. **Chainable**.
+   * @param functions Composer functions that will run in sequence while creating
+   * a new stamp from a list of composables.  The resulting stamp and the
+   * composables get passed to composers.
+   * @return {Stamp} A new Stamp.
+   */
+  composers(...functions: Array<stampit.Composer<S̤t̤a̤m̤p̤>>): S̤t̤a̤m̤p̤;
+  composers(functions: Array<stampit.Composer<S̤t̤a̤m̤p̤>>): S̤t̤a̤m̤p̤;
+// composers?: Array<Composer<S̤t̤a̤m̤p̤>>;
 
   /**
    * Shallowly assign properties of Stamp arbitrary metadata and add them to
@@ -331,10 +343,10 @@ export namespace stampit {
      * containing properties that may be used by initializers. (Cf. the `Descriptor`
      * attributes `configuration` and `deepConfiguration`.)
      * @param {InitializerContext} context The context of current `.initializers` function.
-     * @return {Obj} The object produced by the `Stamp`.
+     * @return {void | Obj} The object produced by the `Stamp`.
      */
     // ??? should the type of `this` be the object or the stamp
-    (/* this: S̤t̤a̤m̤p̤, */ options: _propertyMap, context: InitializerContext<Obj, S̤t̤a̤m̤p̤>): Obj;
+    (/* this: S̤t̤a̤m̤p̤, */ options: /*_propertyMap*/ any, context: InitializerContext<Obj, S̤t̤a̤m̤p̤>): void | Obj;
   }
 
   /**
@@ -484,7 +496,7 @@ export namespace stampit {
   /**
    * A shortcut method for stampit().initializers()
    *
-   * Take in a variable number of functions and add them to the init
+   * Take in a variable number of functions and add them to the initializers
    * prototype as initializers. **Chainable**.
    * @template Obj The type of the object instance being produced by the `Stamp`.
    * or the type of the `Stamp` being created.
@@ -498,7 +510,7 @@ export namespace stampit {
   /**
    * A shortcut method for stampit().init()
    *
-   * Take in a variable number of functions and add them to the init
+   * Take in a variable number of functions and add them to the initializers
    * prototype as initializers. **Chainable**.
    * @template Obj The type of the object instance being produced by the `Stamp`.
    * or the type of the `Stamp` being created.
@@ -556,6 +568,22 @@ export namespace stampit {
    * @return {Stamp} A new Stamp.
    */
   function deepStatics<Obj = any>(...deepStatics: Array<_propertyMap>): StampType<Obj>;
+
+  /**
+   * A shortcut method for stampit().composers()
+   *
+   * Take in a variable number of functions and add them to the composers
+   * prototype as composers. **Chainable**.
+   * @template Obj The type of the object instance being produced by the `Stamp`.
+   * or the type of the `Stamp` being created.
+   * @param functions Composer functions that will run in sequence while creating
+   * a new stamp from a list of composables.  The resulting stamp and the
+   * composables get passed to composers.
+   * @return {Stamp} A new Stamp.
+   */
+  function composers<Obj = any, S̤t̤a̤m̤p̤ extends StampSignature = StampType<Obj>>(...functions: Array<Composer<S̤t̤a̤m̤p̤>>): S̤t̤a̤m̤p̤;
+  function composers<Obj = any, S̤t̤a̤m̤p̤ extends StampSignature = StampType<Obj>>(functions: Array<Composer<S̤t̤a̤m̤p̤>>): S̤t̤a̤m̤p̤;
+// composers?: Array<Composer<S̤t̤a̤m̤p̤>>;
 
   /**
    * A shortcut method for stampit().configuration()
@@ -646,3 +674,22 @@ export namespace stampit {
 }
 
 export default stampit;
+export const compose: typeof stampit.compose;
+export const composers: typeof stampit.composers; // !!!
+export const conf: typeof stampit.conf;
+export const configuration: typeof stampit.configuration;
+export const deepConf: typeof stampit.deepConf;
+export const deepConfiguration: typeof stampit.deepConfiguration;
+export const deepProperties: typeof stampit.deepProperties;
+export const deepProps: typeof stampit.deepProps;
+export const deepStatics: typeof stampit.deepStatics;
+export const init: typeof stampit.init;
+export const initializers: typeof stampit.initializers;
+export const methods: typeof stampit.methods;
+export const properties: typeof stampit.properties;
+export const propertyDescriptors: typeof stampit.propertyDescriptors;
+export const props: typeof stampit.props;
+export const staticDeepProperties: typeof stampit.staticDeepProperties;
+export const staticProperties: typeof stampit.staticProperties;
+export const staticPropertyDescriptors: typeof stampit.staticPropertyDescriptors;
+export const version: typeof stampit.version;
