@@ -28,19 +28,19 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "benchmark": "^2.1.1",
+    "benchmark": "^2.1.4",
     "browserify": "^16.5.0",
     "check-compose": "^5.0.0",
-    "eslint": "^6.4.0",
-    "gzip-size-cli": "^2.1.0",
+    "eslint": "^6.5.1",
+    "gzip-size-cli": "^3.0.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "nyc": "^14.1.1",
-    "require-all": "^2.2.0",
-    "tape": "^4.2.2",
+    "require-all": "^3.0.0",
+    "tape": "^4.11.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4",
-    "uglify-js": "^2.8.29"
+    "uglify-js": "^3.6.2"
   },
   "scripts": {
     "cov": "nyc npm run test",
@@ -53,7 +53,7 @@
     "build": "npm run minify",
     "ci": "npm run test",
     "check": "npm run test && npm run lint",
-    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,screw_ie8,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
+    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,ie8=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
     "preversion": "npm run check",
     "postversion": "V=`node -e \"process.stdout.write(require('./package.json').version)\"` && sed s/VERSION/$V/g dist/stampit.min.js > dist/tmp && rm dist/stampit.min.js && mv dist/tmp dist/stampit.min.js",
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
