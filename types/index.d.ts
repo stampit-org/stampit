@@ -13,7 +13,7 @@
  * @template This The type to use for `this` within methods.
  */
 interface MethodMap<This> {
-  [s: string]: (this: This, ...args: any[]) => any;
+  [s: string]: ((this: This, ...args: any[]) => any) | {};
 }
 
 /** @internal A plain old JavaScript object created by a `Stamp`. */
