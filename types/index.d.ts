@@ -59,8 +59,8 @@ type StampObjectType<Original> = Original extends /* disallowed types */ bigint 
   ? Original
   : Original extends StampSignature
   ? (Original extends stampit.Stamp<infer Obj> /* extended stamps may require infering twice */
-        ? (Obj extends stampit.Stamp<infer Obj> ? Obj : Obj)
-        : any)
+    ? (Obj extends stampit.Stamp<infer Obj> ? Obj : Obj)
+    : any)
   : Original extends stampit.ExtendedDescriptor<infer Obj, any>
   ? Obj
   : Original extends Pojo
@@ -216,7 +216,7 @@ declare function stampit<Obj = any>(...composables: stampit.Composable[]): Stamp
 
 declare namespace stampit {
   /** A composable object (either a `Stamp` or a `ExtendedDescriptor`.) */
-  type Composable = StampSignature | ExtendedDescriptor<any, StampSignature>;
+  type Composable = StampSignature | ExtendedDescriptor<any, any>;
 
   /**
    * A `Stamp`'s metadata.
@@ -233,19 +233,19 @@ declare namespace stampit {
       /** A set of object property descriptors (`PropertyDescriptor`) used for fine-grained control over object property behaviors. */
       propertyDescriptors?: PropertyDescriptorMap;
       /** A set of static properties that will be copied by assignment to the `Stamp`. */
-      staticProperties?: PropertyMap /* & ThisType<S> */;
+      staticProperties?: PropertyMap;
       /** A set of static properties that will be added to the `Stamp` by deep property merge. */
-      staticDeepProperties?: PropertyMap /* & ThisType<S> */;
+      staticDeepProperties?: PropertyMap;
       /** A set of object property descriptors (`PropertyDescriptor`) to apply to the `Stamp`. */
-      staticPropertyDescriptors?: PropertyDescriptorMap /* & ThisType<S> */;
+      staticPropertyDescriptors?: PropertyDescriptorMap;
       /** An array of functions that will run in sequence while creating an object instance from a `Stamp`. `Stamp` details and arguments get passed to initializers. */
       initializers?: Initializer<Obj, S̤t̤a̤m̤p̤> | Array<Initializer<Obj, S̤t̤a̤m̤p̤>>;
       /** An array of functions that will run in sequence while creating a new `Stamp` from a list of `Composable`s. The resulting `Stamp` and the `Composable`s get passed to composers. */
       composers?: Array<Composer<S̤t̤a̤m̤p̤>>;
       /** A set of options made available to the `Stamp` and its initializers during object instance creation. These will be copied by assignment. */
-      configuration?: PropertyMap /* & ThisType<S> */;
+      configuration?: PropertyMap;
       /** A set of options made available to the `Stamp` and its initializers during object instance creation. These will be deep merged. */
-      deepConfiguration?: PropertyMap /* & ThisType<S> */;
+      deepConfiguration?: PropertyMap;
   }
 
   /**
@@ -259,15 +259,15 @@ declare namespace stampit {
       /** A set of properties that will be added to new object instances by deep property merge. */
       deepProps?: PropertyMap;
       /** A set of static properties that will be copied by assignment to the `Stamp`. */
-      statics?: PropertyMap /* & ThisType<S> */;
+      statics?: PropertyMap;
       /** A set of static properties that will be added to the `Stamp` by deep property merge. */
-      deepStatics?: PropertyMap /* & ThisType<S> */;
+      deepStatics?: PropertyMap;
       /** An array of functions that will run in sequence while creating an object instance from a `Stamp`. `Stamp` details and arguments get passed to initializers. */
       init?: Initializer<Obj, S̤t̤a̤m̤p̤> | Array<Initializer<Obj, S̤t̤a̤m̤p̤>>;
       /** A set of options made available to the `Stamp` and its initializers during object instance creation. These will be copied by assignment. */
-      conf?: PropertyMap /* & ThisType<S> */;
+      conf?: PropertyMap;
       /** A set of options made available to the `Stamp` and its initializers during object instance creation. These will be deep merged. */
-      deepConf?: PropertyMap /* & ThisType<S> */;
+      deepConf?: PropertyMap;
       // TODO: Add description
       name?: string;
   }
