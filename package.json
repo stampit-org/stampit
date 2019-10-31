@@ -31,6 +31,7 @@
     "benchmark": "^2.1.4",
     "browserify": "^16.5.0",
     "check-compose": "^5.0.0",
+    "dtslint": "^0.9.8",
     "eslint": "^6.5.1",
     "gzip-size-cli": "^3.0.0",
     "lodash": "^4.17.15",
@@ -44,6 +45,7 @@
   },
   "scripts": {
     "cov": "nyc npm run test",
+    "dtslint": "dtslint test/types",
     "pretest": "npm run build",
     "test": "node test",
     "posttest": "node test/benchmark",
