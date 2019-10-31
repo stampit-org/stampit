@@ -27,192 +27,193 @@ import stampit from 'stampit';
 //   version,
 // } from 'stampit';
 
-// const a = stampit().init(function(options) {
-//   const a = options.args[0];
-//   this.getA = () => {
-//       return a;
-//   };
-// });
-// a(); // Object -- so far so good.
-// a().getA(); // "a"
+const a = stampit().init(function(options) {
+  const a = options.args[0];
+  this.getA = () => {
+      return a;
+  };
+});
+a(); // Object -- so far so good.
+a().getA(); // "a"
 
-// const b = stampit().init(function() {
-//   const a = 'b';
-//   this.getB = () => {
-//       return a;
-//   };
-// });
+const b = stampit().init(function() {
+  const a = 'b';
+  this.getB = () => {
+      return a;
+  };
+});
 
-// const c = stampit.compose(a, b);
-// const foo = c(); // we won't throw this one away...
-// foo.getA(); // "a"
-// foo.getB(); // "b"
+const c = stampit.compose(a, b);
+const foo = c(); // we won't throw this one away...
+foo.getA(); // "a"
+foo.getB(); // "b"
 
-// // Here's a mixin with public methods, and some props:
-// const membership = stampit({
-//   methods: {
-//       // members: {},
-//       add(member: any) {
-//           this.members[member.name] = member;
-//           return this;
-//       },
-//       getMember(name: any) {
-//           return this.members[name];
-//       }
-//   },
-//   props: {
-//       members: {}
-//   }
-// });
+// Here's a mixin with public methods, and some props:
+const membership = stampit({
+  methods: {
+      // members: {},
+      add(member: any) {
+          this.members[member.name] = member;
+          return this;
+      },
+      getMember(name: any) {
+          return this.members[name];
+      }
+  },
+  props: {
+      members: {}
+  }
+});
 
-// // Let's set some defaults:
-// const defaults = stampit().props({
-//   name: 'The Saloon',
-//   specials: 'Whisky, Gin, Tequila'
-// });
+// Let's set some defaults:
+const defaults = stampit().props({
+  name: 'The Saloon',
+  specials: 'Whisky, Gin, Tequila'
+});
 
-// // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
-// // Just good, clean code reusability.
-// const bar = stampit.compose(defaults, membership);
-// // Note that you can override props on instantiation:
-// const myBar = bar({ name: 'Moe\'s' });
-// // Silly, but proves that everything is as it should be.
-// myBar.add({ name: 'Homer' }).open().getMember('Homer');
+// Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
+// Just good, clean code reusability.
+const bar = stampit.compose(defaults, membership);
+// Note that you can override props on instantiation:
+const myBar = bar({ name: 'Moe\'s' });
+// Silly, but proves that everything is as it should be.
+myBar.add({ name: 'Homer' }).open().getMember('Homer');
 
-// const myStamp = stampit().methods({
-//   foo() {
-//       return 'foo';
-//   },
-//   methodOverride() {
-//       return false;
-//   }
-// }).methods({
-//   bar() {
-//       return 'bar';
-//   },
-//   methodOverride() {
-//       return true;
-//   }
-// });
+const myStamp = stampit().methods({
+  foo() {
+      return 'foo';
+  },
+  methodOverride() {
+      return false;
+  }
+}).methods({
+  bar() {
+      return 'bar';
+  },
+  methodOverride() {
+      return true;
+  }
+});
 
-// myStamp.deepProps({
-//   foo: { bar: 'bar' },
-//   refsOverride: false
-// }).props({
-//   bar: 'bar',
-//   refsOverride: true
-// });
+myStamp.deepProps({
+  foo: { bar: 'bar' },
+  refsOverride: false
+}).props({
+  bar: 'bar',
+  refsOverride: true
+});
 
-// myStamp.init(function() {
-//   const secret = 'foo';
+myStamp.init(function() {
+  const secret = 'foo';
 
-//   this.getSecret = () => {
-//       return secret;
-//   };
-// }).init(function() {
-//   this.a = true;
-// }).init(function() {
-//   this.b = true;
-// }, function() {
-//   this.c = true;
-// });
+  this.getSecret = () => {
+      return secret;
+  };
+}).init(function() {
+  this.a = true;
+}).init(function() {
+  this.b = true;
+}, function() {
+  this.c = true;
+});
 
-// let obj = myStamp.create();
-// obj.getSecret && obj.a && obj.b && obj.c; // true
+// tslint:disable-next-line prefer-const
+let obj = myStamp.create();
+obj.getSecret && obj.a && obj.b && obj.c; // true
 
-// const newStamp = stampit({ props: { defaultNum: 1 } }).compose(myStamp);
+const newStamp = stampit({ props: { defaultNum: 1 } }).compose(myStamp);
 
-// const obj1 = stampit().methods({
-//   a() {
-//       return 'a';
-//   }
-// }, {
-//   b() {
-//       return 'b';
-//   }
-// }).create();
+const obj1 = stampit().methods({
+  a() {
+      return 'a';
+  }
+}, {
+  b() {
+      return 'b';
+  }
+}).create();
 
-// const obj2 = stampit().props({
-//   a: 'a'
-// }, {
-//   b: 'b'
-// }).create();
+const obj2 = stampit().props({
+  a: 'a'
+}, {
+  b: 'b'
+}).create();
 
-// obj = defaults.compose(newStamp, membership).create();
+obj = defaults.compose(newStamp, membership).create();
 
-// // The old constructor / class thing...
-// const Constructor = function Constructor() {
-//   this.thing = 'initialized';
-// };
-// Constructor.prototype.foo = function foo() {
-//   return 'foo';
-// };
+// The old constructor / class thing...
+const Constructor = function Constructor() {
+  this.thing = 'initialized';
+};
+Constructor.prototype.foo = function foo() {
+  return 'foo';
+};
 
-// // A new stamp to compose with...
-// const newskool = stampit().methods({
-//   bar: function bar() {
-//       return 'bar';
-//   }
-//   // your methods here...
-// }).init(function() {
-//   this.baz = 'baz';
-// });
+// A new stamp to compose with...
+const newskool = stampit().methods({
+  bar: function bar() {
+      return 'bar';
+  }
+  // your methods here...
+}).init(function() {
+  this.baz = 'baz';
+});
 
-// // Now you can compose those old constructors just like you could
-// // with any other stamp...
-// const myThing = stampit.compose(newskool);
+// Now you can compose those old constructors just like you could
+// with any other stamp...
+const myThing = stampit.compose(newskool);
 
-// const t = myThing();
+const t = myThing();
 
-// t.thing; // 'initialized',
+t.thing; // 'initialized',
 
-// t.foo(); // 'foo',
+t.foo(); // 'foo',
 
-// t.bar(); // 'bar'
+t.bar(); // 'bar'
 
-// interface SomeStampInstance {
-//   a: string;
-//   b: string;
-// }
+interface SomeStampInstance {
+  a: string;
+  b: string;
+}
 
-// // Test import of stamp type
-// interface SomeStamp extends stampit.Stamp<SomeStampInstance> {
-//   (params: { a: number; b: boolean}): SomeStampInstance;
-// }
+// Test import of stamp type
+interface SomeStamp extends stampit.Stamp<SomeStampInstance> {
+  (params: { a: number; b: boolean}): SomeStampInstance;
+}
 
-// const SomeStamp = stampit<SomeStamp>()
-//   .init(function(params: { a: number; b: boolean}) {
-//       // tslint:disable-next-line: strict-string-expressions
-//       this.a = '' + a; // this SomeStampInstance
-//       // tslint:disable-next-line: strict-string-expressions
-//       this.b = '' + b;
-//   });
+const SomeStamp = stampit<SomeStamp>()
+  .init(function(params: { a: number; b: boolean}) {
+      // tslint:disable-next-line: strict-string-expressions
+      this.a = '' + a; // this SomeStampInstance
+      // tslint:disable-next-line: strict-string-expressions
+      this.b = '' + b;
+  });
 
-// SomeStamp({ a: 1, b: false }); // $ExpectType SomeStampInstance
-// SomeStamp({ a: 1, b: false }).a; // $ExpectType string
+SomeStamp({ a: 1, b: false }); // $ExpectType SomeStampInstance
+SomeStamp({ a: 1, b: false }).a; // $ExpectType string
 
-// const d: stampit.ExtendedDescriptor<{}> = {
-// methods: {},
-// properties: {},
-// deepProperties: {},
-// propertyDescriptors: {},
-// initializers: [],
-// staticProperties: {},
-// staticDeepProperties: {},
-// staticPropertyDescriptors: {},
-// composers: [],
-// configuration: {},
-// deepConfiguration: {},
-// name: '',
-// // shorthands
-// props: {},
-// deepProps: {},
-// init: [],
-// statics: {},
-// deepStatics: {},
-// conf: {},
-// deepConf: {},
-// };
+const d: stampit.ExtendedDescriptor<{}> = {
+methods: {},
+properties: {},
+deepProperties: {},
+propertyDescriptors: {},
+initializers: [],
+staticProperties: {},
+staticDeepProperties: {},
+staticPropertyDescriptors: {},
+composers: [],
+configuration: {},
+deepConfiguration: {},
+name: '',
+// shorthands
+props: {},
+deepProps: {},
+init: [],
+statics: {},
+deepStatics: {},
+conf: {},
+deepConf: {},
+};
 
 // The `.compose()` method
 const compose = stampit.compose; // $ExpectType typeof stampit
@@ -255,10 +256,6 @@ methods: {
   logLocalThis() {
       this; // $ExpectType Object0
   },
-  myMembers: {},
-  dbConnString: "pgs://data.local",
-  MY_LIMIT: 100,
-  myRegExp: /foobar/g,
 },
 properties: {},
 deepProperties: {},
@@ -281,7 +278,7 @@ configuration: {},
 deepConfiguration: {}
 };
 
-const stampDescriptor0 = compose<typeof descriptor0>(descriptor0); // $ExpectType Stamp<Object0>
+const stampDescriptor0 = compose<typeof descriptor0>(); // $ExpectType Stamp<Object0>
 stampDescriptor0(); // $ExpectType Object0
 
 // check typed stamps... with untyped descriptor (`this` isn't typed in `methods`)
