@@ -47,7 +47,7 @@
     "cov": "nyc npm run test",
     "dtslint": "dtslint test/types",
     "pretest": "npm run build",
-    "test": "node test",
+    "test": "node test && npm run dtslint",
     "posttest": "node test/benchmark",
     "browsertest": "mkdirp ./dist/ && browserify ./test/index.js > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
     "lint": "eslint ./src/ ./test/",
