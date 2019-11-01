@@ -31,7 +31,8 @@
     "benchmark": "^2.1.4",
     "browserify": "^16.5.0",
     "check-compose": "^5.0.0",
-    "eslint": "^6.5.1",
+    "dtslint": "1.0.2",
+    "eslint": "^6.6.0",
     "gzip-size-cli": "^3.0.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
@@ -40,12 +41,13 @@
     "tape": "^4.11.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4",
-    "uglify-js": "^3.6.2"
+    "uglify-js": "^3.6.5"
   },
   "scripts": {
     "cov": "nyc npm run test",
+    "dtslint": "dtslint test/types",
     "pretest": "npm run build",
-    "test": "node test",
+    "test": "node test && npm run dtslint",
     "posttest": "node test/benchmark",
     "browsertest": "mkdirp ./dist/ && browserify ./test/index.js > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
     "lint": "eslint ./src/ ./test/",
