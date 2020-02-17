@@ -6,11 +6,11 @@
 
 **Create objects from reusable, composable behaviors** 
 
-Stampit is a **1.3KB** gzipped (or 2.7K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+Stampit is a **1.4KB** gzipped (or 3K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
- Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is an [infected compose](https://medium.com/@koresar/fun-with-stamps-episode-8-tracking-and-overriding-composition-573aa85ba622) featuring friendly handy API.
+ Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is a handy implementation of the specification featuring friendly API.
 
-Find many more examples in [this series of mini blog posts](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0). 
+Find many more examples in [this series of mini blog posts](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0) or on the [official website](https://stampit.js.org/api/quick-start).
 
 ## Example
 
@@ -27,7 +27,7 @@ const Character = stampit({
   }
 })
 
-const Fighter = stampit(Character, { // inheriting
+const Fighter = Character.compose({ // inheriting
   props: {
     stamina: 100
   },
@@ -42,7 +42,7 @@ const Fighter = stampit(Character, { // inheriting
   }
 })
 
-const Mage = stampit(Character, { // inheriting
+const Mage = Character.compose({ // inheriting
   props: {
     mana: 100
   },
@@ -83,15 +83,7 @@ console.log(Paladin.compose.methods) // { fight: [Function: fight], cast: [Funct
 
 ## Install
 
-Via NPM:
-[![NPM](https://nodei.co/npm/stampit.png?downloadRank=true)](https://www.npmjs.com/package/stampit)
-
-Via bower:
-```sh
-$ bower install stampit=https://npmcdn.com/stampit@4.1.1/dist/stampit.min.js
-or
-$ bower install stampit=https://unpkg.com/stampit@4.1.1/dist/stampit.min.js
-```
+[![NPM](https://nodei.co/npm/stampit.png?compact=true)](https://www.npmjs.com/package/stampit)
 
 ## Compatibility
 
@@ -113,19 +105,21 @@ Let's answer both of these questions at the same time.
 
 ```js
 // Some privileged methods with some private data.
-const Availability = stampit().init(function() {
-  var isOpen = false; // private
+const Availability = stampit({
+  init() {
+    let isOpen = false; // private
 
-  this.open = function open() {
-    isOpen = true;
-    return this;
-  };
-  this.close = function close() {
-    isOpen = false;
-    return this;
-  };
-  this.isOpen = function isOpenMethod() {
-    return isOpen;
+    this.open = function open() {
+      isOpen = true;
+      return this;
+    };
+    this.close = function close() {
+      isOpen = false;
+      return this;
+    };
+    this.isOpen = function isOpenMethod() {
+      return isOpen;
+    }
   }
 });
 
@@ -148,10 +142,10 @@ const Membership = stampit({
 // Let's set some defaults:
 const Defaults = stampit({
   props: {
-    name: 'The Saloon',
-    specials: 'Whisky, Gin, Tequila'
+    name: "The Saloon",
+    specials: "Whisky, Gin, Tequila"
   },
-  init({name, specials}) {
+  init({ name, specials }) {
     this.name = name || this.name;
     this.specials = specials || this.specials;
   }
@@ -163,10 +157,10 @@ const Defaults = stampit({
 const Bar = stampit(Defaults, Availability, Membership);
 
 // Create an object instance
-const myBar = Bar({name: 'Moe\'s'});
+const myBar = Bar({ name: "Moe's" });
 
 // Silly, but proves that everything is as it should be.
-myBar.add({name: 'Homer'}).open().getMember('Homer');
+myBar.add({ name: "Homer" }).open().getMember("Homer");
 ```
 
 For more examples see the [API](https://stampit.js.org) or the [Fun With Stamps](https://medium.com/@koresar/fun-with-stamps-episode-1-stamp-basics-e0627d81efe0) mini-blog series.
