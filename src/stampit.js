@@ -2,18 +2,15 @@
   'use strict';
   var _undefined;
 
-  var var1 = 'roperties';
-  var var2 = 'ropertyDescriptors';
-  var var3 = 'static';
-  var var4 = 'onfiguration';
-  var _properties = 'p' + var1;
-  var _deepProperties = 'deepP' + var1;
-  var _propertyDescriptors = 'p' + var2;
-  var _staticProperties = var3 + 'P' + var1;
-  var _staticDeepProperties = var3 + 'DeepP' + var1;
-  var _staticPropertyDescriptors = var3 + 'P' + var2;
-  var _configuration = 'c' + var4;
-  var _deepConfiguration = 'deepC' + var4;
+  var var1, var2, var3;
+  var _properties = 'properties';
+  var _deepProperties = 'deepProperties';
+  var _propertyDescriptors = 'propertyDescriptors';
+  var _staticProperties = 'staticProperties';
+  var _staticDeepProperties = 'staticDeepProperties';
+  var _staticPropertyDescriptors = 'staticPropertyDescriptors';
+  var _configuration = 'configuration';
+  var _deepConfiguration = 'deepConfiguration';
   var _deepProps = 'deepProps';
   var _deepStatics = 'deepStatics';
   var _deepConf = 'deepConf';
@@ -21,25 +18,14 @@
   var _methods = 'methods';
   var _composers = 'composers';
   var _compose = 'compose';
-  var _object = 'object';
-  var _length = 'length';
-  var _create = 'create';
-  var _Object = Object;
-  var isArray = Array.isArray;
-  var defineProperties = _Object.defineProperties;
-  var defineProperty = _Object.defineProperty;
-  var getOwnPropertyDescriptor = _Object.getOwnPropertyDescriptor;
-  var getOwnPropertySymbols = _Object.getOwnPropertySymbols;
-  var baseStampit = Array.prototype; // temporary reusing the variable
-  var concat = baseStampit.concat;
-  var slice = baseStampit.slice;
+  var baseStampit;
 
   function getOwnPropertyKeys(obj) {
-    return _Object.getOwnPropertyNames(obj).concat(getOwnPropertySymbols ? getOwnPropertySymbols(obj) : []);
+    return Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(obj) : []);
   }
 
   function _mergeOrAssign(action, dst) {
-    return slice.call(arguments, 2).reduce(action, dst);
+    return Array.prototype.slice.call(arguments, 2).reduce(action, dst);
   }
 
   function assignOne(dst, src) {
@@ -47,9 +33,9 @@
       // We need to copy regular props, symbols, getters and setters.
       var keys = getOwnPropertyKeys(src), i = 0, desc;
       for (; i < keys.length; i += 1) {
-        desc = getOwnPropertyDescriptor(src, keys[i]);
+        desc = Object.getOwnPropertyDescriptor(src, keys[i]);
         // Make it rewritable because two stamps can have same named getter/setter
-        defineProperty(dst, keys[i], desc);
+        Object.defineProperty(dst, keys[i], desc);
       }
     }
     return dst;
@@ -62,12 +48,12 @@
   }
 
   function isObject(obj) {
-    return obj && typeof obj == _object || isFunction(obj);
+    return obj && typeof obj == 'object' || isFunction(obj);
   }
 
   function isPlainObject(value) {
-    return value && typeof value == _object &&
-      value.__proto__ == _Object.prototype;
+    return value && typeof value == 'object' &&
+      value.__proto__ == Object.prototype;
   }
 
   /**
@@ -82,25 +68,25 @@
 
     // According to specification arrays must be concatenated.
     // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
-    if (isArray(src)) return (isArray(dst) ? dst : []).concat(src);
+    if (Array.isArray(src)) return (Array.isArray(dst) ? dst : []).concat(src);
 
     // Now deal with non plain 'src' object. 'src' overrides 'dst'
     // Note that functions are also assigned! We do not deep merge functions.
     if (!isPlainObject(src)) return src;
 
     var keys = getOwnPropertyKeys(src), i = 0, key, desc;
-    for (; i < keys[_length];) {
+    for (; i < keys.length;) {
       key = keys[i++];
-      desc = getOwnPropertyDescriptor(src, key);
+      desc = Object.getOwnPropertyDescriptor(src, key);
       if (desc.hasOwnProperty('value')) { // is this a regular property?
         // Do not merge properties with the 'undefined' value.
         if (desc.value !== _undefined) {
           // deep merge each property. Recursion!
-          dst[key] = mergeOne(isPlainObject(dst[key]) || isArray(src[key]) ? dst[key] : {}, src[key]);
+          dst[key] = mergeOne(isPlainObject(dst[key]) || Array.isArray(src[key]) ? dst[key] : {}, src[key]);
         }
       } else { // nope, it looks like a getter/setter
         // Make it rewritable because two stamps can have same named getter/setter
-        defineProperty(dst, key, desc);
+        Object.defineProperty(dst, key, desc);
       }
     }
 
@@ -110,10 +96,10 @@
   var merge = _mergeOrAssign.bind(0, mergeOne);
 
   function extractUniqueFunctions() {
-    var1 = concat.apply([], arguments).filter(function(elem, index, array) {
+    var1 = Array.prototype.concat.apply([], arguments).filter(function(elem, index, array) {
       return isFunction(elem) && array.indexOf(elem) === index;
     });
-    return var1[_length] ? var1 : _undefined;
+    return var1.length ? var1 : _undefined;
   }
 
 
@@ -141,45 +127,45 @@
    * @returns {Descriptor} Standardised descriptor
    */
   function standardiseDescriptor(descr) {
-    var4 = {};
+    var3 = {};
 
-    var4[_methods] = descr[_methods] || _undefined;
+    var3[_methods] = descr[_methods] || _undefined;
 
     var1 = descr[_properties];
     var2 = descr.props;
-    var4[_properties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3[_properties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
-    var4[_initializers] = extractUniqueFunctions(descr.init, descr[_initializers]);
+    var3[_initializers] = extractUniqueFunctions(descr.init, descr[_initializers]);
 
-    var4[_composers] = extractUniqueFunctions(descr[_composers]);
+    var3[_composers] = extractUniqueFunctions(descr[_composers]);
 
     var1 = descr[_deepProperties];
     var2 = descr[_deepProps];
-    var4[_deepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var3[_deepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var4[_propertyDescriptors] = descr[_propertyDescriptors];
+    var3[_propertyDescriptors] = descr[_propertyDescriptors];
 
     var1 = descr[_staticProperties];
     var2 = descr.statics;
-    var4[_staticProperties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3[_staticProperties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
     var1 = descr[_staticDeepProperties];
     var2 = descr[_deepStatics];
-    var4[_staticDeepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var3[_staticDeepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
     var1 = descr[_staticPropertyDescriptors];
     var2 = descr.name && {name: {value: descr.name}};
-    var4[_staticPropertyDescriptors] = isObject(var2 || var1) ? assign({}, var1, var2) : _undefined;
+    var3[_staticPropertyDescriptors] = isObject(var2 || var1) ? assign({}, var1, var2) : _undefined;
 
     var1 = descr[_configuration];
     var2 = descr.conf;
-    var4[_configuration] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3[_configuration] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
     var1 = descr[_deepConfiguration];
     var2 = descr[_deepConf];
-    var4[_deepConfiguration] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var3[_deepConfiguration] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    return var4;
+    return var3;
   }
 
   /**
@@ -192,7 +178,7 @@
       // Next line was optimized for most JS VMs. Please, be careful here!
       var obj = {__proto__: i[_methods]};
 
-      var inits = i[_initializers], args = slice.apply(arguments);
+      var inits = i[_initializers], args = Array.prototype.slice.apply(arguments);
       var initializer, returnedValue;
 
       var tmp = i[_deepProperties];
@@ -200,12 +186,12 @@
       tmp = i[_properties];
       if (tmp) assign(obj, tmp);
       tmp = i[_propertyDescriptors];
-      if (tmp) defineProperties(obj, tmp);
+      if (tmp) Object.defineProperties(obj, tmp);
 
-      if (!inits || !inits[_length]) return obj;
+      if (!inits || !inits.length) return obj;
 
       if (options === _undefined) options = {};
-      for (i = 0; i < inits[_length];) {
+      for (i = 0; i < inits.length;) {
         initializer = inits[i++];
         if (isFunction(initializer)) {
           returnedValue = initializer.call(obj, options,
@@ -233,7 +219,7 @@
     if (var2) assign(var1, var2);
 
     var2 = descriptor[_staticPropertyDescriptors];
-    if (var2) defineProperties(var1, var2);
+    if (var2) Object.defineProperties(var1, var2);
 
     var2 = isFunction(var1[_compose]) ? var1[_compose] : compose;
     assign(var1[_compose] = function() {
@@ -291,7 +277,7 @@
    * @returns {Stamp} A new stamp (aka composable factory function)
    */
   function compose() {
-    var descriptor = concat.apply([this], arguments)
+    var descriptor = Array.prototype.concat.apply([this], arguments)
     .reduce(mergeComposable, {});
     return createStamp(descriptor);
   }
@@ -367,11 +353,11 @@
 
   function createUtilityFunction(propName, action) {
     return function() {
-      var4 = {};
-      var4[propName] = action.apply(_undefined, concat.apply([{}], arguments));
+      var3 = {};
+      var3[propName] = action.apply(_undefined, Array.prototype.concat.apply([{}], arguments));
       var1 = this;
 
-      return ((var1 && var1[_compose]) || var2).call(var1, var4);
+      return ((var1 && var1[_compose]) || var2).call(var1, var3);
     };
   }
 
@@ -382,7 +368,7 @@
    */
   var2 = allUtilities[_compose] = assign(function stampit() {
     var i = 0, composable, composables = [], array = arguments, composerResult = this;
-    for (; i < array[_length];) {
+    for (; i < array.length;) {
       composable = array[i++];
       if (isObject(composable)) {
         composables.push(isStamp(composable) ? composable : standardiseDescriptor(composable));
@@ -394,8 +380,8 @@
     if (composerResult) composables.unshift(composerResult);
 
     array = composable[_compose][_composers];
-    if (isArray(array)) {
-      for (i = 0; i < array[_length];) {
+    if (Array.isArray(array)) {
+      for (i = 0; i < array.length;) {
         composerResult = array[i++]({stamp: composable, composables: composables});
         composable = isStamp(composerResult) ? composerResult : composable;
       }
@@ -404,19 +390,19 @@
     return composable;
   }, allUtilities); // Setting up the shortcut functions
 
-  allUtilities[_create] = function() {
+  allUtilities.create = function() {
     return this.apply(_undefined, arguments);
   };
 
-  var4 = {};
-  var4[_staticProperties] = allUtilities;
+  var3 = {};
+  var3[_staticProperties] = allUtilities;
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
    * @type {Function}
    * @return {Stamp}
    */
-  baseStampit = compose(var4);
+  baseStampit = compose(var3);
 
   var2[_compose] = var2.bind(); // bind to undefined
   var2.version = 'VERSION';
