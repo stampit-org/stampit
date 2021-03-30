@@ -26,25 +26,19 @@ jobs:
           CI: true
 
   types:
-    name: Node.js v${{ matrix.node }} and ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: ['14']
+    name: .dts types
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Node.js v${{ matrix.node }}
+      - name: Setup Node.js 14
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 14
 
       - name: Install dependencies
         run: npm i
 
-      - name: Run tests
+      - name: Run dtslint
         run: |
           npm run dtslint
-        env:
-          CI: true
