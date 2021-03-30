@@ -41,7 +41,7 @@
     "tape": "^4.11.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4",
-    "uglify-js": "^3.6.5"
+    "uglify-js": "^3.13.3"
   },
   "scripts": {
     "cov": "nyc npm run test",
@@ -55,7 +55,7 @@
     "build": "npm run minify",
     "ci": "npm run test",
     "check": "npm run test && npm run lint",
-    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,ie8=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m --reserved stampit,Stamp -o dist/stampit.min.js",
+    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,ie8=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o dist/stampit.min.js",
     "preversion": "npm run check",
     "postversion": "replace-in-file VERSION $npm_package_version dist/stampit.min.js",
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
