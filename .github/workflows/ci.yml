@@ -16,7 +16,10 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install dependencies and run tests
+      - name: Install dependencies
+        run: npm i
+
+      - name: Run tests
         run: |
           npm run ci
         env:
