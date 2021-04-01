@@ -11,9 +11,7 @@
   var _staticPropertyDescriptors = 'staticPropertyDescriptors';
   var _configuration = 'configuration';
   var _deepConfiguration = 'deepConfiguration';
-  var _deepProps = 'deepProps';
   var _deepStatics = 'deepStatics';
-  var _deepConf = 'deepConf';
   var _initializers = 'initializers';
   var _methods = 'methods';
   var _composers = 'composers';
@@ -140,7 +138,7 @@
     var3[_composers] = extractUniqueFunctions(descr[_composers]);
 
     var1 = descr[_deepProperties];
-    var2 = descr[_deepProps];
+    var2 = descr.deepProps;
     var3[_deepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
     var3[_propertyDescriptors] = descr[_propertyDescriptors];
@@ -162,7 +160,7 @@
     var3[_configuration] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
     var1 = descr[_deepConfiguration];
-    var2 = descr[_deepConf];
+    var2 = descr.deepConf;
     var3[_deepConfiguration] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
     return var3;
@@ -332,7 +330,7 @@
 
   allUtilities[_composers] = createUtilityFunction(_composers, extractUniqueFunctions);
 
-  allUtilities[_deepProperties] = allUtilities[_deepProps] =
+  allUtilities[_deepProperties] = allUtilities.deepProps =
     createUtilityFunction(_deepProperties, merge);
 
   allUtilities[_staticProperties] = allUtilities.statics =
@@ -344,7 +342,7 @@
   allUtilities[_configuration] = allUtilities.conf =
     createUtilityFunction(_configuration, assign);
 
-  allUtilities[_deepConfiguration] = allUtilities[_deepConf] =
+  allUtilities[_deepConfiguration] = allUtilities.deepConf =
     createUtilityFunction(_deepConfiguration, merge);
 
   allUtilities[_propertyDescriptors] = createUtilityFunction(_propertyDescriptors, assign);
