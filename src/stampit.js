@@ -1,8 +1,7 @@
 !(function () {
   "use strict";
 
-  var var2, var3;
-  var baseStampit;
+  var var2;
 
   function getOwnPropertyKeys(obj) {
     return Object.getOwnPropertyNames(obj).concat(
@@ -29,7 +28,7 @@
     return dst;
   }
 
-  var assign = _mergeOrAssign.bind(0, assignOne);
+  const assign = _mergeOrAssign.bind(0, assignOne);
 
   function isFunction(obj) {
     return typeof obj == "function";
@@ -90,7 +89,7 @@
     return dst;
   }
 
-  var merge = _mergeOrAssign.bind(0, mergeOne);
+  const merge = _mergeOrAssign.bind(0, mergeOne);
 
   function extractUniqueFunctions(...args) {
     const funcs = new Set();
@@ -142,7 +141,7 @@
 
     out.composers = extractUniqueFunctions(descr.composers);
 
-    var dp1 = descr.deepProperties;
+    const dp1 = descr.deepProperties;
     const dp2 = descr.deepProps;
     out.deepProperties = isObject(dp1 || dp2) ? merge({}, dp2, dp1) : undefined;
 
@@ -184,38 +183,40 @@
    * @returns {Function} The new factory function.
    */
   function createFactory() {
-    return function Stamp(options) {
-      var i = Stamp.compose || {};
+    return function Stamp(...args) {
+      let options = args[0];
+      const descriptor = Stamp.compose || {};
+
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = { __proto__: i.methods };
+      // The instance of this stamp
+      let instance = { __proto__: descriptor.methods };
 
-      var inits = i.initializers,
-        args = Array.prototype.slice.apply(arguments);
-      var initializer, returnedValue;
+      if (descriptor.deepProperties) merge(instance, descriptor.deepProperties);
+      if (descriptor.properties) assign(instance, descriptor.properties);
+      if (descriptor.propertyDescriptors)
+        Object.defineProperties(instance, descriptor.propertyDescriptors);
 
-      var tmp = i.deepProperties;
-      if (tmp) merge(obj, tmp);
-      tmp = i.properties;
-      if (tmp) assign(obj, tmp);
-      tmp = i.propertyDescriptors;
-      if (tmp) Object.defineProperties(obj, tmp);
+      const inits = descriptor.initializers;
+      // No initializers?
+      if (!Array.isArray(inits) || inits.length === 0) return instance;
 
-      if (!inits || !inits.length) return obj;
-
+      // The spec. says that the first argument to every initializer must be an
+      // empty object if nothing else was given when a stamp was called: Stamp()
       if (options === undefined) options = {};
-      for (i = 0; i < inits.length; ) {
+
+      for (let i = 0, initializer, returnedValue; i < inits.length; ) {
         initializer = inits[i++];
         if (isFunction(initializer)) {
-          returnedValue = initializer.call(obj, options, {
-            instance: obj,
+          returnedValue = initializer.call(instance, options, {
+            instance,
             stamp: Stamp,
-            args: args,
+            args,
           });
-          obj = returnedValue === undefined ? obj : returnedValue;
+          instance = returnedValue === undefined ? instance : returnedValue;
         }
       }
 
-      return obj;
+      return instance;
     };
   }
 
@@ -301,7 +302,7 @@
    * @returns {Stamp} A new stamp (aka composable factory function)
    */
   function compose() {
-    var descriptor = Array.prototype.concat
+    const descriptor = Array.prototype.concat
       .apply([this], arguments)
       .reduce(mergeComposable, {});
     return createStamp(descriptor);
@@ -344,7 +345,7 @@
     return isFunction(obj) && isFunction(obj.compose);
   }
 
-  var allUtilities = {};
+  const allUtilities = {};
 
   allUtilities.methods = createUtilityFunction("methods", assign);
 
@@ -395,12 +396,9 @@
   );
 
   function createUtilityFunction(propName, action) {
-    return function () {
+    return function (...args) {
       const obj = {
-        [propName]: action.apply(
-          undefined,
-          Array.prototype.concat.apply([{}], arguments),
-        ),
+        [propName]: action({}, ...args),
       };
 
       return ((this && this.compose) || var2).call(this, obj);
@@ -412,14 +410,10 @@
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  var2 = allUtilities.compose = assign(function stampit() {
-    var i = 0,
-      composable,
-      composables = [],
-      array = arguments,
-      composerResult = this;
-    for (; i < array.length; ) {
-      composable = array[i++];
+  var2 = allUtilities.compose = assign(function stampit(...args) {
+    // "Composable" is both Descriptor and Stamp.
+    const composables = [];
+    for (const composable of args) {
       if (isObject(composable)) {
         composables.push(
           isStamp(composable) ? composable : standardiseDescriptor(composable),
@@ -428,40 +422,41 @@
     }
 
     // Calling the standard pure compose function here.
-    composable = compose.apply(composerResult || baseStampit, composables);
-    if (composerResult) composables.unshift(composerResult);
+    let composeResult = compose.apply(this || baseStampit, composables);
 
-    array = composable.compose.composers;
-    if (Array.isArray(array)) {
-      for (i = 0; i < array.length; ) {
-        composerResult = array[i++]({
-          stamp: composable,
-          composables: composables,
+    // The "this" context must be the first in the list.
+    if (this) composables.unshift(this);
+    const composers = composeResult.compose.composers;
+    let composerResult;
+    if (Array.isArray(composers)) {
+      for (const composer of composers) {
+        composerResult = composer({
+          stamp: composeResult,
+          composables,
         });
-        composable = isStamp(composerResult) ? composerResult : composable;
+        composeResult = isStamp(composerResult)
+          ? composerResult
+          : composeResult;
       }
     }
 
-    return composable;
+    return composeResult;
   }, allUtilities); // Setting up the shortcut functions
 
-  allUtilities.create = function () {
-    return this.apply(undefined, arguments);
+  allUtilities.create = function (...args) {
+    return this(...args);
   };
-
-  var3 = {};
-  var3.staticProperties = allUtilities;
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
    * @type {Function}
    * @return {Stamp}
    */
-  baseStampit = compose(var3);
+  let baseStampit = compose({ staticProperties: allUtilities });
 
   var2.compose = var2.bind(); // bind to undefined
   var2.version = "VERSION";
 
-  if (typeof undefined != typeof module) module.exports = var2;
+  if ("undefined" !== typeof module) module.exports = var2;
   else self.stampit = var2;
 })();
