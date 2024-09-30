@@ -1,7 +1,7 @@
 !(function () {
   "use strict";
 
-  var var1, var2, var3;
+  var var2, var3;
   var baseStampit;
 
   function getOwnPropertyKeys(obj) {
@@ -92,13 +92,18 @@
 
   var merge = _mergeOrAssign.bind(0, mergeOne);
 
-  function extractUniqueFunctions() {
-    var1 = Array.prototype.concat
-      .apply([], arguments)
-      .filter(function (elem, index, array) {
-        return isFunction(elem) && array.indexOf(elem) === index;
-      });
-    return var1.length ? var1 : undefined;
+  function extractUniqueFunctions(...args) {
+    const funcs = new Set();
+    for (const arg of args) {
+      if (isFunction(arg)) {
+        funcs.add(arg);
+      } else if (Array.isArray(arg)) {
+        for (const f of arg) {
+          if (isFunction(f)) funcs.add(f);
+        }
+      }
+    }
+    return funcs.size ? Array.from(funcs) : undefined;
   }
 
   /**
@@ -125,59 +130,53 @@
    * @returns {Descriptor} Standardised descriptor
    */
   function standardiseDescriptor(descr) {
-    var3 = {};
+    const out = {};
 
-    var3.methods = descr.methods || undefined;
+    out.methods = descr.methods || undefined;
 
-    var1 = descr.properties;
-    var2 = descr.props;
-    var3.properties = isObject(var1 || var2)
-      ? assign({}, var2, var1)
+    const p1 = descr.properties;
+    const p2 = descr.props;
+    out.properties = isObject(p1 || p2) ? assign({}, p2, p1) : undefined;
+
+    out.initializers = extractUniqueFunctions(descr.init, descr.initializers);
+
+    out.composers = extractUniqueFunctions(descr.composers);
+
+    var dp1 = descr.deepProperties;
+    const dp2 = descr.deepProps;
+    out.deepProperties = isObject(dp1 || dp2) ? merge({}, dp2, dp1) : undefined;
+
+    out.propertyDescriptors = descr.propertyDescriptors;
+
+    const sp1 = descr.staticProperties;
+    const sp2 = descr.statics;
+    out.staticProperties = isObject(sp1 || sp2)
+      ? assign({}, sp2, sp1)
       : undefined;
 
-    var3.initializers = extractUniqueFunctions(descr.init, descr.initializers);
-
-    var3.composers = extractUniqueFunctions(descr.composers);
-
-    var1 = descr.deepProperties;
-    var2 = descr.deepProps;
-    var3.deepProperties = isObject(var1 || var2)
-      ? merge({}, var2, var1)
+    const sdp1 = descr.staticDeepProperties;
+    const sdp2 = descr.deepStatics;
+    out.staticDeepProperties = isObject(sdp1 || sdp2)
+      ? merge({}, sdp2, sdp1)
       : undefined;
 
-    var3.propertyDescriptors = descr.propertyDescriptors;
-
-    var1 = descr.staticProperties;
-    var2 = descr.statics;
-    var3.staticProperties = isObject(var1 || var2)
-      ? assign({}, var2, var1)
+    const spd1 = descr.staticPropertyDescriptors;
+    const spd2 = descr.name && { name: { value: descr.name } };
+    out.staticPropertyDescriptors = isObject(spd2 || spd1)
+      ? assign({}, spd1, spd2)
       : undefined;
 
-    var1 = descr.staticDeepProperties;
-    var2 = descr.deepStatics;
-    var3.staticDeepProperties = isObject(var1 || var2)
-      ? merge({}, var2, var1)
+    const c1 = descr.configuration;
+    const c2 = descr.conf;
+    out.configuration = isObject(c1 || c2) ? assign({}, c2, c1) : undefined;
+
+    const dc1 = descr.deepConfiguration;
+    const dc2 = descr.deepConf;
+    out.deepConfiguration = isObject(dc1 || dc2)
+      ? merge({}, dc2, dc1)
       : undefined;
 
-    var1 = descr.staticPropertyDescriptors;
-    var2 = descr.name && { name: { value: descr.name } };
-    var3.staticPropertyDescriptors = isObject(var2 || var1)
-      ? assign({}, var1, var2)
-      : undefined;
-
-    var1 = descr.configuration;
-    var2 = descr.conf;
-    var3.configuration = isObject(var1 || var2)
-      ? assign({}, var2, var1)
-      : undefined;
-
-    var1 = descr.deepConfiguration;
-    var2 = descr.deepConf;
-    var3.deepConfiguration = isObject(var1 || var2)
-      ? merge({}, var2, var1)
-      : undefined;
-
-    return var3;
+    return out;
   }
 
   /**
@@ -226,26 +225,26 @@
    * @returns {Stamp} The new stamp
    */
   function createStamp(descriptor) {
-    var1 = createFactory();
+    const factory = createFactory();
 
-    var2 = descriptor.staticDeepProperties;
-    if (var2) merge(var1, var2);
+    const sdp = descriptor.staticDeepProperties;
+    if (sdp) merge(factory, sdp);
 
-    var2 = descriptor.staticProperties;
-    if (var2) assign(var1, var2);
+    const sp = descriptor.staticProperties;
+    if (sp) assign(factory, sp);
 
-    var2 = descriptor.staticPropertyDescriptors;
-    if (var2) Object.defineProperties(var1, var2);
+    const spd = descriptor.staticPropertyDescriptors;
+    if (spd) Object.defineProperties(factory, spd);
 
-    var2 = isFunction(var1.compose) ? var1.compose : compose;
+    var2 = isFunction(factory.compose) ? factory.compose : compose;
     assign(
-      (var1.compose = function () {
+      (factory.compose = function () {
         return var2.apply(this, arguments);
       }),
       descriptor,
     );
 
-    return var1;
+    return factory;
   }
 
   /**
@@ -267,11 +266,11 @@
     }
 
     function concatAssignFunctions(propName) {
-      var1 = extractUniqueFunctions(
+      const funcs = extractUniqueFunctions(
         dstDescriptor[propName],
         srcComposable[propName],
       );
-      if (var1) dstDescriptor[propName] = var1;
+      if (funcs) dstDescriptor[propName] = funcs;
     }
 
     if (
@@ -397,14 +396,14 @@
 
   function createUtilityFunction(propName, action) {
     return function () {
-      var3 = {};
-      var3[propName] = action.apply(
-        undefined,
-        Array.prototype.concat.apply([{}], arguments),
-      );
-      var1 = this;
+      const obj = {
+        [propName]: action.apply(
+          undefined,
+          Array.prototype.concat.apply([{}], arguments),
+        ),
+      };
 
-      return ((var1 && var1.compose) || var2).call(var1, var3);
+      return ((this && this.compose) || var2).call(this, obj);
     };
   }
 

@@ -31,7 +31,7 @@
     "browserify": "^16.5.0",
     "check-compose": "^5.0.0",
     "dtslint": "1.0.2",
-    "eslint": "^6.6.0",
+    "eslint": "^9.11.1",
     "gzip-size-cli": "^3.0.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
@@ -84,7 +84,7 @@
       "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-      "ecmaVersion": 2018
+      "ecmaVersion": 2023
     },
     "rules": {
       "no-prototype-builtins": 0
