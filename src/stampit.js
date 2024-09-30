@@ -1,50 +1,53 @@
+// This IIFE serves two needs:
+// 1. The minified GZIP file becomes 10% smaller.
+// 2. This file can be used in browsers as is by adding `self.stampit = stampit` to be bottom.
 !(function () {
+  // We use unbound `this` multiple times in the file.
+  // We need to make sure that `this` is never referencing the `globalThis`.
+  // This, we have to put "use strict".
   "use strict";
 
-  var var2;
-
   function getOwnPropertyKeys(obj) {
-    return Object.getOwnPropertyNames(obj).concat(
-      Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(obj) : [],
-    );
+    return [
+      ...Object.getOwnPropertyNames(obj),
+      ...Object.getOwnPropertySymbols(obj),
+    ];
   }
 
-  function _mergeOrAssign(action, dst) {
-    return Array.prototype.slice.call(arguments, 2).reduce(action, dst);
-  }
-
+  /**
+   * Unlike Object.assign(), our assign() copies symbols, getters and setters.
+   * @param {Object} dst Must be an object. Otherwise throws.
+   * @param {Object} [src] Can be falsy
+   * @returns {Object} updated 'dst'
+   */
   function assignOne(dst, src) {
     if (src) {
       // We need to copy regular props, symbols, getters and setters.
-      var keys = getOwnPropertyKeys(src),
-        i = 0,
-        desc;
-      for (; i < keys.length; i += 1) {
-        desc = Object.getOwnPropertyDescriptor(src, keys[i]);
+      for (const key of getOwnPropertyKeys(src)) {
+        const desc = Object.getOwnPropertyDescriptor(src, key);
         // Make it rewritable because two stamps can have same named getter/setter
-        Object.defineProperty(dst, keys[i], desc);
+        Object.defineProperty(dst, key, desc);
       }
     }
     return dst;
   }
 
-  const assign = _mergeOrAssign.bind(0, assignOne);
-
   function isFunction(obj) {
-    return typeof obj == "function";
+    return typeof obj === "function";
   }
 
   function isObject(obj) {
-    return (obj && typeof obj == "object") || isFunction(obj);
+    return (obj && typeof obj === "object") || isFunction(obj);
   }
 
   function isPlainObject(value) {
     return (
-      value && typeof value == "object" && value.__proto__ == Object.prototype
+      value && typeof value === "object" && value.__proto__ === Object.prototype
     );
   }
 
   /**
+   * Unlike _.merge(), our merge() copies symbols, getters and setters.
    * The 'src' argument plays the command role.
    * The returned values is always of the same type as the 'src'.
    * @param {Array|Object|*} dst Destination
@@ -62,13 +65,8 @@
     // Note that functions are also assigned! We do not deep merge functions.
     if (!isPlainObject(src)) return src;
 
-    var keys = getOwnPropertyKeys(src),
-      i = 0,
-      key,
-      desc;
-    for (; i < keys.length; ) {
-      key = keys[i++];
-      desc = Object.getOwnPropertyDescriptor(src, key);
+    for (const key of getOwnPropertyKeys(src)) {
+      const desc = Object.getOwnPropertyDescriptor(src, key);
       if (desc.hasOwnProperty("value")) {
         // is this a regular property?
         // Do not merge properties with the 'undefined' value.
@@ -89,7 +87,9 @@
     return dst;
   }
 
-  const merge = _mergeOrAssign.bind(0, mergeOne);
+  const assign = (dst, ...args) => args.reduce(assignOne, dst);
+
+  const merge = (dst, ...args) => args.reduce(mergeOne, dst);
 
   function extractUniqueFunctions(...args) {
     const funcs = new Set();
@@ -237,10 +237,10 @@
     const spd = descriptor.staticPropertyDescriptors;
     if (spd) Object.defineProperties(factory, spd);
 
-    var2 = isFunction(factory.compose) ? factory.compose : compose;
+    const c = isFunction(factory.compose) ? factory.compose : compose;
     assign(
       (factory.compose = function () {
-        return var2.apply(this, arguments);
+        return c.apply(this, arguments);
       }),
       descriptor,
     );
@@ -274,10 +274,8 @@
       if (funcs) dstDescriptor[propName] = funcs;
     }
 
-    if (
-      srcComposable &&
-      isObject((srcComposable = srcComposable.compose || srcComposable))
-    ) {
+    srcComposable = srcComposable?.compose || srcComposable;
+    if (isObject(srcComposable)) {
       mergeAssign("methods");
       mergeAssign("properties");
       mergeAssign("deepProperties", merge);
@@ -301,10 +299,8 @@
    * Parameters:  {...Composable} The list of composables.
    * @returns {Stamp} A new stamp (aka composable factory function)
    */
-  function compose() {
-    const descriptor = Array.prototype.concat
-      .apply([this], arguments)
-      .reduce(mergeComposable, {});
+  function compose(...args) {
+    const descriptor = [this, ...args].reduce(mergeComposable, {});
     return createStamp(descriptor);
   }
 
@@ -401,16 +397,20 @@
         [propName]: action({}, ...args),
       };
 
-      return ((this && this.compose) || var2).call(this, obj);
+      return (this?.compose || stampit).call(this, obj);
     };
   }
+
+  allUtilities.create = function (...args) {
+    return this(...args);
+  };
 
   /**
    * Infected compose
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  var2 = allUtilities.compose = assign(function stampit(...args) {
+  const stampit = assign(function stampit(...args) {
     // "Composable" is both Descriptor and Stamp.
     const composables = [];
     for (const composable of args) {
@@ -422,30 +422,28 @@
     }
 
     // Calling the standard pure compose function here.
-    let composeResult = compose.apply(this || baseStampit, composables);
+    let resultingStamp = compose.apply(this || baseStampit, composables);
 
     // The "this" context must be the first in the list.
     if (this) composables.unshift(this);
-    const composers = composeResult.compose.composers;
+    const composers = resultingStamp.compose.composers;
     let composerResult;
     if (Array.isArray(composers)) {
       for (const composer of composers) {
         composerResult = composer({
-          stamp: composeResult,
+          stamp: resultingStamp,
           composables,
         });
-        composeResult = isStamp(composerResult)
+        resultingStamp = isStamp(composerResult)
           ? composerResult
-          : composeResult;
+          : resultingStamp;
       }
     }
 
-    return composeResult;
+    return resultingStamp;
   }, allUtilities); // Setting up the shortcut functions
 
-  allUtilities.create = function (...args) {
-    return this(...args);
-  };
+  allUtilities.compose = stampit;
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
@@ -454,9 +452,9 @@
    */
   let baseStampit = compose({ staticProperties: allUtilities });
 
-  var2.compose = var2.bind(); // bind to undefined
-  var2.version = "VERSION";
+  stampit.compose = stampit.bind(); // bind to undefined
+  stampit.version = "VERSION";
 
-  if ("undefined" !== typeof module) module.exports = var2;
-  else self.stampit = var2;
+  if ("undefined" !== typeof module) module.exports = stampit;
+  else self.stampit = stampit;
 })();
