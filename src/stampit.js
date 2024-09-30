@@ -3,19 +3,6 @@
   var _undefined;
 
   var var1, var2, var3;
-  var _properties = 'properties';
-  var _deepProperties = 'deepProperties';
-  var _propertyDescriptors = 'propertyDescriptors';
-  var _staticProperties = 'staticProperties';
-  var _staticDeepProperties = 'staticDeepProperties';
-  var _staticPropertyDescriptors = 'staticPropertyDescriptors';
-  var _configuration = 'configuration';
-  var _deepConfiguration = 'deepConfiguration';
-  var _deepStatics = 'deepStatics';
-  var _initializers = 'initializers';
-  var _methods = 'methods';
-  var _composers = 'composers';
-  var _compose = 'compose';
   var baseStampit;
 
   function getOwnPropertyKeys(obj) {
@@ -127,41 +114,41 @@
   function standardiseDescriptor(descr) {
     var3 = {};
 
-    var3[_methods] = descr[_methods] || _undefined;
+    var3.methods = descr.methods || _undefined;
 
-    var1 = descr[_properties];
+    var1 = descr.properties;
     var2 = descr.props;
-    var3[_properties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3.properties = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
-    var3[_initializers] = extractUniqueFunctions(descr.init, descr[_initializers]);
+    var3.initializers = extractUniqueFunctions(descr.init, descr.initializers);
 
-    var3[_composers] = extractUniqueFunctions(descr[_composers]);
+    var3.composers = extractUniqueFunctions(descr.composers);
 
-    var1 = descr[_deepProperties];
+    var1 = descr.deepProperties;
     var2 = descr.deepProps;
-    var3[_deepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var3.deepProperties = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var3[_propertyDescriptors] = descr[_propertyDescriptors];
+    var3.propertyDescriptors = descr.propertyDescriptors;
 
-    var1 = descr[_staticProperties];
+    var1 = descr.staticProperties;
     var2 = descr.statics;
-    var3[_staticProperties] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3.staticProperties = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
-    var1 = descr[_staticDeepProperties];
-    var2 = descr[_deepStatics];
-    var3[_staticDeepProperties] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var1 = descr.staticDeepProperties;
+    var2 = descr.deepStatics;
+    var3.staticDeepProperties = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
-    var1 = descr[_staticPropertyDescriptors];
+    var1 = descr.staticPropertyDescriptors;
     var2 = descr.name && {name: {value: descr.name}};
-    var3[_staticPropertyDescriptors] = isObject(var2 || var1) ? assign({}, var1, var2) : _undefined;
+    var3.staticPropertyDescriptors = isObject(var2 || var1) ? assign({}, var1, var2) : _undefined;
 
-    var1 = descr[_configuration];
+    var1 = descr.configuration;
     var2 = descr.conf;
-    var3[_configuration] = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
+    var3.configuration = isObject(var1 || var2) ? assign({}, var2, var1) : _undefined;
 
-    var1 = descr[_deepConfiguration];
+    var1 = descr.deepConfiguration;
     var2 = descr.deepConf;
-    var3[_deepConfiguration] = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
+    var3.deepConfiguration = isObject(var1 || var2) ? merge({}, var2, var1) : _undefined;
 
     return var3;
   }
@@ -172,18 +159,18 @@
    */
   function createFactory() {
     return function Stamp(options) {
-      var i = Stamp[_compose] || {};
+      var i = Stamp.compose || {};
       // Next line was optimized for most JS VMs. Please, be careful here!
-      var obj = {__proto__: i[_methods]};
+      var obj = {__proto__: i.methods};
 
-      var inits = i[_initializers], args = Array.prototype.slice.apply(arguments);
+      var inits = i.initializers, args = Array.prototype.slice.apply(arguments);
       var initializer, returnedValue;
 
-      var tmp = i[_deepProperties];
+      var tmp = i.deepProperties;
       if (tmp) merge(obj, tmp);
-      tmp = i[_properties];
+      tmp = i.properties;
       if (tmp) assign(obj, tmp);
-      tmp = i[_propertyDescriptors];
+      tmp = i.propertyDescriptors;
       if (tmp) Object.defineProperties(obj, tmp);
 
       if (!inits || !inits.length) return obj;
@@ -210,17 +197,17 @@
   function createStamp(descriptor) {
     var1 = createFactory();
 
-    var2 = descriptor[_staticDeepProperties];
+    var2 = descriptor.staticDeepProperties;
     if (var2) merge(var1, var2);
 
-    var2 = descriptor[_staticProperties];
+    var2 = descriptor.staticProperties;
     if (var2) assign(var1, var2);
 
-    var2 = descriptor[_staticPropertyDescriptors];
+    var2 = descriptor.staticPropertyDescriptors;
     if (var2) Object.defineProperties(var1, var2);
 
-    var2 = isFunction(var1[_compose]) ? var1[_compose] : compose;
-    assign(var1[_compose] = function() {
+    var2 = isFunction(var1.compose) ? var1.compose : compose;
+    assign(var1.compose = function() {
       return var2.apply(this, arguments);
     }, descriptor);
 
@@ -250,18 +237,18 @@
       if (var1) dstDescriptor[propName] = var1;
     }
 
-    if (srcComposable && isObject(srcComposable = srcComposable[_compose] || srcComposable)) {
-      mergeAssign(_methods);
-      mergeAssign(_properties);
-      mergeAssign(_deepProperties, merge);
-      mergeAssign(_propertyDescriptors);
-      mergeAssign(_staticProperties);
-      mergeAssign(_staticDeepProperties, merge);
-      mergeAssign(_staticPropertyDescriptors);
-      mergeAssign(_configuration);
-      mergeAssign(_deepConfiguration, merge);
-      concatAssignFunctions(_initializers);
-      concatAssignFunctions(_composers);
+    if (srcComposable && isObject(srcComposable = srcComposable.compose || srcComposable)) {
+      mergeAssign("methods");
+      mergeAssign("properties");
+      mergeAssign("deepProperties", merge);
+      mergeAssign("propertyDescriptors");
+      mergeAssign("staticProperties");
+      mergeAssign("staticDeepProperties", merge);
+      mergeAssign("staticPropertyDescriptors");
+      mergeAssign("configuration");
+      mergeAssign("deepConfiguration", merge);
+      concatAssignFunctions("initializers");
+      concatAssignFunctions("composers");
     }
 
     return dstDescriptor;
@@ -315,39 +302,39 @@
    * @returns {Boolean} True is the obj is a stamp
    */
   function isStamp(obj) {
-    return isFunction(obj) && isFunction(obj[_compose]);
+    return isFunction(obj) && isFunction(obj.compose);
   }
 
   var allUtilities = {};
 
-  allUtilities[_methods] = createUtilityFunction(_methods, assign);
+  allUtilities.methods = createUtilityFunction("methods", assign);
 
-  allUtilities[_properties] = allUtilities.props =
-    createUtilityFunction(_properties, assign);
+  allUtilities.properties = allUtilities.props =
+    createUtilityFunction("properties", assign);
 
-  allUtilities[_initializers] = allUtilities.init =
-    createUtilityFunction(_initializers, extractUniqueFunctions);
+  allUtilities.initializers = allUtilities.init =
+    createUtilityFunction("initializers", extractUniqueFunctions);
 
-  allUtilities[_composers] = createUtilityFunction(_composers, extractUniqueFunctions);
+  allUtilities.composers = createUtilityFunction("composers", extractUniqueFunctions);
 
-  allUtilities[_deepProperties] = allUtilities.deepProps =
-    createUtilityFunction(_deepProperties, merge);
+  allUtilities.deepProperties = allUtilities.deepProps =
+    createUtilityFunction("deepProperties", merge);
 
-  allUtilities[_staticProperties] = allUtilities.statics =
-    createUtilityFunction(_staticProperties, assign);
+  allUtilities.staticProperties = allUtilities.statics =
+    createUtilityFunction("staticProperties", assign);
 
-  allUtilities[_staticDeepProperties] = allUtilities[_deepStatics] =
-    createUtilityFunction(_staticDeepProperties, merge);
+  allUtilities.staticDeepProperties = allUtilities.deepStatics =
+    createUtilityFunction("staticDeepProperties", merge);
 
-  allUtilities[_configuration] = allUtilities.conf =
-    createUtilityFunction(_configuration, assign);
+  allUtilities.configuration = allUtilities.conf =
+    createUtilityFunction("configuration", assign);
 
-  allUtilities[_deepConfiguration] = allUtilities.deepConf =
-    createUtilityFunction(_deepConfiguration, merge);
+  allUtilities.deepConfiguration = allUtilities.deepConf =
+    createUtilityFunction("deepConfiguration", merge);
 
-  allUtilities[_propertyDescriptors] = createUtilityFunction(_propertyDescriptors, assign);
+  allUtilities.propertyDescriptors = createUtilityFunction("propertyDescriptors", assign);
 
-  allUtilities[_staticPropertyDescriptors] = createUtilityFunction(_staticPropertyDescriptors, assign);
+  allUtilities.staticPropertyDescriptors = createUtilityFunction("staticPropertyDescriptors", assign);
 
   function createUtilityFunction(propName, action) {
     return function() {
@@ -355,7 +342,7 @@
       var3[propName] = action.apply(_undefined, Array.prototype.concat.apply([{}], arguments));
       var1 = this;
 
-      return ((var1 && var1[_compose]) || var2).call(var1, var3);
+      return ((var1 && var1.compose) || var2).call(var1, var3);
     };
   }
 
@@ -364,7 +351,7 @@
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  var2 = allUtilities[_compose] = assign(function stampit() {
+  var2 = allUtilities.compose = assign(function stampit() {
     var i = 0, composable, composables = [], array = arguments, composerResult = this;
     for (; i < array.length;) {
       composable = array[i++];
@@ -377,7 +364,7 @@
     composable = compose.apply(composerResult || baseStampit, composables);
     if (composerResult) composables.unshift(composerResult);
 
-    array = composable[_compose][_composers];
+    array = composable.compose.composers;
     if (Array.isArray(array)) {
       for (i = 0; i < array.length;) {
         composerResult = array[i++]({stamp: composable, composables: composables});
@@ -393,7 +380,7 @@
   };
 
   var3 = {};
-  var3[_staticProperties] = allUtilities;
+  var3.staticProperties = allUtilities;
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
@@ -402,7 +389,7 @@
    */
   baseStampit = compose(var3);
 
-  var2[_compose] = var2.bind(); // bind to undefined
+  var2.compose = var2.bind(); // bind to undefined
   var2.version = 'VERSION';
 
   if (typeof _undefined != typeof module) module.exports = var2; else self.stampit = var2;
