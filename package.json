@@ -13,6 +13,7 @@
     }
   ],
   "homepage": "https://stampit.js.org",
+  "type": "module",
   "main": "stampit.js",
   "types": "stampit.d.ts",
   "keywords": [

@@ -1,5 +1,5 @@
-const test = require("tape");
-const stampit = require("../stampit.js").default;
+import test from "tape";
+import stampit from "../stampit.js";
 
 function isFunction(obj) {
   return typeof obj === "function";

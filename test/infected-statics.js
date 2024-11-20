@@ -1,7 +1,6 @@
-"use strict"; // eslint-disable-line
-const test = require("tape");
-const _ = require("lodash");
-const stampit = require("../stampit.js").default;
+import test from "tape";
+import stampit from "../stampit.js";
+import _ from "lodash";
 
 test("stampit().methods static method", (t) => {
   const methods = { method1() {} };

@@ -1,8 +1,7 @@
-"use strict"; // for node v4 and v5
-const test = require("tape");
+import test from "tape";
+import stampit from "../../stampit.js"; // Need to test the distributable
 
-const Benchmark = require("benchmark");
-const stampit = require("../.."); // Need to test the distributable
+import Benchmark from "benchmark";
 
 test("benchmarking property access", (t) => {
   const Position = stampit({

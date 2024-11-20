@@ -1,6 +1,9 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 const test = require("tape");
 
-test('infection works using the require("src/stampit")', (t) => {
+test('infection works using the require("stampit")', (t) => {
   const obj = require("../stampit.js")
     .default // eslint-disable-line global-require
     .init(function () {
