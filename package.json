@@ -6,6 +6,12 @@
     "name": "Eric Elliott",
     "url": "https://ericelliottjs.com"
   },
+  "maintainers": [
+    {
+      "name": "Vasyl Boroviak",
+      "url": "https://vasyl.boroviak.name"
+    }
+  ],
   "homepage": "https://stampit.js.org",
   "main": "dist/stampit.min.js",
   "minified:main": "dist/stampit.min.js",
@@ -28,9 +34,9 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "browserify": "^17.0.0",
+    "browserify": "^17.0.1",
     "check-compose": "^5.0.0",
-    "eslint": "^9.11.1",
+    "eslint": "^8.57.1",
     "gzip-size-cli": "^5.1.0",
     "lodash": "^4.17.21",
     "mkdirp": "^3.0.1",
@@ -59,14 +65,9 @@
     "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
   },
   "license": "MIT",
-  "npmName": "stampit",
-  "npmFileMap": [
-    {
-      "files": [
-        "/src/stampit.js",
-        "/dist/stampit.min.js"
-      ]
-    }
+  "files": [
+    "/src/stampit.js",
+    "/dist/stampit.min.js"
   ],
   "eslintConfig": {
     "env": {
@@ -76,10 +77,6 @@
       "node": true
     },
     "extends": "eslint:recommended",
-    "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
-    },
     "parserOptions": {
       "ecmaVersion": 2023
     },
