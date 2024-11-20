@@ -78,7 +78,7 @@ console.log(Paladin.compose.methods) // { fight: [Function: fight], cast: [Funct
 * **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
 * **v3**. `npm i stampit@3` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) <= 1.4
 * **v4**. `npm i stampit@4` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v4.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) v1.5
-* **v5**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v5.0.0). Drop support of ES5. But the distributed module is still UMD (i.e. works in Node/Deno/Bun and browsers).
+* **v5**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v5.0.0). Package becomes ESM-only.
 * **next**. `npm i @stamp/it` The [new ecosystem](https://www.npmjs.com/~stamp/) of useful stamps like collision control, etc.
 
 
