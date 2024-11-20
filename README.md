@@ -6,7 +6,7 @@
 
 **Create objects from reusable, composable behaviors** 
 
-Stampit is a **1.4KB** gzipped (or 3K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+Stampit is a **1.3KB** gzipped (or 4K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
  Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is a handy implementation of the specification featuring friendly API.
 
@@ -77,17 +77,14 @@ console.log(Paladin.compose.methods) // { fight: [Function: fight], cast: [Funct
 * **v1**. `npm i stampit@1`
 * **v2**. `npm i stampit@2` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/2.0)
 * **v3**. `npm i stampit@3` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v3.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) <= 1.4
-* **v4**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v4.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) v1.5
+* **v4**. `npm i stampit@4` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v4.0.0). Compatible with the [stamp specification](https://github.com/stampit-org/stamp-specification) v1.5
+* **v5**. `npm i stampit` [Breaking changes](https://github.com/stampit-org/stampit/releases/tag/v5.0.0). Drop support of ES5. But the distributed module is still UMD (i.e. works in Node/Deno/Bun and browsers).
 * **next**. `npm i @stamp/it` The [new ecosystem](https://www.npmjs.com/~stamp/) of useful stamps like collision control, etc.
 
 
 ## Install
 
 [![NPM](https://nodei.co/npm/stampit.png?compact=true)](https://www.npmjs.com/package/stampit)
-
-## Compatibility
-
-Stampit should run fine in any ES5 browser or any node.js.
 
 ## API
 
