@@ -189,7 +189,9 @@
 
       // Next line was optimized for most JS VMs. Please, be careful here!
       // The instance of this stamp
-      let instance = { __proto__: descriptor.methods };
+      let instance = descriptor.methods
+        ? Object.create(descriptor.methods)
+        : {};
 
       if (descriptor.deepProperties) merge(instance, descriptor.deepProperties);
       if (descriptor.properties) assign(instance, descriptor.properties);
