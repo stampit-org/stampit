@@ -49,7 +49,7 @@
   },
   "scripts": {
     "cov": "npx --yes c8 --reporter html node --run test && open ./coverage/index.html",
-    "test": "node --run build && node test && node test/benchmark",
+    "test": "export NODE_OPTIONS='--experimental-require-module --disable-warning=ExperimentalWarning' && node --run build && node ./test/index.js && node test/benchmark/index.js",
     "browsertest": "mkdir out || true && browserify ./test/index.js -p esmify > out/test_bundle.js && cp ./test/index.html ./out/ && open ./out/index.html",
     "lint": "eslint ./stampit.js ./test/",
     "build": "rm -rf ./out stampit.min.js && node --run minify && node --run replace-version",
