@@ -56,7 +56,8 @@
     "replace-version": "replace-in-file VERSION `node -e 'process.stdout.write(require(\"./package\").version)'` ./stampit.min.js",
     "ci": "node --run test && node --run lint",
     "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
-    "preversion": "node --run ci"
+    "preversion": "node --run ci",
+    "postversion": "node --run replace-version"
   },
   "license": "MIT",
   "files": [
