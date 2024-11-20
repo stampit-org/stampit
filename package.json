@@ -67,7 +67,8 @@
   "license": "MIT",
   "files": [
     "/src/stampit.js",
-    "/dist/stampit.min.js"
+    "/dist/stampit.min.js",
+    "/types/index.d.ts"
   ],
   "eslintConfig": {
     "env": {
