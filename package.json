@@ -57,7 +57,7 @@
     "ci": "node --run test && node --run lint",
     "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
     "preversion": "node --run ci",
-    "postversion": "node --run replace-version"
+    "postversion": "node --run build"
   },
   "license": "MIT",
   "files": [
