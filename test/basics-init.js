@@ -1,52 +1,58 @@
-const test = require('tape');
-const stampit = require('../src/stampit');
+const test = require("tape");
+const stampit = require("../stampit.js").default;
 
 // Basics Enclose
 
-test('stampit({ init })', (t) => {
+test("stampit({ init })", (t) => {
   const obj = stampit({
     init() {
-      const secret = 'foo';
-      this.getSecret = () => { return secret; };
-    }
+      const secret = "foo";
+      this.getSecret = () => {
+        return secret;
+      };
+    },
   }).create();
 
-  t.equal(obj.getSecret(), 'foo',
-    'Should set closure.');
+  t.equal(obj.getSecret(), "foo", "Should set closure.");
 
   t.end();
 });
 
-test('stampit().init()', (t) => {
-  const obj = stampit().init(function () {
-    const secret = 'foo';
-    this.getSecret = () => { return secret; };
-  }).init(function () {
-    this.a = 'a';
-  }).create();
+test("stampit().init()", (t) => {
+  const obj = stampit()
+    .init(function () {
+      const secret = "foo";
+      this.getSecret = () => {
+        return secret;
+      };
+    })
+    .init(function () {
+      this.a = "a";
+    })
+    .create();
 
-  t.equal(obj.getSecret(), 'foo',
-    'Should set closure.');
-  t.ok(obj.a,
-    'Should allow chaining.');
+  t.equal(obj.getSecret(), "foo", "Should set closure.");
+  t.ok(obj.a, "Should allow chaining.");
 
   t.end();
 });
 
-test('stampit({ init }).init()', (t) => {
+test("stampit({ init }).init()", (t) => {
   const obj = stampit({
     init() {
-      const secret = 'foo';
-      this.getSecret = () => { return secret; };
-    }
-  }).init(function () {
-    this.a = 'a';
-  }).create();
+      const secret = "foo";
+      this.getSecret = () => {
+        return secret;
+      };
+    },
+  })
+    .init(function () {
+      this.a = "a";
+    })
+    .create();
 
-  t.equal(obj.getSecret(), 'foo',
-    'Should set closure.');
-  t.ok(obj.a,
-    'Should allow chaining.');
+  t.equal(obj.getSecret(), "foo", "Should set closure.");
+  t.ok(obj.a, "Should allow chaining.");
 
   t.end();
 });

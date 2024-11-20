@@ -1,5 +1,5 @@
-const checkCompose = require('check-compose');
+const checkCompose = require("check-compose");
 
-const stampit = require('../src/stampit');
+const stampit = require("../stampit.js").default;
 
 checkCompose(stampit);

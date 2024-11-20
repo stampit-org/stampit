@@ -13,9 +13,8 @@
     }
   ],
   "homepage": "https://stampit.js.org",
-  "main": "dist/stampit.min.js",
-  "minified:main": "dist/stampit.min.js",
-  "types": "./types/index.d.ts",
+  "main": "stampit.js",
+  "types": "stampit.d.ts",
   "keywords": [
     "object",
     "prototype",
@@ -26,7 +25,8 @@
     "node",
     "factory",
     "class",
-    "stamp"
+    "stamp",
+    "mixin"
   ],
   "repository": {
     "type": "git",
@@ -37,38 +37,31 @@
     "browserify": "^17.0.1",
     "check-compose": "^5.0.0",
     "eslint": "^8.57.1",
+    "esmify": "^2.1.1",
     "gzip-size-cli": "^5.1.0",
     "lodash": "^4.17.21",
-    "mkdirp": "^3.0.1",
-    "nyc": "^17.1.0",
     "prettier": "^3.3.3",
     "replace-in-file": "^8.2.0",
-    "require-all": "^3.0.0",
     "tape": "^4.11.0",
-    "typescript": "^3.6.4",
+    "typescript": "^5.6.3",
     "uglify-js": "^3.13.3"
   },
   "scripts": {
-    "cov": "nyc npm run test",
-    "pretest": "npm run build",
-    "test": "node test",
-    "posttest": "node test/benchmark",
-    "browsertest": "mkdirp ./dist/ && browserify ./test/index.js > dist/test_bundle.js && cp ./test/index.html ./dist/ && open ./dist/index.html",
-    "lint": "eslint ./src/ ./test/",
-    "prebuild": "rm -rf ./dist/*",
-    "build": "npm run minify",
-    "ci": "npm run test",
-    "check": "npm run test && npm run lint",
-    "minify": "mkdirp ./dist/ && uglifyjs src/stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o dist/stampit.min.js",
-    "preversion": "npm run check",
-    "postversion": "replace-in-file VERSION $npm_package_version dist/stampit.min.js",
-    "postminify": "ls -l dist/ && echo GZIP size: && gzip-size --raw dist/stampit.min.js"
+    "cov": "npx --yes nyc --reporter html node --run test && open ./coverage/index.html",
+    "test": "node --run build && node test && node test/benchmark",
+    "browsertest": "mkdir out || true && browserify ./test/index.js -p esmify > out/test_bundle.js && cp ./test/index.html ./out/ && open ./out/index.html",
+    "lint": "eslint ./stampit.js ./test/",
+    "build": "rm -rf ./out stampit.min.js && node --run minify && node --run replace-version",
+    "replace-version": "replace-in-file VERSION `node -e 'process.stdout.write(require(\"./package\").version)'` ./stampit.min.js",
+    "ci": "node --run test && node --run lint",
+    "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
+    "preversion": "node --run ci"
   },
   "license": "MIT",
   "files": [
-    "/src/stampit.js",
-    "/dist/stampit.min.js",
-    "/types/index.d.ts"
+    "stampit.js",
+    "stampit.min.js",
+    "stampit.d.ts"
   ],
   "eslintConfig": {
     "env": {
@@ -79,6 +72,7 @@
     },
     "extends": "eslint:recommended",
     "parserOptions": {
+      "sourceType": "module",
       "ecmaVersion": 2023
     },
     "rules": {

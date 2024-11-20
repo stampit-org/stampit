@@ -3,6 +3,7 @@ buildconfig.env
 server.js
 sauce_connect.log
 /dist/
+stampit.min.js
 
 
 

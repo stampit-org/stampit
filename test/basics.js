@@ -1,28 +1,36 @@
-const test = require('tape');
-const stampit = require('../src/stampit');
+const test = require("tape");
+const stampit = require("../stampit.js").default;
 
 // Basics
 
-test('.create()', (t) => {
+test(".create()", (t) => {
   const stamp = stampit({
     methods: {
-      foo() { return 'foo'; }
-    }
+      foo() {
+        return "foo";
+      },
+    },
   });
 
   t.ok(stamp.create);
-  t.equal(stamp.create().foo(), 'foo',
-    'Should produce an object from specified prototypes.');
+  t.equal(
+    stamp.create().foo(),
+    "foo",
+    "Should produce an object from specified prototypes.",
+  );
 
   t.end();
 });
 
-test('.create(options)', (t) => {
+test(".create(options)", (t) => {
   const stamp = stampit.init((options) => {
-    t.deepEqual(options, {foo: 'bar'},
-      'Should pass options object to initializer.');
+    t.deepEqual(
+      options,
+      { foo: "bar" },
+      "Should pass options object to initializer.",
+    );
     t.end();
   });
   t.ok(stamp.create);
-  stamp.create({foo: 'bar'});
+  stamp.create({ foo: "bar" });
 });

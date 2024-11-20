@@ -1,11 +1,7 @@
-// This IIFE serves two needs:
-// 1. The minified GZIP file becomes 10% smaller.
-// 2. This file can be used in browsers as is by adding `self.stampit = stampit` to be bottom.
-!(function () {
-  // We use unbound `this` multiple times in the file.
-  // We need to make sure that `this` is never referencing the `globalThis`.
-  // This, we have to put "use strict".
-  "use strict";
+export default (function () {
+  // This IIFE serves two needs:
+  // 1. The minified JS file becomes 20% smaller.
+  // 2. The minified GZIP file becomes 10% smaller.
 
   function getOwnPropertyKeys(obj) {
     return [
@@ -455,8 +451,7 @@
   let baseStampit = compose({ staticProperties: allUtilities });
 
   stampit.compose = stampit.bind(); // bind to undefined
-  stampit.version = "VERSION";
+  stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
 
-  if ("undefined" !== typeof module) module.exports = stampit;
-  else self.stampit = stampit;
+  return stampit;
 })();

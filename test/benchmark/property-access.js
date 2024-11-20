@@ -1,36 +1,35 @@
-'use strict'; // for node v4 and v5
-const test = require('tape');
+"use strict"; // for node v4 and v5
+const test = require("tape");
 
-const Benchmark = require('benchmark');
-const stampit = require('../..'); // Need to test the distributable
+const Benchmark = require("benchmark");
+const stampit = require("../.."); // Need to test the distributable
 
-
-test('benchmarking property access', (t) => {
+test("benchmarking property access", (t) => {
   const Position = stampit({
-    methods: {a() {}},
+    methods: { a() {} },
     init() {
       this.x = 10;
       this.y = 10;
-    }
+    },
   });
 
   const Velocity = stampit({
-    methods: {a() {}},
+    methods: { a() {} },
     init() {
       this.vx = 10;
       this.vy = 10;
-    }
+    },
   });
 
   const Entity = stampit({
-    methods: {a() {}},
+    methods: { a() {} },
     deepProps: {
-      components: {}
+      components: {},
     },
     init() {
       this.components.position = Position();
       this.components.velocity = Velocity();
-    }
+    },
   });
 
   const stampitEntity = Entity();
@@ -50,25 +49,27 @@ test('benchmarking property access', (t) => {
   const suite = new Benchmark.Suite();
   const results = [];
   suite
-    .add('Stampit', () => {
+    .add("Stampit", () => {
       const entity = stampitEntity.components;
 
       entity.position.x += entity.velocity.vx;
       entity.position.y += entity.velocity.vy;
     })
-    .add('Plain object', () => {
+    .add("Plain object", () => {
       const entity = normalEntity.components;
 
       entity.position.x += entity.velocity.vx;
       entity.position.y += entity.velocity.vy;
     })
-    .on('cycle', (event) => {
+    .on("cycle", (event) => {
       results.push(String(event.target));
     })
-    .on('complete', function () {
-      t.ok(this[0].hz / this[1].hz >= 0.5,
-        'object instances property access must be as fast as plain object.');
-      t.comment(results.join('. '));
+    .on("complete", function () {
+      t.ok(
+        this[0].hz / this[1].hz >= 0.5,
+        "object instances property access must be as fast as plain object.",
+      );
+      t.comment(results.join(". "));
       t.end();
     })
     .run();
