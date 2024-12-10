@@ -54,9 +54,11 @@ export default (function () {
     if (src === undefined) return dst;
 
     // According to specification arrays must be concatenated.
-    // Also, the '.concat' creates a new array instance. Overrides the 'dst'.
-    if (Array.isArray(src)) return (Array.isArray(dst) ? dst : []).concat(src);
-
+    // Create a new array instance. Overrides the 'dst'.
+    if (Array.isArray(src)) {
+      if (Array.isArray(dst)) return [...dst, ...src];
+      return [...src]; // ignore the 'dst'
+    }
     // Now deal with non plain 'src' object. 'src' overrides 'dst'
     // Note that functions are also assigned! We do not deep merge functions.
     if (!isPlainObject(src)) return src;
@@ -90,12 +92,12 @@ export default (function () {
   function extractUniqueFunctions(...args) {
     const funcs = new Set();
     for (const arg of args) {
-      if (isFunction(arg)) {
-        funcs.add(arg);
-      } else if (Array.isArray(arg)) {
+      if (Array.isArray(arg)) {
         for (const f of arg) {
           if (isFunction(f)) funcs.add(f);
         }
+      } else if (isFunction(arg)) {
+        funcs.add(arg);
       }
     }
     return funcs.size ? Array.from(funcs) : undefined;
