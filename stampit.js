@@ -2,6 +2,7 @@ export default (function () {
   // This IIFE serves two needs:
   // 1. The minified JS file becomes 20% smaller.
   // 2. The minified GZIP file becomes 10% smaller.
+  // There is nothing to treeshake in this file.
 
   function isFunction(obj) {
     return typeof obj === "function";
@@ -192,14 +193,14 @@ export default (function () {
     assignOne(stamp, descriptor.staticProperties);
     if (descriptor.staticPropertyDescriptors) Object.defineProperties(stamp, descriptor.staticPropertyDescriptors);
 
-    const c = isFunction(stamp.compose) ? stamp.compose : compose;
+    const c = isFunction(stamp.compose) ? stamp.compose : compose; // either use the Infected Compose or the standard one.
     stamp.compose = function (...args) {
       return c(this, ...args);
     };
 
     assignOne(stamp.compose, descriptor);
 
-    const composers = stamp.compose.composers;
+    const composers = descriptor.composers;
     if (Array.isArray(composers)) {
       for (const composer of composers) {
         const composerResult = composer({ stamp: stamp, composables });

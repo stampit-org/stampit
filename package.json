@@ -2,10 +2,13 @@
   "name": "stampit",
   "version": "5.0.4-next",
   "description": "Create objects from reusable, composable behaviors.",
-  "author": {
+  "authors": [{
     "name": "Eric Elliott",
     "url": "https://ericelliottjs.com"
-  },
+  }, {
+    "name": "Vasyl Boroviak",
+    "url": "https://vasyl.boroviak.name"
+  }],
   "maintainers": [
     {
       "name": "Vasyl Boroviak",
