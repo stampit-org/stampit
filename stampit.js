@@ -4,10 +4,7 @@ export default (function () {
   // 2. The minified GZIP file becomes 10% smaller.
 
   function getOwnPropertyKeys(obj) {
-    return [
-      ...Object.getOwnPropertyNames(obj),
-      ...Object.getOwnPropertySymbols(obj),
-    ];
+    return [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)];
   }
 
   /**
@@ -37,9 +34,7 @@ export default (function () {
   }
 
   function isPlainObject(value) {
-    return (
-      value && typeof value === "object" && value.__proto__ === Object.prototype
-    );
+    return value && typeof value === "object" && value.__proto__ === Object.prototype;
   }
 
   /**
@@ -70,10 +65,7 @@ export default (function () {
         // Do not merge properties with the 'undefined' value.
         if (desc.value !== undefined) {
           // deep merge each property. Recursion!
-          dst[key] = mergeOne(
-            isPlainObject(dst[key]) || Array.isArray(src[key]) ? dst[key] : {},
-            src[key],
-          );
+          dst[key] = mergeOne(isPlainObject(dst[key]) || Array.isArray(src[key]) ? dst[key] : {}, src[key]);
         }
       } else {
         // nope, it looks like a getter/setter
@@ -147,21 +139,15 @@ export default (function () {
 
     const sp1 = descr.staticProperties;
     const sp2 = descr.statics;
-    out.staticProperties = isObject(sp1 || sp2)
-      ? assign({}, sp2, sp1)
-      : undefined;
+    out.staticProperties = isObject(sp1 || sp2) ? assign({}, sp2, sp1) : undefined;
 
     const sdp1 = descr.staticDeepProperties;
     const sdp2 = descr.deepStatics;
-    out.staticDeepProperties = isObject(sdp1 || sdp2)
-      ? merge({}, sdp2, sdp1)
-      : undefined;
+    out.staticDeepProperties = isObject(sdp1 || sdp2) ? merge({}, sdp2, sdp1) : undefined;
 
     const spd1 = descr.staticPropertyDescriptors;
     const spd2 = descr.name && { name: { value: descr.name } };
-    out.staticPropertyDescriptors = isObject(spd2 || spd1)
-      ? assign({}, spd1, spd2)
-      : undefined;
+    out.staticPropertyDescriptors = isObject(spd2 || spd1) ? assign({}, spd1, spd2) : undefined;
 
     const c1 = descr.configuration;
     const c2 = descr.conf;
@@ -169,9 +155,7 @@ export default (function () {
 
     const dc1 = descr.deepConfiguration;
     const dc2 = descr.deepConf;
-    out.deepConfiguration = isObject(dc1 || dc2)
-      ? merge({}, dc2, dc1)
-      : undefined;
+    out.deepConfiguration = isObject(dc1 || dc2) ? merge({}, dc2, dc1) : undefined;
 
     return out;
   }
@@ -187,14 +171,11 @@ export default (function () {
 
       // Next line was optimized for most JS VMs. Please, be careful here!
       // The instance of this stamp
-      let instance = descriptor.methods
-        ? Object.create(descriptor.methods)
-        : {};
+      let instance = descriptor.methods ? Object.create(descriptor.methods) : {};
 
       if (descriptor.deepProperties) merge(instance, descriptor.deepProperties);
       if (descriptor.properties) assign(instance, descriptor.properties);
-      if (descriptor.propertyDescriptors)
-        Object.defineProperties(instance, descriptor.propertyDescriptors);
+      if (descriptor.propertyDescriptors) Object.defineProperties(instance, descriptor.propertyDescriptors);
 
       const inits = descriptor.initializers;
       // No initializers?
@@ -238,12 +219,11 @@ export default (function () {
     if (spd) Object.defineProperties(factory, spd);
 
     const c = isFunction(factory.compose) ? factory.compose : compose;
-    assign(
-      (factory.compose = function () {
-        return c.apply(this, arguments);
-      }),
-      descriptor,
-    );
+    factory.compose = function (...args) {
+      return c.call(this, ...args);
+    };
+
+    assign(factory.compose, descriptor);
 
     return factory;
   }
@@ -256,34 +236,31 @@ export default (function () {
    * @returns {Descriptor} Returns the dstDescriptor argument.
    */
   function mergeComposable(dstDescriptor, srcComposable) {
-    function mergeAssign(propName, deep) {
+    function mergeAssign(propName, action) {
       if (!isObject(srcComposable[propName])) {
         return;
       }
       if (!isObject(dstDescriptor[propName])) {
         dstDescriptor[propName] = {};
       }
-      (deep || assign)(dstDescriptor[propName], srcComposable[propName]);
+      action(dstDescriptor[propName], srcComposable[propName]);
     }
 
     function concatAssignFunctions(propName) {
-      const funcs = extractUniqueFunctions(
-        dstDescriptor[propName],
-        srcComposable[propName],
-      );
+      const funcs = extractUniqueFunctions(dstDescriptor[propName], srcComposable[propName]);
       if (funcs) dstDescriptor[propName] = funcs;
     }
 
     srcComposable = srcComposable?.compose || srcComposable;
     if (isObject(srcComposable)) {
-      mergeAssign("methods");
-      mergeAssign("properties");
+      mergeAssign("methods", assign);
+      mergeAssign("properties", assign);
       mergeAssign("deepProperties", merge);
-      mergeAssign("propertyDescriptors");
-      mergeAssign("staticProperties");
+      mergeAssign("propertyDescriptors", assign);
+      mergeAssign("staticProperties", assign);
       mergeAssign("staticDeepProperties", merge);
-      mergeAssign("staticPropertyDescriptors");
-      mergeAssign("configuration");
+      mergeAssign("staticPropertyDescriptors", assign);
+      mergeAssign("configuration", assign);
       mergeAssign("deepConfiguration", merge);
       concatAssignFunctions("initializers");
       concatAssignFunctions("composers");
@@ -341,83 +318,76 @@ export default (function () {
     return isFunction(obj) && isFunction(obj.compose);
   }
 
-  const allUtilities = {};
-
-  allUtilities.methods = createUtilityFunction("methods", assign);
-
-  allUtilities.properties = allUtilities.props = createUtilityFunction(
-    "properties",
-    assign,
-  );
-
-  allUtilities.initializers = allUtilities.init = createUtilityFunction(
-    "initializers",
-    extractUniqueFunctions,
-  );
-
-  allUtilities.composers = createUtilityFunction(
-    "composers",
-    extractUniqueFunctions,
-  );
-
-  allUtilities.deepProperties = allUtilities.deepProps = createUtilityFunction(
-    "deepProperties",
-    merge,
-  );
-
-  allUtilities.staticProperties = allUtilities.statics = createUtilityFunction(
-    "staticProperties",
-    assign,
-  );
-
-  allUtilities.staticDeepProperties = allUtilities.deepStatics =
-    createUtilityFunction("staticDeepProperties", merge);
-
-  allUtilities.configuration = allUtilities.conf = createUtilityFunction(
-    "configuration",
-    assign,
-  );
-
-  allUtilities.deepConfiguration = allUtilities.deepConf =
-    createUtilityFunction("deepConfiguration", merge);
-
-  allUtilities.propertyDescriptors = createUtilityFunction(
-    "propertyDescriptors",
-    assign,
-  );
-
-  allUtilities.staticPropertyDescriptors = createUtilityFunction(
-    "staticPropertyDescriptors",
-    assign,
-  );
-
-  function createUtilityFunction(propName, action) {
-    return function (...args) {
-      const obj = {
-        [propName]: action({}, ...args),
-      };
-
-      return (this?.compose || stampit).call(this, obj);
-    };
-  }
-
-  allUtilities.create = function (...args) {
-    return this(...args);
+  const allUtilities = {
+    methods(...args) {
+      const descriptor = { methods: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    properties(...args) {
+      const descriptor = { properties: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    initializers(...args) {
+      const descriptor = { initializers: extractUniqueFunctions(...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    composers(...args) {
+      const descriptor = { composers: extractUniqueFunctions(...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    deepProperties(...args) {
+      const descriptor = { deepProperties: merge({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    staticProperties(...args) {
+      const descriptor = { staticProperties: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    staticDeepProperties(...args) {
+      const descriptor = { staticDeepProperties: merge({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    configuration(...args) {
+      const descriptor = { configuration: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    deepConfiguration(...args) {
+      const descriptor = { deepConfiguration: merge({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    propertyDescriptors(...args) {
+      const descriptor = { propertyDescriptors: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    staticPropertyDescriptors(...args) {
+      const descriptor = { staticPropertyDescriptors: assign({}, ...args) };
+      return this ? this.compose(descriptor) : stampit(descriptor);
+    },
+    create(...args) {
+      return this(...args);
+    },
   };
+  allUtilities.props = allUtilities.properties;
+  allUtilities.init = allUtilities.initializers;
+  allUtilities.deepProps = allUtilities.deepProperties;
+  allUtilities.statics = allUtilities.staticProperties;
+  allUtilities.deepStatics = allUtilities.staticDeepProperties;
+  allUtilities.conf = allUtilities.configuration;
+  allUtilities.deepConf = allUtilities.deepConfiguration;
+
+  allUtilities.compose = stampit;
 
   /**
    * Infected compose
    * Parameters:  {...Composable} The list of composables.
    * @return {Stamp} The Stampit-flavoured stamp
    */
-  const stampit = assign(function stampit(...args) {
+  function stampit(...args) {
     // "Composable" is both Descriptor and Stamp.
     const composables = [];
     for (const composable of args) {
       if (isObject(composable)) {
-        composables.push(
-          isStamp(composable) ? composable : standardiseDescriptor(composable),
-        );
+        composables.push(isStamp(composable) ? composable : standardiseDescriptor(composable));
       }
     }
 
@@ -434,16 +404,14 @@ export default (function () {
           stamp: resultingStamp,
           composables,
         });
-        resultingStamp = isStamp(composerResult)
-          ? composerResult
-          : resultingStamp;
+        resultingStamp = isStamp(composerResult) ? composerResult : resultingStamp;
       }
     }
 
     return resultingStamp;
-  }, allUtilities); // Setting up the shortcut functions
+  }
 
-  allUtilities.compose = stampit;
+  assign(stampit, allUtilities); // Setting up the shortcut functions
 
   /**
    * Infected stamp. Used as a storage of the infection metadata
