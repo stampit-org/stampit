@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/stampit-org/stampit-logo/master/stampit-logo.png" alt="stampit" width="160" />
 </p>
 
-# Stampit [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/stampit-org/stampit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Twitter Follow](https://img.shields.io/twitter/follow/stampit.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/stampit_org) [![UNPKG](https://img.shields.io/badge/gzip%20size-1.4%20kB-brightgreen.svg)](https://unpkg.com/stampit@latest/dist/stampit.min.js)
+# Stampit [![npm](https://img.shields.io/npm/dm/stampit.svg)](https://www.npmjs.com/package/stampit)
 
 **Create objects from reusable, composable behaviors** 
 
