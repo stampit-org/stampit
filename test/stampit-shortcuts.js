@@ -4,6 +4,12 @@ import _ from "lodash";
 
 // stampit.methods, stampit.init, stampit.props, etc.
 
+test("stampit.create should not be accidentally present", (t) => {
+  t.notOk(stampit.create, "should not be present");
+
+  t.end();
+});
+
 test("stampit.methods shortcut", (t) => {
   const methods = { method1() {} };
   const stamp1 = stampit({ methods: methods });
@@ -160,10 +166,7 @@ test("all shortcuts combined", (t) => {
   const Foo = compose(HasFoo, PrintFoo, Init);
 
   t.equal(Foo.compose.properties.foo, "default foo!", "the method should exit");
-  t.ok(
-    typeof Foo.compose.methods.printFoo === "function",
-    "the method should exit",
-  );
+  t.ok(typeof Foo.compose.methods.printFoo === "function", "the method should exit");
   t.equal(Foo.compose.initializers.length, 1, "should be single initializer");
 
   t.end();

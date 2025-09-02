@@ -312,52 +312,39 @@ export default (function () {
 
   const allUtilities = {
     methods(...args) {
-      const descriptor = { methods: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ methods: assign({}, ...args) });
     },
     properties(...args) {
-      const descriptor = { properties: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ properties: assign({}, ...args) });
     },
     initializers(...args) {
-      const descriptor = { initializers: extractUniqueFunctions(...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ initializers: extractUniqueFunctions(...args) });
     },
     composers(...args) {
-      const descriptor = { composers: extractUniqueFunctions(...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ composers: extractUniqueFunctions(...args) });
     },
     deepProperties(...args) {
-      const descriptor = { deepProperties: merge({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ deepProperties: merge({}, ...args) });
     },
     staticProperties(...args) {
-      const descriptor = { staticProperties: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ staticProperties: assign({}, ...args) });
     },
     staticDeepProperties(...args) {
-      const descriptor = { staticDeepProperties: merge({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ staticDeepProperties: merge({}, ...args) });
     },
     configuration(...args) {
-      const descriptor = { configuration: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ configuration: assign({}, ...args) });
     },
     deepConfiguration(...args) {
-      const descriptor = { deepConfiguration: merge({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ deepConfiguration: merge({}, ...args) });
     },
     propertyDescriptors(...args) {
-      const descriptor = { propertyDescriptors: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ propertyDescriptors: assign({}, ...args) });
     },
     staticPropertyDescriptors(...args) {
-      const descriptor = { staticPropertyDescriptors: assign({}, ...args) };
-      return this ? this.compose(descriptor) : stampit(descriptor);
+      return this.compose({ staticPropertyDescriptors: assign({}, ...args) });
     },
-    create(...args) {
-      return this(...args);
-    },
+    compose: stampit, // infecting!
   };
   allUtilities.props = allUtilities.properties;
   allUtilities.init = allUtilities.initializers;
@@ -367,7 +354,13 @@ export default (function () {
   allUtilities.conf = allUtilities.configuration;
   allUtilities.deepConf = allUtilities.deepConfiguration;
 
-  allUtilities.compose = stampit; // infecting!
+  // Add one more method to the statics. Most importantly - we have to clone the `allUtilities` object as it will be mutated below.
+  const staticProperties = {
+    ...allUtilities,
+    create(...args) {
+      return this(...args);
+    },
+  };
 
   /**
    * Infected compose
@@ -375,12 +368,13 @@ export default (function () {
    * @return {Stamp} The Stampit-flavoured stamp
    */
   function stampit(...args) {
-    return compose(this, { staticProperties: allUtilities }, ...args.map(standardiseDescriptor));
+    return compose(this, { staticProperties }, ...args.map(standardiseDescriptor));
   }
 
-  assignOne(stampit, allUtilities); // Setting up the shortcut functions
+  Object.entries(allUtilities).forEach(([name, func]) => (allUtilities[name] = func.bind(stampit)));
 
-  stampit.compose = stampit.bind(); // bind to undefined
+  assignOne(stampit, allUtilities); // Setting up the shortcut functions. It must not have the `.create()` in it.
+
   stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
 
   return stampit;
