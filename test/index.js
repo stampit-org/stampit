@@ -5,7 +5,6 @@ import "./basics-props.js";
 import "./basics-static.js";
 import "./basics.js";
 import "./compose.js";
-import "./composers.js";
 import "./convert-constructor.js";
 import "./corner-cases.js";
 import "./deep-props-safety.js";

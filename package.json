@@ -36,7 +36,7 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "browserify": "^17.0.1",
-    "check-compose": "^5.0.0",
+    "check-compose": "^5.1.0",
     "eslint": "^8.57.1",
     "esmify": "^2.1.1",
     "gzip-size-cli": "^5.1.0",
