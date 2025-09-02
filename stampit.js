@@ -38,6 +38,15 @@ export default (function () {
   }
 
   /**
+   * Returns true if argument is a stamp.
+   * @param {*} obj Any object
+   * @returns {Boolean} True is the obj is a stamp
+   */
+  function isStamp(obj) {
+    return isFunction(obj) && isFunction(obj.compose);
+  }
+
+  /**
    * Unlike _.merge(), our merge() copies symbols, getters and setters.
    * The 'src' argument plays the command role.
    * The returned values is always of the same type as the 'src'.
@@ -96,75 +105,10 @@ export default (function () {
   }
 
   /**
-   * Converts stampit extended descriptor to a standard one.
-   * @param {Object|*} descr
-   * methods
-   * properties
-   * props
-   * initializers
-   * init
-   * deepProperties
-   * deepProps
-   * propertyDescriptors
-   * staticProperties
-   * statics
-   * staticDeepProperties
-   * deepStatics
-   * staticPropertyDescriptors
-   * configuration
-   * conf
-   * deepConfiguration
-   * deepConf
-   * composers
-   * @returns {Descriptor} Standardised descriptor
-   */
-  function standardiseDescriptor(descr) {
-    const out = {};
-
-    out.methods = descr.methods || undefined;
-
-    const p1 = descr.properties;
-    const p2 = descr.props;
-    out.properties = isObject(p1 || p2) ? assign({}, p2, p1) : undefined;
-
-    out.initializers = extractUniqueFunctions(descr.init, descr.initializers);
-
-    out.composers = extractUniqueFunctions(descr.composers);
-
-    const dp1 = descr.deepProperties;
-    const dp2 = descr.deepProps;
-    out.deepProperties = isObject(dp1 || dp2) ? merge({}, dp2, dp1) : undefined;
-
-    out.propertyDescriptors = descr.propertyDescriptors;
-
-    const sp1 = descr.staticProperties;
-    const sp2 = descr.statics;
-    out.staticProperties = isObject(sp1 || sp2) ? assign({}, sp2, sp1) : undefined;
-
-    const sdp1 = descr.staticDeepProperties;
-    const sdp2 = descr.deepStatics;
-    out.staticDeepProperties = isObject(sdp1 || sdp2) ? merge({}, sdp2, sdp1) : undefined;
-
-    const spd1 = descr.staticPropertyDescriptors;
-    const spd2 = descr.name && { name: { value: descr.name } };
-    out.staticPropertyDescriptors = isObject(spd2 || spd1) ? assign({}, spd1, spd2) : undefined;
-
-    const c1 = descr.configuration;
-    const c2 = descr.conf;
-    out.configuration = isObject(c1 || c2) ? assign({}, c2, c1) : undefined;
-
-    const dc1 = descr.deepConfiguration;
-    const dc2 = descr.deepConf;
-    out.deepConfiguration = isObject(dc1 || dc2) ? merge({}, dc2, dc1) : undefined;
-
-    return out;
-  }
-
-  /**
    * Creates new factory instance.
    * @returns {Function} The new factory function.
    */
-  function createFactory() {
+  function createEmptyStamp() {
     return function Stamp(...args) {
       let options = args[0];
       const descriptor = Stamp.compose || {};
@@ -188,44 +132,13 @@ export default (function () {
       for (let i = 0, initializer, returnedValue; i < inits.length; ) {
         initializer = inits[i++];
         if (isFunction(initializer)) {
-          returnedValue = initializer.call(instance, options, {
-            instance,
-            stamp: Stamp,
-            args,
-          });
+          returnedValue = initializer.call(instance, options, { instance, stamp: Stamp, args });
           instance = returnedValue === undefined ? instance : returnedValue;
         }
       }
 
       return instance;
     };
-  }
-
-  /**
-   * Returns a new stamp given a descriptor and a compose function implementation.
-   * @param {Descriptor} [descriptor={}] The information about the object the stamp will be creating.
-   * @returns {Stamp} The new stamp
-   */
-  function createStamp(descriptor) {
-    const factory = createFactory();
-
-    const sdp = descriptor.staticDeepProperties;
-    if (sdp) merge(factory, sdp);
-
-    const sp = descriptor.staticProperties;
-    if (sp) assign(factory, sp);
-
-    const spd = descriptor.staticPropertyDescriptors;
-    if (spd) Object.defineProperties(factory, spd);
-
-    const c = isFunction(factory.compose) ? factory.compose : compose;
-    factory.compose = function (...args) {
-      return c.call(this, ...args);
-    };
-
-    assign(factory.compose, descriptor);
-
-    return factory;
   }
 
   /**
@@ -277,8 +190,33 @@ export default (function () {
    * @returns {Stamp} A new stamp (aka composable factory function)
    */
   function compose(...args) {
-    const descriptor = [this, ...args].reduce(mergeComposable, {});
-    return createStamp(descriptor);
+    // "Composable" is both Descriptor and Stamp.
+    // The "this" context must be the first in the list.
+    const composables = [this, ...args].filter(isObject);
+
+    let stamp = createEmptyStamp();
+    const descriptor = composables.reduce(mergeComposable, {});
+
+    merge(stamp, descriptor.staticDeepProperties);
+    assign(stamp, descriptor.staticProperties);
+    if (descriptor.staticPropertyDescriptors) Object.defineProperties(stamp, descriptor.staticPropertyDescriptors);
+
+    const c = isFunction(stamp.compose) ? stamp.compose : compose;
+    stamp.compose = function (...args) {
+      return c(this, ...args);
+    };
+
+    assign(stamp.compose, descriptor);
+
+    const composers = stamp.compose.composers;
+    if (Array.isArray(composers)) {
+      for (const composer of composers) {
+        const composerResult = composer({ stamp: stamp, composables });
+        stamp = isStamp(composerResult) ? composerResult : stamp;
+      }
+    }
+
+    return stamp;
   }
 
   /**
@@ -309,13 +247,76 @@ export default (function () {
    * @typedef {Stamp|Descriptor} Composable
    */
 
+  /////////////
+  ///////////// NOTE! Everything above is the compose(). The below is the stampit(). /////////////
+  /////////////
+
   /**
-   * Returns true if argument is a stamp.
-   * @param {*} obj Any object
-   * @returns {Boolean} True is the obj is a stamp
+   * Converts stampit extended descriptor to a standard one.
+   * @param {Object|*} descr
+   * methods
+   * properties
+   * props
+   * initializers
+   * init
+   * deepProperties
+   * deepProps
+   * propertyDescriptors
+   * staticProperties
+   * statics
+   * staticDeepProperties
+   * deepStatics
+   * staticPropertyDescriptors
+   * configuration
+   * conf
+   * deepConfiguration
+   * deepConf
+   * composers
+   * @returns {Descriptor} Standardised descriptor
    */
-  function isStamp(obj) {
-    return isFunction(obj) && isFunction(obj.compose);
+  function standardiseDescriptor(descr) {
+    // Avoid processing non-objects. Also, do not process stamps because they are already standard.
+    if (!isObject(descr) || isStamp(descr)) return descr;
+
+    const out = {};
+
+    out.methods = descr.methods || undefined;
+
+    const p1 = descr.properties;
+    const p2 = descr.props;
+    out.properties = isObject(p1 || p2) ? assign({}, p2, p1) : undefined;
+
+    out.initializers = extractUniqueFunctions(descr.init, descr.initializers);
+
+    out.composers = extractUniqueFunctions(descr.composers);
+
+    const dp1 = descr.deepProperties;
+    const dp2 = descr.deepProps;
+    out.deepProperties = isObject(dp1 || dp2) ? merge({}, dp2, dp1) : undefined;
+
+    out.propertyDescriptors = descr.propertyDescriptors;
+
+    const sp1 = descr.staticProperties;
+    const sp2 = descr.statics;
+    out.staticProperties = isObject(sp1 || sp2) ? assign({}, sp2, sp1) : undefined;
+
+    const sdp1 = descr.staticDeepProperties;
+    const sdp2 = descr.deepStatics;
+    out.staticDeepProperties = isObject(sdp1 || sdp2) ? merge({}, sdp2, sdp1) : undefined;
+
+    const spd1 = descr.staticPropertyDescriptors;
+    const spd2 = descr.name && { name: { value: descr.name } };
+    out.staticPropertyDescriptors = isObject(spd2 || spd1) ? assign({}, spd1, spd2) : undefined;
+
+    const c1 = descr.configuration;
+    const c2 = descr.conf;
+    out.configuration = isObject(c1 || c2) ? assign({}, c2, c1) : undefined;
+
+    const dc1 = descr.deepConfiguration;
+    const dc2 = descr.deepConf;
+    out.deepConfiguration = isObject(dc1 || dc2) ? merge({}, dc2, dc1) : undefined;
+
+    return out;
   }
 
   const allUtilities = {
@@ -375,7 +376,7 @@ export default (function () {
   allUtilities.conf = allUtilities.configuration;
   allUtilities.deepConf = allUtilities.deepConfiguration;
 
-  allUtilities.compose = stampit;
+  allUtilities.compose = stampit; // infecting!
 
   /**
    * Infected compose
@@ -383,42 +384,10 @@ export default (function () {
    * @return {Stamp} The Stampit-flavoured stamp
    */
   function stampit(...args) {
-    // "Composable" is both Descriptor and Stamp.
-    const composables = [];
-    for (const composable of args) {
-      if (isObject(composable)) {
-        composables.push(isStamp(composable) ? composable : standardiseDescriptor(composable));
-      }
-    }
-
-    // Calling the standard pure compose function here.
-    let resultingStamp = compose.apply(this || baseStampit, composables);
-
-    // The "this" context must be the first in the list.
-    if (this) composables.unshift(this);
-    const composers = resultingStamp.compose.composers;
-    let composerResult;
-    if (Array.isArray(composers)) {
-      for (const composer of composers) {
-        composerResult = composer({
-          stamp: resultingStamp,
-          composables,
-        });
-        resultingStamp = isStamp(composerResult) ? composerResult : resultingStamp;
-      }
-    }
-
-    return resultingStamp;
+    return compose(this, { staticProperties: allUtilities }, ...args.map(standardiseDescriptor));
   }
 
   assign(stampit, allUtilities); // Setting up the shortcut functions
-
-  /**
-   * Infected stamp. Used as a storage of the infection metadata
-   * @type {Function}
-   * @return {Stamp}
-   */
-  let baseStampit = compose({ staticProperties: allUtilities });
 
   stampit.compose = stampit.bind(); // bind to undefined
   stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
