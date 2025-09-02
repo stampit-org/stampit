@@ -3,6 +3,27 @@ export default (function () {
   // 1. The minified JS file becomes 20% smaller.
   // 2. The minified GZIP file becomes 10% smaller.
 
+  function isFunction(obj) {
+    return typeof obj === "function";
+  }
+
+  function isObject(obj) {
+    return (obj && typeof obj === "object") || isFunction(obj);
+  }
+
+  function isPlainObject(value) {
+    return value && typeof value === "object" && value.__proto__ === Object.prototype;
+  }
+
+  /**
+   * Returns true if argument is a stamp.
+   * @param {*} obj Any object
+   * @returns {Boolean} True is the obj is a stamp
+   */
+  function isStamp(obj) {
+    return isFunction(obj) && isFunction(obj.compose);
+  }
+
   function getOwnPropertyKeys(obj) {
     return [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)];
   }
@@ -25,27 +46,6 @@ export default (function () {
     return dst;
   }
 
-  function isFunction(obj) {
-    return typeof obj === "function";
-  }
-
-  function isObject(obj) {
-    return (obj && typeof obj === "object") || isFunction(obj);
-  }
-
-  function isPlainObject(value) {
-    return value && typeof value === "object" && value.__proto__ === Object.prototype;
-  }
-
-  /**
-   * Returns true if argument is a stamp.
-   * @param {*} obj Any object
-   * @returns {Boolean} True is the obj is a stamp
-   */
-  function isStamp(obj) {
-    return isFunction(obj) && isFunction(obj.compose);
-  }
-
   /**
    * Unlike _.merge(), our merge() copies symbols, getters and setters.
    * The 'src' argument plays the command role.
@@ -61,7 +61,7 @@ export default (function () {
     // Create a new array instance. Overrides the 'dst'.
     if (Array.isArray(src)) {
       if (Array.isArray(dst)) return [...dst, ...src];
-      return [...src]; // ignore the 'dst'
+      return [...src]; // ignore the 'dst', clone the src
     }
     // Now deal with non plain 'src' object. 'src' overrides 'dst'
     // Note that functions are also assigned! We do not deep merge functions.
@@ -91,17 +91,8 @@ export default (function () {
   const merge = (dst, ...args) => args.reduce(mergeOne, dst);
 
   function extractUniqueFunctions(...args) {
-    const funcs = new Set();
-    for (const arg of args) {
-      if (Array.isArray(arg)) {
-        for (const f of arg) {
-          if (isFunction(f)) funcs.add(f);
-        }
-      } else if (isFunction(arg)) {
-        funcs.add(arg);
-      }
-    }
-    return funcs.size ? Array.from(funcs) : undefined;
+    const funcs = new Set(args.flat().filter(isFunction));
+    return funcs.size ? [...funcs] : undefined;
   }
 
   /**
@@ -117,8 +108,8 @@ export default (function () {
       // The instance of this stamp
       let instance = descriptor.methods ? Object.create(descriptor.methods) : {};
 
-      if (descriptor.deepProperties) merge(instance, descriptor.deepProperties);
-      if (descriptor.properties) assign(instance, descriptor.properties);
+      mergeOne(instance, descriptor.deepProperties);
+      assignOne(instance, descriptor.properties);
       if (descriptor.propertyDescriptors) Object.defineProperties(instance, descriptor.propertyDescriptors);
 
       const inits = descriptor.initializers;
@@ -166,15 +157,15 @@ export default (function () {
 
     srcComposable = srcComposable?.compose || srcComposable;
     if (isObject(srcComposable)) {
-      mergeAssign("methods", assign);
-      mergeAssign("properties", assign);
-      mergeAssign("deepProperties", merge);
-      mergeAssign("propertyDescriptors", assign);
-      mergeAssign("staticProperties", assign);
-      mergeAssign("staticDeepProperties", merge);
-      mergeAssign("staticPropertyDescriptors", assign);
-      mergeAssign("configuration", assign);
-      mergeAssign("deepConfiguration", merge);
+      mergeAssign("methods", assignOne);
+      mergeAssign("properties", assignOne);
+      mergeAssign("deepProperties", mergeOne);
+      mergeAssign("propertyDescriptors", assignOne);
+      mergeAssign("staticProperties", assignOne);
+      mergeAssign("staticDeepProperties", mergeOne);
+      mergeAssign("staticPropertyDescriptors", assignOne);
+      mergeAssign("configuration", assignOne);
+      mergeAssign("deepConfiguration", mergeOne);
       concatAssignFunctions("initializers");
       concatAssignFunctions("composers");
     }
@@ -197,8 +188,8 @@ export default (function () {
     let stamp = createEmptyStamp();
     const descriptor = composables.reduce(mergeComposable, {});
 
-    merge(stamp, descriptor.staticDeepProperties);
-    assign(stamp, descriptor.staticProperties);
+    mergeOne(stamp, descriptor.staticDeepProperties);
+    assignOne(stamp, descriptor.staticProperties);
     if (descriptor.staticPropertyDescriptors) Object.defineProperties(stamp, descriptor.staticPropertyDescriptors);
 
     const c = isFunction(stamp.compose) ? stamp.compose : compose;
@@ -206,7 +197,7 @@ export default (function () {
       return c(this, ...args);
     };
 
-    assign(stamp.compose, descriptor);
+    assignOne(stamp.compose, descriptor);
 
     const composers = stamp.compose.composers;
     if (Array.isArray(composers)) {
@@ -387,7 +378,7 @@ export default (function () {
     return compose(this, { staticProperties: allUtilities }, ...args.map(standardiseDescriptor));
   }
 
-  assign(stampit, allUtilities); // Setting up the shortcut functions
+  assignOne(stampit, allUtilities); // Setting up the shortcut functions
 
   stampit.compose = stampit.bind(); // bind to undefined
   stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
