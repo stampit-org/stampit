@@ -173,15 +173,6 @@ npm t
 env CI=1 npm t
 ```
 
-### Unit tests in a browser
-To run unit tests in a default browser:
-```
-npm run browsertest
-```
-To run tests in a different browser:
-* Open the `./test/index.html` in your browser, and
-* open developer's console. The logs should indicate success.
-
 ### Publishing to NPM registry
 ```bash
 npx cut-release

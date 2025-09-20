@@ -2,6 +2,44 @@
   "name": "stampit",
   "version": "5.0.5-next",
   "description": "Create objects from reusable, composable behaviors.",
+  "homepage": "https://stampit.js.org",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:stampit-org/stampit.git"
+  },
+  "type": "module",
+  "main": "stampit.js",
+  "types": "stampit.d.ts",
+  "license": "MIT",
+  "files": [
+    "stampit.js",
+    "stampit.min.js",
+    "stampit.d.ts"
+  ],
+  "scripts": {
+    "cov": "npx --yes c8 --reporter html node --run test && open ./coverage/index.html",
+    "test": "node --run build && node ./test/index.js && node test/benchmark/index.js",
+    "lint": "oxlint --ignore-pattern='*.ts'",
+    "build": "rm -rf ./out stampit.min.js && node --run minify && node --run replace-version",
+    "replace-version": "replace-in-file VERSION `node -e 'process.stdout.write(require(\"./package\").version)'` ./stampit.min.js",
+    "ci": "node --run test && node --run lint",
+    "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
+    "preversion": "node --run ci",
+    "postversion": "node --run build"
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "c8": "^10.1.3",
+    "check-compose": "^5.1.0",
+    "gzip-size-cli": "^5.1.0",
+    "lodash": "^4.17.21",
+    "oxlint": "^1.16.0",
+    "prettier": "^3.3.3",
+    "replace-in-file": "^8.2.0",
+    "tape": "^4.11.0",
+    "typescript": "^5.6.3",
+    "uglify-js": "^3.13.3"
+  },
   "authors": [
     {
       "name": "Eric Elliott",
@@ -18,10 +56,6 @@
       "url": "https://vasyl.boroviak.name"
     }
   ],
-  "homepage": "https://stampit.js.org",
-  "type": "module",
-  "main": "stampit.js",
-  "types": "stampit.d.ts",
   "keywords": [
     "object",
     "prototype",
@@ -34,42 +68,6 @@
     "class",
     "stamp",
     "mixin"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:stampit-org/stampit.git"
-  },
-  "devDependencies": {
-    "benchmark": "^2.1.4",
-    "browserify": "^17.0.1",
-    "check-compose": "^5.1.0",
-    "eslint": "^8.57.1",
-    "esmify": "^2.1.1",
-    "gzip-size-cli": "^5.1.0",
-    "lodash": "^4.17.21",
-    "prettier": "^3.3.3",
-    "replace-in-file": "^8.2.0",
-    "tape": "^4.11.0",
-    "typescript": "^5.6.3",
-    "uglify-js": "^3.13.3"
-  },
-  "scripts": {
-    "cov": "npx --yes c8 --reporter html node --run test && open ./coverage/index.html",
-    "test": "export NODE_OPTIONS='--experimental-require-module --disable-warning=ExperimentalWarning' && node --run build && node ./test/index.js && node test/benchmark/index.js",
-    "browsertest": "mkdir out || true && browserify ./test/index.js -p esmify > out/test_bundle.js && cp ./test/index.html ./out/ && open ./out/index.html",
-    "lint": "eslint ./stampit.js ./test/",
-    "build": "rm -rf ./out stampit.min.js && node --run minify && node --run replace-version",
-    "replace-version": "replace-in-file VERSION `node -e 'process.stdout.write(require(\"./package\").version)'` ./stampit.min.js",
-    "ci": "node --run test && node --run lint",
-    "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
-    "preversion": "node --run ci",
-    "postversion": "node --run build"
-  },
-  "license": "MIT",
-  "files": [
-    "stampit.js",
-    "stampit.min.js",
-    "stampit.d.ts"
   ],
   "eslintConfig": {
     "env": {
