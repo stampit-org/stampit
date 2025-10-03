@@ -70,10 +70,7 @@ test("stampit().props(a, b)", (t) => {
     )
     .create();
 
-  t.ok(
-    obj.a && obj.b,
-    "Should mixIn objects when multiple objects are passed.",
-  );
+  t.ok(obj.a && obj.b, "Should mixIn objects when multiple objects are passed.");
 
   t.end();
 });

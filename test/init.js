@@ -128,7 +128,7 @@ test("stamp.init() should call composed init functions in order", (t) => {
     },
   ]);
 
-  const stamp3 = stampit.compose(stamp, stamp2);
+  const stamp3 = stampit().compose(stamp, stamp2);
 
   stamp3();
   t.deepEqual(result, ["a", "b", "c", "d", "e"], "init called in order");
@@ -149,22 +149,20 @@ test("explicit push wrong object to stamp.compose.initializers[]", (t) => {
   stamp.compose.initializers.push(42); // breaking the stamp.
   const obj = stamp();
 
-  t.equal(
-    obj.getSecret(),
-    "foo",
-    "Should omit malformed compose.initializers[] elements.",
-  );
+  t.equal(obj.getSecret(), "foo", "Should omit malformed compose.initializers[] elements.");
 
   t.end();
 });
 
 test("stamp.compose.initializers malformed object", (t) => {
-  const stamp = stampit.props({ ref: 42 }).init(function () {
-    const secret = "foo";
-    this.getSecret = () => {
-      return secret;
-    };
-  });
+  const stamp = stampit()
+    .props({ ref: 42 })
+    .init(function () {
+      const secret = "foo";
+      this.getSecret = () => {
+        return secret;
+      };
+    });
 
   stamp.compose.initializers = 42; // breaking the stamp badly
   const obj = stamp();

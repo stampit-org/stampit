@@ -6,29 +6,6 @@ import stampit from "../";
 /** Import 'stampit' as ... module */
 // import * as Stamp from 'stampit';
 
-/** selective import from module */
-// import {
-//   compose,
-//   composers,
-//   conf,
-//   configuration,
-//   deepConf,
-//   deepConfiguration,
-//   deepProperties,
-//   deepProps,
-//   deepStatics,
-//   init,
-//   initializers,
-//   methods,
-//   properties,
-//   propertyDescriptors,
-//   props,
-//   staticDeepProperties,
-//   staticProperties,
-//   staticPropertyDescriptors,
-//   version,
-// } from 'stampit';
-
 const a = stampit().init(function (options) {
   const a = options.args[0];
   this.getA = () => {
@@ -45,7 +22,7 @@ const b = stampit().init(function () {
   };
 });
 
-const c = stampit.compose(a, b);
+const c = stampit(a, b);
 const foo = c(); // we won't throw this one away...
 foo.getA(); // "a"
 foo.getB(); // "b"
@@ -75,7 +52,7 @@ const defaults = stampit().props({
 
 // Classical inheritance has nothing on this. No parent/child coupling. No deep inheritance hierarchies.
 // Just good, clean code reusability.
-const bar = stampit.compose(defaults, membership);
+const bar = stampit(defaults, membership);
 // Note that you can override props on instantiation:
 const myBar = bar({ name: "Moe's" });
 // Silly, but proves that everything is as it should be.
@@ -184,7 +161,7 @@ const newskool = stampit()
 
 // Now you can compose those old constructors just like you could
 // with any other stamp...
-const myThing = stampit.compose(newskool);
+const myThing = stampit(newskool);
 
 const t = myThing();
 
@@ -204,10 +181,7 @@ interface SomeStamp extends stampit.Stamp<SomeStampInstance> {
   (params: { a: number; b: boolean }): SomeStampInstance;
 }
 
-const SomeStamp = stampit<SomeStamp>().init(function (params: {
-  a: number;
-  b: boolean;
-}) {
+const SomeStamp = stampit<SomeStamp>().init(function (params: { a: number; b: boolean }) {
   this.a = "" + a; // this SomeStampInstance
   this.b = "" + b;
 });
@@ -238,8 +212,8 @@ const d: stampit.ExtendedDescriptor<{}> = {
   deepConf: {},
 };
 
-// The `.compose()` method
-const compose = stampit.compose; // $ExpectType typeof stampit
+// stampit is the infected `compose()` function
+const compose = stampit; // $ExpectType typeof stampit
 
 const stampUntyped = compose(); // $ExpectType Stamp<any>
 stampUntyped(); // $ExpectType any

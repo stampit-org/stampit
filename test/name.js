@@ -12,11 +12,7 @@ try {
         name: "MyFactory",
       });
 
-      t.equal(
-        stamp.name,
-        "MyFactory",
-        "Should produce stamp with non-default name",
-      );
+      t.equal(stamp.name, "MyFactory", "Should produce stamp with non-default name");
 
       t.end();
     });
@@ -29,16 +25,8 @@ try {
         staticPropertyDescriptors: { value: { x: "whatever" } },
       });
 
-      t.equal(
-        derived.name,
-        "MyFactory",
-        "Should inherit name from previous stamp",
-      );
-      t.equal(
-        derived.compose.staticPropertyDescriptors.value.x,
-        "whatever",
-        "Should not loose other data",
-      );
+      t.equal(derived.name, "MyFactory", "Should inherit name from previous stamp");
+      t.equal(derived.compose.staticPropertyDescriptors.value.x, "whatever", "Should not loose other data");
 
       t.end();
     });
@@ -49,11 +37,7 @@ try {
       });
       const derived = stamp.compose({ name: "SecondOne" });
 
-      t.equal(
-        derived.name,
-        "SecondOne",
-        "Should overwrite previous stamp name",
-      );
+      t.equal(derived.name, "SecondOne", "Should overwrite previous stamp name");
 
       t.end();
     });

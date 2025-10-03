@@ -13,22 +13,14 @@ test(".create()", (t) => {
   });
 
   t.ok(stamp.create);
-  t.equal(
-    stamp.create().foo(),
-    "foo",
-    "Should produce an object from specified prototypes.",
-  );
+  t.equal(stamp.create().foo(), "foo", "Should produce an object from specified prototypes.");
 
   t.end();
 });
 
 test(".create(options)", (t) => {
-  const stamp = stampit.init((options) => {
-    t.deepEqual(
-      options,
-      { foo: "bar" },
-      "Should pass options object to initializer.",
-    );
+  const stamp = stampit().init((options) => {
+    t.deepEqual(options, { foo: "bar" }, "Should pass options object to initializer.");
     t.end();
   });
   t.ok(stamp.create);

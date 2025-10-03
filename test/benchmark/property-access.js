@@ -64,10 +64,7 @@ test("benchmarking property access", (t) => {
       results.push(String(event.target));
     })
     .on("complete", function () {
-      t.ok(
-        this[0].hz / this[1].hz >= 0.5,
-        "object instances property access must be as fast as plain object.",
-      );
+      t.ok(this[0].hz / this[1].hz >= 0.5, "object instances property access must be as fast as plain object.");
       t.comment(results.join(". "));
       t.end();
     })

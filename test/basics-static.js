@@ -43,33 +43,13 @@ test("stampit().statics() last override", (t) => {
     })
     .compose(stamp1);
 
-  t.equal(
-    stamp2.foo(),
-    "override",
-    "Should override props during composition.",
-  );
+  t.equal(stamp2.foo(), "override", "Should override props during composition.");
 
   t.end();
 });
 
 test("stampit().statics(arg1, arg2)", (t) => {
   const stamp1 = stampit().statics(
-    {
-      foo1() {},
-    },
-    {
-      foo2() {},
-    },
-  );
-
-  t.ok(stamp1.foo1, "Should accept multiple args.");
-  t.ok(stamp1.foo2, "Should accept multiple args.");
-
-  t.end();
-});
-
-test("stampit.statics(arg1, arg2)", (t) => {
-  const stamp1 = stampit.statics(
     {
       foo1() {},
     },
@@ -96,11 +76,7 @@ test("stampit({statics}).statics()", (t) => {
   });
 
   t.equal(stamp1.foo1, "foo1 value", "Should have statics from options.");
-  t.equal(
-    stamp1.foo2(),
-    "foo2 value",
-    "Should have statics form chain method.",
-  );
+  t.equal(stamp1.foo2(), "foo2 value", "Should have statics form chain method.");
 
   t.end();
 });

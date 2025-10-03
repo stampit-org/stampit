@@ -311,7 +311,7 @@ export default (function () {
     return out;
   }
 
-  const allUtilities = {
+  const additionalStaticProperties = {
     methods(...args) {
       return this.compose({ methods: assign({}, ...args) });
     },
@@ -345,22 +345,22 @@ export default (function () {
     staticPropertyDescriptors(...args) {
       return this.compose({ staticPropertyDescriptors: assign({}, ...args) });
     },
-    compose: stampit, // infecting!
-  };
-  allUtilities.props = allUtilities.properties;
-  allUtilities.init = allUtilities.initializers;
-  allUtilities.deepProps = allUtilities.deepProperties;
-  allUtilities.statics = allUtilities.staticProperties;
-  allUtilities.deepStatics = allUtilities.staticDeepProperties;
-  allUtilities.conf = allUtilities.configuration;
-  allUtilities.deepConf = allUtilities.deepConfiguration;
-
-  // Add one more method to the statics. Most importantly - we have to clone the `allUtilities` object as it will be mutated below.
-  const staticProperties = {
-    ...allUtilities,
     create(...args) {
       return this(...args);
     },
+    compose: stampit, // infecting!
+  };
+  additionalStaticProperties.props = additionalStaticProperties.properties;
+  additionalStaticProperties.init = additionalStaticProperties.initializers;
+  additionalStaticProperties.deepProps = additionalStaticProperties.deepProperties;
+  additionalStaticProperties.statics = additionalStaticProperties.staticProperties;
+  additionalStaticProperties.deepStatics = additionalStaticProperties.staticDeepProperties;
+  additionalStaticProperties.conf = additionalStaticProperties.configuration;
+  additionalStaticProperties.deepConf = additionalStaticProperties.deepConfiguration;
+
+  // Add one more method to the statics. Most importantly - we have to clone the `additionalStaticProperties` object as it will be mutated below.
+  const staticProperties = {
+    ...additionalStaticProperties,
   };
 
   /**
@@ -369,12 +369,8 @@ export default (function () {
    * @return {Stamp} The Stampit-flavoured stamp
    */
   function stampit(...args) {
-    return compose(this, { staticProperties }, ...args.map(standardiseDescriptor));
+    return compose(this, { staticProperties: additionalStaticProperties }, ...args.map(standardiseDescriptor));
   }
-
-  Object.entries(allUtilities).forEach(([name, func]) => (allUtilities[name] = func.bind(stampit)));
-
-  assignOne(stampit, allUtilities); // Setting up the shortcut functions. It must not have the `.create()` in it.
 
   stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
 

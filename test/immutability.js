@@ -22,10 +22,7 @@ test("Basic stamp immutability", (t) => {
   t.equal(stamp1.compose.properties.s.deep, stamp2.compose.properties.s.deep);
   t.notEqual(stamp1.compose.deepProperties, stamp2.compose.properties);
   t.notEqual(stamp1.compose.deepProperties.p, stamp2.compose.deepProperties.p);
-  t.notEqual(
-    stamp1.compose.deepProperties.p.deep,
-    stamp2.compose.deepProperties.p.deep,
-  );
+  t.notEqual(stamp1.compose.deepProperties.p.deep, stamp2.compose.deepProperties.p.deep);
   t.notEqual(stamp1.compose.initializers, stamp2.compose.initializers);
 
   t.end();

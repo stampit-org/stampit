@@ -25,26 +25,6 @@ test("Stamp deepProps deep cloned for object created", (t) => {
   t.end();
 });
 
-test("stampit.deepProps(deepProps) deep merge into stamp", (t) => {
-  const stamp = stampit()
-    .deepProps({ deep: { foo: "foo", bar: "bar" }, foo: "foo", bar: "bar" })
-    .deepProps({
-      deep: { foo: "override", baz: "baz" },
-      foo: "override",
-      baz: "baz",
-    });
-  const o = stamp();
-
-  t.equal(o.foo, "override");
-  t.equal(o.bar, "bar");
-  t.equal(o.baz, "baz");
-  t.equal(o.deep.foo, "override");
-  t.equal(o.deep.bar, "bar");
-  t.equal(o.deep.baz, "baz");
-
-  t.end();
-});
-
 test("stamp.compose() deep merge deepProps", (t) => {
   const stamp = stampit({
     deepProps: {
@@ -76,7 +56,7 @@ test("stamp.compose() deep merge deepProps", (t) => {
 });
 
 test("stamp.compose() deep merge bad deepProps", (t) => {
-  const stamp = stampit.compose(
+  const stamp = stampit().compose(
     {
       deepProperties: null,
     },

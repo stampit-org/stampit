@@ -35,67 +35,6 @@ test("stampit().compose()", (t) => {
   t.end();
 });
 
-test("stampit.compose()", (t) => {
-  const a = stampit({
-    methods: {
-      methodA() {
-        return true;
-      },
-    },
-    init() {
-      const secret = "a";
-      this.getA = () => {
-        return secret;
-      };
-    },
-    props: { propA: "1" },
-  });
-  const b = stampit({
-    methods: {
-      methodB() {
-        return true;
-      },
-    },
-    init() {
-      const secret = true;
-      this.getB = () => {
-        return secret;
-      };
-    },
-    props: { propB: "1" },
-  });
-  const c = stampit({
-    methods: {
-      methodC() {
-        return true;
-      },
-    },
-    init() {
-      const secret = true;
-      this.getC = () => {
-        return secret;
-      };
-    },
-    props: { propC: "1" },
-  });
-  const d = stampit.compose(a, b, c).create();
-
-  t.ok(
-    d.methodA &&
-      d.getA &&
-      d.propA &&
-      d.methodB &&
-      d.getB &&
-      d.propB &&
-      d.methodC &&
-      d.getC &&
-      d.propC,
-    "Should compose all factory prototypes",
-  );
-
-  t.end();
-});
-
 test("stampit().compose() with extended descriptors", (t) => {
   const stamp = stampit().compose({
     props: { a: 1 },
@@ -114,10 +53,7 @@ test("stampit().compose() with extended descriptors", (t) => {
   t.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
   t.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
   t.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
-  t.ok(
-    d.initializers.length === 1 && typeof d.initializers[0] === "function",
-    'should compose "init"',
-  );
+  t.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
 
   t.end();
 });
@@ -140,10 +76,7 @@ test("stampit().compose() with extended stamps", (t) => {
   t.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
   t.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
   t.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
-  t.ok(
-    d.initializers.length === 1 && typeof d.initializers[0] === "function",
-    'should compose "init"',
-  );
+  t.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
 
   t.end();
 });
@@ -173,10 +106,7 @@ test("stampit().compose() with extended stamps and descriptors", (t) => {
   t.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
   t.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
   t.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
-  t.ok(
-    d.initializers.length === 1 && typeof d.initializers[0] === "function",
-    'should compose "init"',
-  );
+  t.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
 
   t.end();
 });
