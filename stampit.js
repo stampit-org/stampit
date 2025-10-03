@@ -358,11 +358,6 @@ export default (function () {
   additionalStaticProperties.conf = additionalStaticProperties.configuration;
   additionalStaticProperties.deepConf = additionalStaticProperties.deepConfiguration;
 
-  // Add one more method to the statics. Most importantly - we have to clone the `additionalStaticProperties` object as it will be mutated below.
-  const staticProperties = {
-    ...additionalStaticProperties,
-  };
-
   /**
    * Infected compose
    * Parameters:  {...Composable} The list of composables.
