@@ -8,7 +8,9 @@
     "url": "git@github.com:stampit-org/stampit.git"
   },
   "type": "module",
-  "main": "stampit.js",
+  "exports": {
+    ".": "./stampit.js"
+  },
   "types": "stampit.d.ts",
   "license": "MIT",
   "files": [
