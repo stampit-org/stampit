@@ -1,0 +1,105 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import stampit from "../stampit.js";
+
+describe("compose", () => {
+  it("stampit().compose()", () => {
+    let closuresCalled = 0;
+    const a = stampit({
+      methods: {
+        method() {
+          return false;
+        },
+      },
+      init() {
+        closuresCalled += 1;
+      },
+      props: { prop: false },
+    });
+    const b = stampit({
+      methods: {
+        method() {
+          return true;
+        },
+      },
+      init() {
+        closuresCalled += 1;
+      },
+      props: { prop: true },
+    });
+    const d = a.compose(b).create();
+
+    assert.ok(d.method() && d.prop, "Last stamp must win.");
+    assert.equal(closuresCalled, 2, "Each stamp closure must be called.");
+  });
+
+  it("stampit().compose() with extended descriptors", () => {
+    const stamp = stampit().compose({
+      props: { a: 1 },
+      init() {},
+      deepProps: { a: 1 },
+      statics: { a: 1 },
+      deepStatics: { a: 1 },
+      conf: { a: 1 },
+      deepConf: { a: 1 },
+    });
+    const d = stamp.compose;
+
+    assert.deepEqual(d.properties, { a: 1 }, 'should compose "props"');
+    assert.deepEqual(d.deepProperties, { a: 1 }, 'should compose "deepProps"');
+    assert.equal(d.staticProperties.a, 1, 'should compose "statics"');
+    assert.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
+    assert.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
+    assert.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
+    assert.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
+  });
+
+  it("stampit().compose() with extended stamps", () => {
+    const stamp = stampit().compose({
+      props: { a: 1 },
+      init() {},
+      deepProps: { a: 1 },
+      statics: { a: 1 },
+      deepStatics: { a: 1 },
+      conf: { a: 1 },
+      deepConf: { a: 1 },
+    });
+    const d = stampit().compose(stamp).compose;
+
+    assert.deepEqual(d.properties, { a: 1 }, 'should compose "props"');
+    assert.deepEqual(d.deepProperties, { a: 1 }, 'should compose "deepProps"');
+    assert.equal(d.staticProperties.a, 1, 'should compose "statics"');
+    assert.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
+    assert.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
+    assert.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
+    assert.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
+  });
+
+  it("stampit().compose() with extended stamps and descriptors", () => {
+    const stamp1 = stampit({
+      props: { a: 1 },
+    });
+    const stamp2 = stampit().compose({
+      props: { b: 1 },
+    });
+    const descriptor1 = {
+      init() {},
+    };
+    const descriptor2 = {
+      deepProps: { a: 1 },
+      statics: { a: 1 },
+      deepStatics: { a: 1 },
+      conf: { a: 1 },
+      deepConf: { a: 1 },
+    };
+    const d = stampit().compose(stamp1, descriptor1, stamp2, descriptor2).compose;
+
+    assert.deepEqual(d.properties, { a: 1, b: 1 }, 'should compose "props"');
+    assert.deepEqual(d.deepProperties, { a: 1 }, 'should compose "deepProps"');
+    assert.equal(d.staticProperties.a, 1, 'should compose "statics"');
+    assert.deepEqual(d.staticDeepProperties, { a: 1 }, 'should compose "deepStatics"');
+    assert.deepEqual(d.configuration, { a: 1 }, 'should compose "conf"');
+    assert.deepEqual(d.deepConfiguration, { a: 1 }, 'should compose "deepConf"');
+    assert.ok(d.initializers.length === 1 && typeof d.initializers[0] === "function", 'should compose "init"');
+  });
+});

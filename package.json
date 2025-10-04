@@ -20,26 +20,22 @@
   ],
   "scripts": {
     "cov": "npx --yes c8 --reporter html node --run test && open ./coverage/index.html",
-    "test": "node --run build && node ./test/index.js && node test/benchmark/index.js",
+    "test": "node --test \"test/*.test.js\"",
+    "test:benchmark": "node --run build && node --test \"test/benchmark/*.test.js\"",
     "lint": "oxlint --ignore-pattern='*.ts'",
     "build": "rm -rf ./out stampit.min.js && node --run minify && node --run replace-version",
     "replace-version": "replace-in-file VERSION `node -e 'process.stdout.write(require(\"./package\").version)'` ./stampit.min.js",
-    "ci": "node --run test && node --run lint",
-    "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js",
-    "preversion": "node --run ci",
-    "postversion": "node --run build"
+    "ci": "node --run test && node --run lint && node --run test:benchmark",
+    "minify": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "c8": "^10.1.3",
     "check-compose": "^5.1.0",
     "gzip-size-cli": "^5.1.0",
     "lodash": "^4.17.21",
     "oxlint": "^1.16.0",
     "prettier": "^3.3.3",
     "replace-in-file": "^8.2.0",
-    "tape": "^4.11.0",
-    "typescript": "^5.6.3",
     "uglify-js": "^3.13.3"
   },
   "authors": [

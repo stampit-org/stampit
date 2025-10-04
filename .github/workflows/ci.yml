@@ -21,6 +21,6 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run ci
+          node --run ci
         env:
           CI: true
