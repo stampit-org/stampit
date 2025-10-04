@@ -70,21 +70,5 @@
     "class",
     "stamp",
     "mixin"
-  ],
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "commonjs": true,
-      "es6": true,
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaVersion": 2023
-    },
-    "rules": {
-      "no-prototype-builtins": 0
-    }
-  }
+  ]
 }
