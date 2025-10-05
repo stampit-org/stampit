@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import stampit from "../../stampit.min.js"; // Need to test the distributable
+import stampit from "../../stampit.js";
 
 import Benchmark from "benchmark";
 

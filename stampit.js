@@ -311,7 +311,7 @@ export default (function () {
     return out;
   }
 
-  const additionalStaticProperties = {
+  const staticUtils = {
     methods(...args) {
       return this.compose({ methods: assign({}, ...args) });
     },
@@ -350,13 +350,13 @@ export default (function () {
     },
     compose: stampit, // infecting!
   };
-  additionalStaticProperties.props = additionalStaticProperties.properties;
-  additionalStaticProperties.init = additionalStaticProperties.initializers;
-  additionalStaticProperties.deepProps = additionalStaticProperties.deepProperties;
-  additionalStaticProperties.statics = additionalStaticProperties.staticProperties;
-  additionalStaticProperties.deepStatics = additionalStaticProperties.staticDeepProperties;
-  additionalStaticProperties.conf = additionalStaticProperties.configuration;
-  additionalStaticProperties.deepConf = additionalStaticProperties.deepConfiguration;
+  staticUtils.props = staticUtils.properties;
+  staticUtils.init = staticUtils.initializers;
+  staticUtils.deepProps = staticUtils.deepProperties;
+  staticUtils.statics = staticUtils.staticProperties;
+  staticUtils.deepStatics = staticUtils.staticDeepProperties;
+  staticUtils.conf = staticUtils.configuration;
+  staticUtils.deepConf = staticUtils.deepConfiguration;
 
   /**
    * Infected compose
@@ -364,10 +364,8 @@ export default (function () {
    * @return {Stamp} The Stampit-flavoured stamp
    */
   function stampit(...args) {
-    return compose(this, { staticProperties: additionalStaticProperties }, ...args.map(standardiseDescriptor));
+    return compose(this, { staticProperties: staticUtils }, ...args.map(standardiseDescriptor));
   }
-
-  stampit.version = "VERSION"; // This will be replaced at the build time with the proper version taken from the package.json
 
   return stampit;
 })();

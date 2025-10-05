@@ -355,11 +355,7 @@ declare namespace stampit {
 
   /** A function which creates a new `Stamp`s from a list of `Composable`s. */
   const compose: ComposeMethod;
-
-  /** the version of the NPM `stampit` package. */
-  const version: string;
 }
 export const compose: typeof stampit.compose;
-export const version: typeof stampit.version;
 // tslint:disable-next-line: npm-naming
 export default stampit;
