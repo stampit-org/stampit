@@ -18,7 +18,7 @@
     "stampit.d.ts"
   ],
   "scripts": {
-    "cov": "npx --yes c8 --reporter html node --run test && open ./coverage/index.html",
+    "cov": "c8 --reporter html node --run test && open ./coverage/index.html",
     "test": "node --test \"test/*.test.js\" && node --run size",
     "test:benchmark": "node --test \"test/benchmark/*.test.js\"",
     "lint": "oxlint --ignore-pattern='*.ts'",
@@ -27,12 +27,11 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
+    "c8": "^10.1.3",
     "check-compose": "^5.1.0",
     "gzip-size-cli": "^5.1.0",
-    "lodash": "^4.17.21",
-    "oxlint": "^1.16.0",
+    "oxlint": "^1.19.0",
     "prettier": "^3.3.3",
-    "replace-in-file": "^8.2.0",
     "uglify-js": "^3.13.3"
   },
   "authors": [

@@ -1,7 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import stampit from "../stampit.js";
-import _ from "lodash";
 
 describe("infected statics", () => {
   it("stampit().methods static method", () => {
@@ -9,7 +8,7 @@ describe("infected statics", () => {
     const stamp1 = stampit({ methods: methods });
     const stamp2 = stampit().methods(methods);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit().init static method", () => {
@@ -17,7 +16,7 @@ describe("infected statics", () => {
     const stamp1 = stampit({ init: init });
     const stamp2 = stampit().init(init);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit().props static method", () => {
@@ -25,7 +24,7 @@ describe("infected statics", () => {
     const stamp1 = stampit({ props: props });
     const stamp2 = stampit().props(props);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit().statics static method", () => {
@@ -33,7 +32,7 @@ describe("infected statics", () => {
     const stamp1 = stampit({ statics: statics });
     const stamp2 = stampit().statics(statics);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit().propertyDescriptors static method", () => {
@@ -41,7 +40,7 @@ describe("infected statics", () => {
     const stamp1 = stampit({ propertyDescriptors: propertyDescriptors });
     const stamp2 = stampit().propertyDescriptors(propertyDescriptors);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit().staticPropertyDescriptors static method", () => {
@@ -51,7 +50,7 @@ describe("infected statics", () => {
     });
     const stamp2 = stampit().staticPropertyDescriptors(staticPropertyDescriptors);
 
-    assert.deepEqual(_.toPlainObject(stamp1.compose), _.toPlainObject(stamp2.compose));
+    assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
   });
 
   it("stampit() can be infected", () => {
