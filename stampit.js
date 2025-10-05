@@ -11,9 +11,9 @@ function isPlainObject(value) {
 }
 
 /**
- * Returns true if argument is a stamp.
+ * Returns true if argument is a Stamp.
  * @param {*} obj Any object
- * @returns {Boolean} True is the obj is a stamp
+ * @returns {Boolean} True is the obj is a Stamp
  */
 function isStamp(obj) {
   return isFunction(obj) && isFunction(obj.compose);
@@ -100,7 +100,7 @@ function createEmptyStamp() {
     const descriptor = Stamp.compose || {};
 
     // Next line was optimized for most JS VMs. Please, be careful here!
-    // The instance of this stamp
+    // The instance of this Stamp
     let instance = descriptor.methods ? Object.create(descriptor.methods) : {};
 
     mergeOne(instance, descriptor.deepProperties);
@@ -112,7 +112,7 @@ function createEmptyStamp() {
     if (!Array.isArray(inits) || inits.length === 0) return instance;
 
     // The spec. says that the first argument to every initializer must be an
-    // empty object if nothing else was given when a stamp was called: Stamp()
+    // empty object if nothing else was given when a Stamp was called: Stamp()
     if (options === undefined) options = {};
 
     for (let i = 0, initializer, returnedValue; i < inits.length; ) {
@@ -131,7 +131,7 @@ function createEmptyStamp() {
  * Mutates the dstDescriptor by merging the srcComposable data into it.
  * @param {Descriptor} dstDescriptor The descriptor object to merge into.
  * @param {Composable} [srcComposable] The composable
- * (either descriptor or stamp) to merge data form.
+ * (either descriptor or Stamp) to merge data form.
  * @returns {Descriptor} Returns the dstDescriptor argument.
  */
 function mergeComposable(dstDescriptor, srcComposable) {
@@ -169,11 +169,11 @@ function mergeComposable(dstDescriptor, srcComposable) {
 }
 
 /**
- * Given the list of composables (stamp descriptors and stamps) returns
- * a new stamp (composable factory function).
+ * Given the list of composables (Stamp descriptors and stamps) returns
+ * a new Stamp (composable factory function).
  * @typedef {Function} Compose
- * Parameters:  {...Composable} The list of composables.
- * @returns {Stamp} A new stamp (aka composable factory function)
+ * @param {...Composable} args The list of composables (aka plain objects and/or other stamps)
+ * @returns {Stamp} A new Stamp (aka composable factory function)
  */
 function compose(...args) {
   // "Composable" is both Descriptor and Stamp.
@@ -208,7 +208,7 @@ function compose(...args) {
 /**
  * The Stamp Descriptor
  * @typedef {Function|Object} Descriptor
- * @returns {Stamp} A new stamp based on this Stamp
+ * @returns {Stamp} A new Stamp based on this Stamp
  * @property {Object} [methods] Methods or other data used as object instances' prototype
  * @property {Array<Function>} [initializers] List of initializers called for each object instance
  * @property {Object} [properties] Shallow assigned properties of object instances
@@ -229,7 +229,7 @@ function compose(...args) {
  */
 
 /**
- * A composable object - stamp or descriptor
+ * A composable object - Stamp or descriptor
  * @typedef {Stamp|Descriptor} Composable
  */
 
@@ -353,9 +353,9 @@ staticUtils.conf = staticUtils.configuration;
 staticUtils.deepConf = staticUtils.deepConfiguration;
 
 /**
- * Infected compose
- * Parameters:  {...Composable} The list of composables.
- * @return {Stamp} The Stampit-flavoured stamp
+ * Create and return a Stamp.
+ * @param {...Composable} args The list of composables (aka plain objects and/or other stamps)
+ * @return {Stamp} The stampit-flavoured Stamp
  */
 export default function stampit(...args) {
   return compose(this, { staticProperties: staticUtils }, ...args.map(standardiseDescriptor));
