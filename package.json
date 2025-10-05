@@ -1,6 +1,6 @@
 {
   "name": "stampit",
-  "version": "5.0.5-next",
+  "version": "5.0.0",
   "description": "Create objects from reusable, composable behaviors.",
   "homepage": "https://stampit.js.org",
   "repository": {
