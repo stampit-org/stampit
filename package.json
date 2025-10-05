@@ -23,7 +23,7 @@
     "test:benchmark": "node --test \"test/benchmark/*.test.js\"",
     "lint": "oxlint --ignore-pattern='*.ts'",
     "ci": "node --run test && node --run lint && node --run test:benchmark",
-    "size": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && ls -l ./stampit.min.js && echo GZIP size: && gzip-size --raw ./stampit.min.js && rm ./stampit.min.js"
+    "size": "uglifyjs ./stampit.js -c collapse_vars,evaluate=false,unsafe,loops=false,keep_fargs=false,pure_getters,unused,dead_code,keep_fnames=[\"'stampit','Stamp'\"] -m reserved=['stampit','Stamp'] -o ./stampit.min.js && echo 'min.js -> min.js.gz:' && gzip-size --raw --include-original ./stampit.min.js && rm ./stampit.min.js"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
