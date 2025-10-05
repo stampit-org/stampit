@@ -3,6 +3,12 @@ import assert from "node:assert/strict";
 import stampit from "../stampit.js";
 
 describe("basics", () => {
+  it("should be named function", async () => {
+    assert.ok(typeof stampit === "function");
+    assert.equal(stampit.name, "stampit");
+    assert.equal(stampit().name, "Stamp");
+  });
+
   it(".create()", () => {
     const stamp = stampit({
       methods: {
