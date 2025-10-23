@@ -6,8 +6,7 @@ const require = createRequire(import.meta.url);
 
 describe("import", () => {
   it('infection works using the require("stampit")', () => {
-    const obj = require("../stampit.js")
-      .default()
+    const obj = require("../stampit.js")()
       .init(function () {
         const secret = "foo";
         this.getSecret = () => {

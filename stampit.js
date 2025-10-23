@@ -360,3 +360,5 @@ staticUtils.deepConf = staticUtils.deepConfiguration;
 export default function stampit(...args) {
   return compose(this, { staticProperties: staticUtils }, ...args.map(standardiseDescriptor));
 }
+
+export { stampit as "module.exports" };
