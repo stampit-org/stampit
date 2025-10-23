@@ -6,7 +6,7 @@
 
 **Create objects from reusable, composable behaviors**
 
-Stampit is a **1.2KB** gzipped (or 4K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
+Stampit is a **1.3KB** gzipped (or 4.8K minified) JavaScript module which supports three different kinds of prototypal inheritance (delegation, concatenation, and functional) to let you inherit behavior in a way that is much more powerful and flexible than any other Object Oriented Programming model.
 
 Stamps are [standardised](https://github.com/stampit-org/stamp-specification) composable factory functions. **Stampit** is a handy implementation of the specification featuring friendly API.
 
