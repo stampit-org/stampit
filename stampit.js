@@ -24,6 +24,28 @@ function getOwnPropertyKeys(obj) {
 }
 
 /**
+ * Returns `undefined` if the prop was assigned. Otherwise, returns the JS property descriptor of the `src[key]`
+ * @param dst destination object
+ * @param src source object
+ * @param key the key to copy from src to dst
+ * @return {PropertyDescriptor|undefined} The `undefined` will be returned if the prop does not need to be copied.
+ */
+function defineProp(dst, src, key) {
+  const desc = Object.getOwnPropertyDescriptor(src, key);
+  // is this a regular property?
+  if (desc.hasOwnProperty("value")) {
+    // Do not merge properties with the 'undefined' value.
+    if (desc.value !== undefined) {
+      return desc;
+    }
+  } else {
+    // nope, it looks like a getter/setter
+    // Make it rewritable because two stamps can have same named getter/setter
+    Object.defineProperty(dst, key, desc);
+  }
+}
+
+/**
  * Unlike Object.assign(), our assign() copies symbols, getters and setters.
  * @param {Object} dst Must be an object. Otherwise throws.
  * @param {Object} [src] Can be falsy
@@ -33,9 +55,8 @@ function assignOne(dst, src) {
   if (src) {
     // We need to copy regular props, symbols, getters and setters.
     for (const key of getOwnPropertyKeys(src)) {
-      const desc = Object.getOwnPropertyDescriptor(src, key);
-      // Make it rewritable because two stamps can have same named getter/setter
-      Object.defineProperty(dst, key, desc);
+      const srcValueDesc = defineProp(dst, src, key);
+      if (srcValueDesc) dst[key] = srcValueDesc.value;
     }
   }
   return dst;
@@ -63,19 +84,13 @@ function mergeOne(dst, src) {
   if (!isPlainObject(src)) return src;
 
   for (const key of getOwnPropertyKeys(src)) {
-    const desc = Object.getOwnPropertyDescriptor(src, key);
-    if (desc.hasOwnProperty("value")) {
-      // is this a regular property?
-      // Do not merge properties with the 'undefined' value.
-      if (desc.value !== undefined) {
-        // deep merge each property. Recursion!
-        dst[key] = mergeOne(isPlainObject(dst[key]) || Array.isArray(src[key]) ? dst[key] : {}, src[key]);
-      }
-    } else {
-      // nope, it looks like a getter/setter
-      // Make it rewritable because two stamps can have same named getter/setter
-      Object.defineProperty(dst, key, desc);
-    }
+    const srcValueDesc = defineProp(dst, src, key);
+    if (srcValueDesc)
+      // deep merge each property. Recursion!
+      dst[key] = mergeOne(
+        isPlainObject(dst[key]) || Array.isArray(srcValueDesc.value) ? dst[key] : {},
+        srcValueDesc.value,
+      );
   }
 
   return dst;

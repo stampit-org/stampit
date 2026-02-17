@@ -23,6 +23,7 @@ describe("props", () => {
         deep: { foo: "1", bar: "1" },
         foo: "1",
         bar: "1",
+        defined: true,
       },
     }).compose(
       stampit({
@@ -30,6 +31,7 @@ describe("props", () => {
           deep: { foo: "override", baz: "baz" },
           foo: "override",
           baz: "baz",
+          defined: undefined,
         },
       }),
     );
@@ -41,5 +43,6 @@ describe("props", () => {
     assert.equal(o.deep.foo, "override");
     assert.equal(o.deep.bar, undefined);
     assert.equal(o.deep.baz, "baz");
+    assert.ok(o.defined, true);
   });
 });
