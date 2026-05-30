@@ -34,7 +34,7 @@ function defineProp(dst, src, key) {
   const desc = Object.getOwnPropertyDescriptor(src, key);
   // is this a regular property?
   if (desc.hasOwnProperty("value")) {
-    // Do not merge properties with the 'undefined' value.
+    // Ignore properties if the existing src prop value is 'undefined'.
     if (desc.value !== undefined) {
       return desc;
     }
