@@ -19,3 +19,9 @@ node_modules
 .npmrc
 .nyc_output
 coverage
+
+# Build artifacts (generated from stampit.ts by `npm run build`)
+/stampit.js
+/stampit.d.ts
+/stampit.min.js
+*.tsbuildinfo

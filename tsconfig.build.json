@@ -1,0 +1,13 @@
+{
+  // Build config: emits the shippable `stampit.js` and `stampit.d.ts`
+  // (next to the source) from `stampit.ts`. Run via `npm run build`.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "allowImportingTsExtensions": false,
+    "lib": ["es2020"]
+    // No outDir: emit `stampit.js` + `stampit.d.ts` next to the source.
+  },
+  "include": ["stampit.ts"]
+}
