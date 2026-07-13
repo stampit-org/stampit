@@ -1,0 +1,21 @@
+{
+  // Project config: type-checks the source AND the type-level tests.
+  // The editor uses this. `tsconfig.build.json` extends it to emit the
+  // shippable `stampit.js` + `stampit.d.ts` from `stampit.ts`.
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2020", "dom"],
+    "types": [],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["stampit.ts", "test/types.test-d.ts"]
+}
