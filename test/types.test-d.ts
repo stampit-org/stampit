@@ -277,13 +277,9 @@ const expectType =
     ],
   });
 
-  /**
-   * Adds `myObject.config` to your object instances.
-   */
+  /** Adds `myObject.config` to your object instances. */
   const HasConfig = stampit({
-    props: {
-      config: { env: "local" },
-    },
+    props: { config: { env: "local" } },
     init({ config }) {
       this.config = config || this.config;
     },
@@ -299,15 +295,11 @@ const expectType =
     error(...args: any[]): void;
   }
 
-  /**
-   * Adds MyService.getInstance() singleton getter.
-   */
+  /** Adds MyService.getInstance() singleton getter. */
   const Singleton2 = stampit(HasConfig).statics({
     instance: null as unknown,
 
-    /**
-     * Returns the singleton instance of the service
-     */
+    /** Returns the singleton instance of the service */
     getInstance(...args: any[]) {
       this.instance = this.instance || this.create(...args);
       // `ReturnType<typeof this>` is the type of `this()` — the instance.
@@ -315,13 +307,9 @@ const expectType =
     },
   });
 
-  /**
-   * Adds `myObject.log` logger to your object instances.
-   */
+  /** Adds `myObject.log` logger to your object instances. */
   const HasLog = stampit({
-    props: {
-      log: undefined as unknown as Logger,
-    },
+    props: { log: undefined as unknown as Logger },
     init(_, { stamp }) {
       if (this.log) return; // logger already exists
       if (stamp.name === "Stamp") throw new Error("Couldn't initialize logger. No name was given.");
@@ -341,6 +329,7 @@ const expectType =
   }).statics({
     /**
      * All log actions become No-Op. Used heavily in unit tests.
+     *
      * @returns {this}
      */
     silenceLogging() {
@@ -350,32 +339,30 @@ const expectType =
   });
 
   /**
-   * The shape of a service descriptor: just an `ExtendedDescriptor` plus a
-   * `dependencies` factory. It stays a plain property bag — the method-map
-   * capture and `this` typing are applied in the `service` function signatures
-   * below (where inference belongs), not here.
+   * The shape of a service descriptor: just an `ExtendedDescriptor` plus a `dependencies` factory. It stays a plain
+   * property bag — the method-map capture and `this` typing are applied in the `service` function signatures below
+   * (where inference belongs), not here.
+   *
    * @template D The dependencies object (what `dependencies()` returns).
    */
   interface ServiceDescriptor<D extends object> extends ExtendedDescriptor {
     /**
-     * Dependencies — either a lazy factory returning them, or the object itself
-     * (the `init` calls it if it's a function). Each key is injected as an
-     * instance property at runtime.
+     * Dependencies — either a lazy factory returning them, or the object itself (the `init` calls it if it's a
+     * function). Each key is injected as an instance property at runtime.
      */
     dependencies?: (() => D) | D;
   }
 
   /**
-   * Reflects the dependency object `D` onto a service stamp's INSTANCE type. The
-   * Service `init` assigns each `dependencies()` key onto the instance at runtime,
-   * but they travel via `configuration`, so the static `compose(...)` return type
-   * cannot infer them — we add them to the instance (keeping the statics `S`) here.
+   * Reflects the dependency object `D` onto a service stamp's INSTANCE type. The Service `init` assigns each
+   * `dependencies()` key onto the instance at runtime, but they travel via `configuration`, so the static
+   * `compose(...)` return type cannot infer them — we add them to the instance (keeping the statics `S`) here.
    */
   type WithDeps<St, D extends object> = St extends Stamp<infer I, infer S> ? Stamp<I & D, S> : never;
 
   /**
-   * The dependency object of a service descriptor — whether `dependencies` is a
-   * factory (`() => D`) or the object `D` itself.
+   * The dependency object of a service descriptor — whether `dependencies` is a factory (`() => D`) or the object `D`
+   * itself.
    */
   type DepsOf<T> = T extends { dependencies?: infer Dep }
     ? Dep extends (...args: any[]) => infer R
@@ -389,6 +376,7 @@ const expectType =
 
   /**
    * This is the base for your services.
+   *
    * @function
    */
   const Service = stampit(HasConfig, HasLog, Singleton2, CanDoInstanceOf, {
@@ -408,13 +396,12 @@ const expectType =
     },
   }).statics({
     /**
-     * Creates a new Service stamp from a `ServiceDescriptor` — conceptually the
-     * same as `stampit(...)`, just specialised to compose onto the `Service` base
-     * and stash `dependencies` into `configuration`. Generic over the whole
-     * descriptor type `Desc` (so `this.compose(...)` folds the descriptor's
-     * methods/props into the instance precisely), with each method's `this` typed
-     * as the dependency object. Defined with `.statics({...})` so that `this` here
-     * is the whole Service Stamp (needed for `this.compose(...)`).
+     * Creates a new Service stamp from a `ServiceDescriptor` — conceptually the same as `stampit(...)`, just
+     * specialised to compose onto the `Service` base and stash `dependencies` into `configuration`. Generic over the
+     * whole descriptor type `Desc` (so `this.compose(...)` folds the descriptor's methods/props into the instance
+     * precisely), with each method's `this` typed as the dependency object. Defined with `.statics({...})` so that
+     * `this` here is the whole Service Stamp (needed for `this.compose(...)`).
+     *
      * @param descriptor Service descriptor; `name` is mandatory.
      */
     service<Desc extends ServiceDescriptor<object>>(descriptor: Desc & ThisType<DepsOf<Desc>>) {
@@ -426,6 +413,7 @@ const expectType =
 
   /**
    * Utility function to pre-setup your service.
+   *
    * @param descriptor.name {String} Your service name. Required. Used in logger.
    * @param [descriptor.dependencies] {Function} Lazy factory returning the dependencies object.
    * @returns {Function}

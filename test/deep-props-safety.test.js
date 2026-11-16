@@ -25,11 +25,7 @@ describe("deep props safety", () => {
 
   it("stamp.compose() deep merge deepProps", () => {
     const stamp = stampit({
-      deepProps: {
-        deep: { foo: "foo", bar: "bar", NULL: null, ZERO: 0 },
-        foo: "foo",
-        bar: "bar",
-      },
+      deepProps: { deep: { foo: "foo", bar: "bar", NULL: null, ZERO: 0 }, foo: "foo", bar: "bar" },
     }).compose(
       stampit({
         deepProps: {
@@ -53,9 +49,7 @@ describe("deep props safety", () => {
 
   it("stamp.compose() deep merge bad deepProps", () => {
     const stamp = stampit().compose(
-      {
-        deepProperties: null,
-      },
+      { deepProperties: null },
       {
         deepProps: {
           deep: { foo: "override", baz: "baz", NULL: "STRING", ZERO: "STRING" },

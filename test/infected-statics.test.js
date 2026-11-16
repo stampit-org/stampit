@@ -45,9 +45,7 @@ describe("infected statics", () => {
 
   it("stampit().staticPropertyDescriptors static method", () => {
     const staticPropertyDescriptors = { x: { writable: true } };
-    const stamp1 = stampit({
-      staticPropertyDescriptors: staticPropertyDescriptors,
-    });
+    const stamp1 = stampit({ staticPropertyDescriptors: staticPropertyDescriptors });
     const stamp2 = stampit().staticPropertyDescriptors(staticPropertyDescriptors);
 
     assert.deepEqual({ ...stamp1.compose }, { ...stamp2.compose });
@@ -57,11 +55,7 @@ describe("infected statics", () => {
     let counter = 0;
     const infectedStampit = function (...args) {
       counter += 1;
-      args.push({
-        staticProperties: {
-          compose: infectedStampit,
-        },
-      });
+      args.push({ staticProperties: { compose: infectedStampit } });
 
       return stampit.apply(this, args);
     };

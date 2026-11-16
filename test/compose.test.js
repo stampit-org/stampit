@@ -76,15 +76,9 @@ describe("compose", () => {
   });
 
   it("stampit().compose() with extended stamps and descriptors", () => {
-    const stamp1 = stampit({
-      props: { a: 1 },
-    });
-    const stamp2 = stampit().compose({
-      props: { b: 1 },
-    });
-    const descriptor1 = {
-      init() {},
-    };
+    const stamp1 = stampit({ props: { a: 1 } });
+    const stamp2 = stampit().compose({ props: { b: 1 } });
+    const descriptor1 = { init() {} };
     const descriptor2 = {
       deepProps: { a: 1 },
       statics: { a: 1 },

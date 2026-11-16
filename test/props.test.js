@@ -18,22 +18,8 @@ describe("props", () => {
   });
 
   it("stamp.compose() shallow copy props", () => {
-    const stamp = stampit({
-      props: {
-        deep: { foo: "1", bar: "1" },
-        foo: "1",
-        bar: "1",
-        defined: true,
-      },
-    }).compose(
-      stampit({
-        props: {
-          deep: { foo: "override", baz: "baz" },
-          foo: "override",
-          baz: "baz",
-          defined: undefined,
-        },
-      }),
+    const stamp = stampit({ props: { deep: { foo: "1", bar: "1" }, foo: "1", bar: "1", defined: true } }).compose(
+      stampit({ props: { deep: { foo: "override", baz: "baz" }, foo: "override", baz: "baz", defined: undefined } }),
     );
     const o = stamp();
 

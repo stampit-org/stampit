@@ -26,9 +26,7 @@ describe("property access", () => {
 
     const Entity = stampit({
       methods: { a() {} },
-      deepProps: {
-        components: {},
-      },
+      deepProps: { components: {} },
       init() {
         this.components.position = Position();
         this.components.velocity = Velocity();
@@ -36,18 +34,7 @@ describe("property access", () => {
     });
 
     const stampitEntity = Entity();
-    const normalEntity = {
-      components: {
-        position: {
-          x: 10,
-          y: 10,
-        },
-        velocity: {
-          vy: 10,
-          vx: 10,
-        },
-      },
-    };
+    const normalEntity = { components: { position: { x: 10, y: 10 }, velocity: { vy: 10, vx: 10 } } };
 
     const suite = new Benchmark.Suite();
     const results = [];

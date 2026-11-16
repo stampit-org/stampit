@@ -10,8 +10,8 @@
 type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 /**
- * Shallow object spread at the type level: keys of `R` win over `L`.
- * Mirrors the runtime `assignOne`/`mergeComposable` "last one wins" semantics.
+ * Shallow object spread at the type level: keys of `R` win over `L`. Mirrors the runtime `assignOne`/`mergeComposable`
+ * "last one wins" semantics.
  */
 type Spread<L, R> = Prettify<Omit<L, keyof R> & R>;
 
@@ -41,9 +41,8 @@ interface InitializerContext<I> {
   /** The object instance being produced. Returning a non-`undefined` value replaces it. */
   instance: I;
   /**
-   * A reference to the Stamp producing the instance. Its statics are typed
-   * loosely (`any`) on purpose: pinning them here would make `Stamp` invariant
-   * in `S`, which breaks the common `let X = stampit(...); X = X.statics(...)`
+   * A reference to the Stamp producing the instance. Its statics are typed loosely (`any`) on purpose: pinning them
+   * here would make `Stamp` invariant in `S`, which breaks the common `let X = stampit(...); X = X.statics(...)`
    * reassignment pattern. `stamp()` still returns a precisely-typed instance.
    */
   stamp: Stamp<I, any>;
@@ -53,26 +52,24 @@ interface InitializerContext<I> {
 
 /**
  * A function used as an `.init()` / `.initializers()` argument.
+ *
  * @template I The instance type (`this` and the produced object).
- * @template O The options object this initializer reads (the factory's 1st arg).
- *   Captured from the `initializers` so the produced factory's options type can be
- *   built from them.
+ * @template O The options object this initializer reads (the factory's 1st arg). Captured from the `initializers` so
+ *   the produced factory's options type can be built from them.
  */
 interface Initializer<I = any, O = any> {
   (this: I, options: O, context: InitializerContext<I>): void | I;
 }
 
 /**
- * An initializer as it is written *inside a descriptor literal*
- * (`stampit({ init(options) { … } })`).
+ * An initializer as it is written _inside a descriptor literal_ (`stampit({ init(options) { … } })`).
  *
- * Unlike {@link Initializer}, it declares **no explicit `this`**. That omission is
- * load-bearing: an explicit `this` in a property's declared type overrides the
- * `ThisType<…>` contextual marker, whereas a `this`-less signature lets the
- * `ThisType<InstanceOf<T>>` that `StampitArgs` injects onto the descriptor set
- * `this` to the produced instance. (The chainable `.init(fn)` form can't use this
- * shape — there `fn` is a standalone argument that `ThisType` can't reach, so it
- * needs `Initializer<I, O>`'s explicit `this: I` instead.)
+ * Unlike {@link Initializer}, it declares **no explicit `this`**. That omission is load-bearing: an explicit `this` in
+ * a property's declared type overrides the `ThisType<…>` contextual marker, whereas a `this`-less signature lets the
+ * `ThisType<InstanceOf<T>>` that `StampitArgs` injects onto the descriptor set `this` to the produced instance. (The
+ * chainable `.init(fn)` form can't use this shape — there `fn` is a standalone argument that `ThisType` can't reach, so
+ * it needs `Initializer<I, O>`'s explicit `this: I` instead.)
+ *
  * @template O The options object this initializer reads (the factory's 1st arg).
  */
 interface DescriptorInitializer<O = any> {
@@ -95,12 +92,10 @@ interface Composer<S = any> {
 /**
  * A standard (already-normalised) Stamp descriptor.
  *
- * Per the stamp specification a descriptor is *just data*: a plain bag of the
- * spec's descriptor properties. It deliberately carries NO instance/statics type
- * parameters and NO `this` typing — all type inference lives in the function
- * signatures that consume/produce descriptors (`compose`, `stampit`, and the
- * chainable Stamp methods), never in the descriptor itself. This is also exactly
- * the shape exposed on `Stamp.compose`.
+ * Per the stamp specification a descriptor is _just data_: a plain bag of the spec's descriptor properties. It
+ * deliberately carries NO instance/statics type parameters and NO `this` typing — all type inference lives in the
+ * function signatures that consume/produce descriptors (`compose`, `stampit`, and the chainable Stamp methods), never
+ * in the descriptor itself. This is also exactly the shape exposed on `Stamp.compose`.
  */
 interface Descriptor {
   methods?: object;
@@ -117,9 +112,8 @@ interface Descriptor {
 }
 
 /**
- * The stampit-flavoured descriptor accepted by `stampit(...)`. Same idea as
- * `Descriptor` — a plain property bag — plus stampit's short aliases. Like
- * `Descriptor`, it knows nothing about instance/statics types or `this`.
+ * The stampit-flavoured descriptor accepted by `stampit(...)`. Same idea as `Descriptor` — a plain property bag — plus
+ * stampit's short aliases. Like `Descriptor`, it knows nothing about instance/statics types or `this`.
  */
 interface ExtendedDescriptor extends Descriptor {
   props?: object;
@@ -133,15 +127,15 @@ interface ExtendedDescriptor extends Descriptor {
 }
 
 /**
- * Anything the standard `compose()` accepts — a Stamp or a standard `Descriptor`.
- * Per the spec, a composable is exactly this: it is NOT the extended descriptor.
+ * Anything the standard `compose()` accepts — a Stamp or a standard `Descriptor`. Per the spec, a composable is exactly
+ * this: it is NOT the extended descriptor.
  */
 type Composable = StampSignature | Descriptor;
 
 /**
- * Anything `stampit()` — and a stamp's infected `.compose` — accepts: a Stamp or
- * an `ExtendedDescriptor`. `stampit` standardises these down to `Composable`s
- * (via `standardiseDescriptor`) before delegating to the standard `compose()`.
+ * Anything `stampit()` — and a stamp's infected `.compose` — accepts: a Stamp or an `ExtendedDescriptor`. `stampit`
+ * standardises these down to `Composable`s (via `standardiseDescriptor`) before delegating to the standard
+ * `compose()`.
  */
 type ExtendedComposable = StampSignature | ExtendedDescriptor;
 
@@ -154,10 +148,9 @@ interface StampSignature {
 // --- Extracting `I` and `S` out of an arbitrary composable -------------------
 
 /**
- * Reads `D[K]` if present (including when `K` is an *optional* property),
- * otherwise contributes nothing (`{}`). Using `keyof` rather than
- * `Record<K, infer V>` matters: the `Record` check only matches *required*
- * keys, so an optional `methods?`/`props?` on a descriptor type would be dropped.
+ * Reads `D[K]` if present (including when `K` is an _optional_ property), otherwise contributes nothing (`{}`). Using
+ * `keyof` rather than `Record<K, infer V>` matters: the `Record` check only matches _required_ keys, so an optional
+ * `methods?`/`props?` on a descriptor type would be dropped.
  */
 type Prop<D, K extends PropertyKey> = K extends keyof D ? Exclude<D[K], undefined> : {};
 
@@ -191,10 +184,7 @@ type StaticsOf<T extends readonly unknown[]> = T extends readonly [infer H, ...i
   ? Spread<ComposableStatics<H>, StaticsOf<R>>
   : {};
 
-/**
- * The first (options) parameter type of an initializer function. Falls back to
- * `object` for a non-function / no-init.
- */
+/** The first (options) parameter type of an initializer function. Falls back to `object` for a non-function / no-init. */
 type InitOptions<F> = F extends (options: infer O, ...args: any[]) => any ? O : object;
 
 /** Collapse a union into an intersection (used to merge initializers' option types). */
@@ -203,7 +193,7 @@ type UnionToIntersection<U> = (U extends any ? (x: U) => void : never) extends (
 /** Unwrap an `init`/`initializers` value (a function, or an array of functions) to a union of functions. */
 type InitFns<X> = X extends readonly (infer E)[] ? E : X;
 
-/** Options contributed by each *descriptor* composable's initializers (Stamps contribute none). */
+/** Options contributed by each _descriptor_ composable's initializers (Stamps contribute none). */
 type OptionItems<T extends readonly unknown[]> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any
     ? never
@@ -211,35 +201,30 @@ type OptionItems<T extends readonly unknown[]> = {
 }[number];
 
 /**
- * The merged options object the produced factory accepts: the intersection of
- * every initializer's first (options) argument across ALL composables — so
- * `Stamp({ … })` completes the options' props. `object` when there are none.
+ * The merged options object the produced factory accepts: the intersection of every initializer's first (options)
+ * argument across ALL composables — so `Stamp({ … })` completes the options' props. `object` when there are none.
  */
 type OptionsAll<T extends readonly unknown[]> = [OptionItems<T>] extends [never]
   ? object
   : UnionToIntersection<OptionItems<T>>;
 
 /**
- * Wraps each composable so that, inside a descriptor's `methods`, `this` is the
- * produced instance (`InstanceOf<T>`). `ThisType<…>` is NON-inferential, so the
- * composable tuple `T` still infers cleanly, and intersecting it is safe for Stamp
- * arguments too (a Stamp's chainable members are unaffected by the `{}`-marker).
+ * Wraps each composable so that, inside a descriptor's `methods`, `this` is the produced instance (`InstanceOf<T>`).
+ * `ThisType<…>` is NON-inferential, so the composable tuple `T` still infers cleanly, and intersecting it is safe for
+ * Stamp arguments too (a Stamp's chainable members are unaffected by the `{}`-marker).
  *
- * NOTE: only `methods` get `this` here. A descriptor's `init`/`initializers` are
- * plain functions, whose `this` can only be set by an explicit `this:` parameter
- * (`ThisType` can't reach a standalone function). Doing that in this variadic
- * position would break two common, legitimate cases — an un-annotated
- * `init({ x })` (circular inference → implicit-any) and re-composing a Stamp that
- * has a non-`object` options type — so `this` inside initializers stays loose.
+ * NOTE: only `methods` get `this` here. A descriptor's `init`/`initializers` are plain functions, whose `this` can only
+ * be set by an explicit `this:` parameter (`ThisType` can't reach a standalone function). Doing that in this variadic
+ * position would break two common, legitimate cases — an un-annotated `init({ x })` (circular inference → implicit-any)
+ * and re-composing a Stamp that has a non-`object` options type — so `this` inside initializers stays loose.
  */
 type StampitArgs<T extends readonly unknown[]> = {
   [K in keyof T]: T[K] & ThisType<InstanceOf<T>> & { methods?: ThisType<InstanceOf<T>> };
 };
 
 /**
- * The composition function attached to every Stamp. It is BOTH callable
- * (returns a Stamp merging `this` with the given composables) AND carries the
- * Stamp's metadata (the `Descriptor`).
+ * The composition function attached to every Stamp. It is BOTH callable (returns a Stamp merging `this` with the given
+ * composables) AND carries the Stamp's metadata (the `Descriptor`).
  */
 type ComposeProperty<I, S> = {
   <T extends ExtendedComposable[]>(
@@ -248,12 +233,13 @@ type ComposeProperty<I, S> = {
 } & Descriptor;
 
 /**
- * The chainable methods of a Stamp. Each returns a *new* Stamp type with the
- * added shape merged in, so completion accumulates across the whole chain.
+ * The chainable methods of a Stamp. Each returns a _new_ Stamp type with the added shape merged in, so completion
+ * accumulates across the whole chain.
  *
  * Two overloads each:
- *   1. single object  — precise `this` (via `ThisType`) + precise accumulation.
- *   2. variadic       — `.methods(a, b, …)`, accumulates all args (looser `this`).
+ *
+ * 1. single object — precise `this` (via `ThisType`) + precise accumulation.
+ * 2. variadic — `.methods(a, b, …)`, accumulates all args (looser `this`).
  */
 interface Chainables<I, S> {
   /** Add methods to the instance prototype. Inside the bodies, `this` is the instance. */
@@ -277,10 +263,9 @@ interface Chainables<I, S> {
   deepProps<P extends readonly object[]>(...deepProps: [...P]): Stamp<Prettify<Spread<I, MergeAll<P>>>, S>;
 
   /**
-   * Add static properties to the Stamp. Inside static method bodies, `this` is
-   * the **whole Stamp** — so `this(...)` returns an instance and a cached
-   * singleton field is reachable. This is what makes `Stamp.getInstance()` infer
-   * the instance type.
+   * Add static properties to the Stamp. Inside static method bodies, `this` is the **whole Stamp** — so `this(...)`
+   * returns an instance and a cached singleton field is reachable. This is what makes `Stamp.getInstance()` infer the
+   * instance type.
    */
   staticProperties<St extends object>(
     statics: St & ThisType<Stamp<I, Prettify<Spread<S, St>>>>,
@@ -308,9 +293,8 @@ interface Chainables<I, S> {
   deepStatics<St extends readonly object[]>(...deepStatics: [...St]): Stamp<I, Prettify<Spread<S, MergeAll<St>>>>;
 
   /**
-   * Add initializers. Inside the bodies, `this` is the instance. The initializers'
-   * options type `O` is captured and becomes the produced Stamp's factory options
-   * (so `stamp({ … })` completes those props).
+   * Add initializers. Inside the bodies, `this` is the instance. The initializers' options type `O` is captured and
+   * becomes the produced Stamp's factory options (so `stamp({ … })` completes those props).
    */
   initializers<O = object>(...functions: Array<Initializer<I, O>>): Stamp<I, S, O>;
   initializers<O = object>(functions: Array<Initializer<I, O>>): Stamp<I, S, O>;
@@ -340,22 +324,20 @@ interface Chainables<I, S> {
   staticPropertyDescriptors(...descriptors: PropertyDescriptorMap[]): Stamp<I, S>;
 
   /**
-   * Creates and returns a new instance — identical to calling the Stamp directly.
-   * `create` is NOT part of the bare stamp spec; `stampit` adds it as a static
-   * (via `staticUtils`), so it lives here among the other stampit-provided
+   * Creates and returns a new instance — identical to calling the Stamp directly. `create` is NOT part of the bare
+   * stamp spec; `stampit` adds it as a static (via `staticUtils`), so it lives here among the other stampit-provided
    * statics rather than being hard-coded onto the base Stamp shape.
    */
   create: FactoryFunction<I>;
 }
 
 /**
- * A Stamp: a factory function producing instances of `I`, carrying statics `S`,
- * plus the chainable composition API.
+ * A Stamp: a factory function producing instances of `I`, carrying statics `S`, plus the chainable composition API.
+ *
  * @template I The instance object type the Stamp creates.
  * @template S The statics object type attached to the Stamp.
- * @template O The options object the factory accepts — derived from the
- *   initializers' first argument(s). Defaults to `object`; only the
- *   descriptor-form `stampit({...})` pins it precisely.
+ * @template O The options object the factory accepts — derived from the initializers' first argument(s). Defaults to
+ *   `object`; only the descriptor-form `stampit({...})` pins it precisely.
  */
 type Stamp<I, S, O = object> = FactoryFunction<I, O> &
   Chainables<I, S> &
@@ -373,12 +355,10 @@ interface Stampit {
 }
 
 /**
- * The shape of the shared `staticUtils` object — stampit's built-in chainable
- * methods that are attached as static properties to every Stamp. Each is called
- * with `this` bound to the *parent Stamp* (so `this.compose(...)` is available)
- * and returns a new derived Stamp; `create` returns a new instance of the parent
- * Stamp. These are the *implementation* signatures — the precise,
- * type-accumulating public surface is `Chainables<I, S>` on `Stamp<I, S>`.
+ * The shape of the shared `staticUtils` object — stampit's built-in chainable methods that are attached as static
+ * properties to every Stamp. Each is called with `this` bound to the _parent Stamp_ (so `this.compose(...)` is
+ * available) and returns a new derived Stamp; `create` returns a new instance of the parent Stamp. These are the
+ * _implementation_ signatures — the precise, type-accumulating public surface is `Chainables<I, S>` on `Stamp<I, S>`.
  */
 interface StaticUtilities {
   methods(this: Stamp<any, any>, ...methods: object[]): Stamp<any, any>;
@@ -444,7 +424,8 @@ function isPlainObject(value: any): boolean {
 
 /**
  * Returns true if argument is a Stamp.
- * @param {*} obj Any object
+ *
+ * @param {any} obj Any object
  * @returns {Boolean} True is the obj is a Stamp
  */
 function isStamp(obj: any): boolean {
@@ -456,8 +437,10 @@ function getOwnPropertyKeys(obj: any): Array<string | symbol> {
 }
 
 /**
- * Copies the `src[key]` property (regular prop, getter or setter) to `dst`. Regular props with `undefined` values are skipped.
- * Defines rather than assigns, so getters/setters up the prototype chain and read-only props (e.g. a function's `name`) are overridden instead of throwing.
+ * Copies the `src[key]` property (regular prop, getter or setter) to `dst`. Regular props with `undefined` values are
+ * skipped. Defines rather than assigns, so getters/setters up the prototype chain and read-only props (e.g. a
+ * function's `name`) are overridden instead of throwing.
+ *
  * @param dst destination object
  * @param src source object
  * @param key the key to copy from src to dst
@@ -482,6 +465,7 @@ function defineProp(dst: any, src: any, key: any, shouldMerge: boolean): void {
 
 /**
  * Unlike Object.assign(), our assign() copies symbols, getters and setters.
+ *
  * @param {Object} dst Must be an object. Otherwise throws.
  * @param {Object} [src] Can be falsy
  * @returns {Object} updated 'dst'
@@ -495,12 +479,12 @@ function assignOne(dst: any, src: any): any {
 }
 
 /**
- * Unlike _.merge(), our merge() copies symbols, getters and setters.
- * The 'src' argument plays the command role.
- * The returned values is always of the same type as the 'src'.
- * @param {Array|Object|*} dst Destination
- * @param {Array|Object|*} src Source
- * @returns {Array|Object|*} The `dst` argument
+ * Unlike _.merge(), our merge() copies symbols, getters and setters. The 'src' argument plays the command role. The
+ * returned values is always of the same type as the 'src'.
+ *
+ * @param {Array | Object | any} dst Destination
+ * @param {Array | Object | any} src Source
+ * @returns {Array | Object | any} The `dst` argument
  */
 function mergeOne(dst: any, src: any): any {
   if (src === undefined) return dst;
@@ -531,6 +515,7 @@ function extractUniqueFunctions(...args: any[]): Function[] | undefined {
 
 /**
  * Creates new factory instance.
+ *
  * @returns {Stamp} The new Stamp (factory function).
  */
 function createEmptyStamp(): Stamp<any, any> {
@@ -554,7 +539,7 @@ function createEmptyStamp(): Stamp<any, any> {
     // empty object if nothing else was given when a Stamp was called: Stamp()
     if (options === undefined) options = {};
 
-    for (let i = 0, initializer: Initializer, returnedValue; i < inits.length; ) {
+    for (let i = 0, initializer: Initializer, returnedValue; i < inits.length;) {
       initializer = inits[i++];
       if (isFunction(initializer)) {
         returnedValue = initializer.call(instance, options, { instance, stamp: Stamp, args });
@@ -568,9 +553,9 @@ function createEmptyStamp(): Stamp<any, any> {
 
 /**
  * Mutates the dstDescriptor by merging the srcComposable data into it.
+ *
  * @param {Descriptor} dstDescriptor The descriptor object to merge into.
- * @param {Composable} [srcComposable] The composable
- * (either descriptor or Stamp) to merge data form.
+ * @param {Composable} [srcComposable] The composable (either descriptor or Stamp) to merge data form.
  * @returns {Descriptor} Returns the dstDescriptor argument.
  */
 function mergeComposable(dstDescriptor: Descriptor, srcComposable: Composable): Descriptor {
@@ -608,8 +593,8 @@ function mergeComposable(dstDescriptor: Descriptor, srcComposable: Composable): 
 }
 
 /**
- * Given the list of composables (Stamp descriptors and stamps) returns
- * a new Stamp (composable factory function).
+ * Given the list of composables (Stamp descriptors and stamps) returns a new Stamp (composable factory function).
+ *
  * @typedef {Function} Compose
  * @param {...Composable} args The list of composables (aka plain objects and/or other stamps)
  * @returns {Stamp} A new Stamp (aka composable factory function)
@@ -657,25 +642,10 @@ function compose(this: any, ...args: any[]): any {
 
 /**
  * Converts stampit extended descriptor to a standard one.
- * @param {Object} descr
- * methods
- * properties
- * props
- * initializers
- * init
- * deepProperties
- * deepProps
- * propertyDescriptors
- * staticProperties
- * statics
- * staticDeepProperties
- * deepStatics
- * staticPropertyDescriptors
- * configuration
- * conf
- * deepConfiguration
- * deepConf
- * composers
+ *
+ * @param {Object} descr methods properties props initializers init deepProperties deepProps propertyDescriptors
+ *   staticProperties statics staticDeepProperties deepStatics staticPropertyDescriptors configuration conf
+ *   deepConfiguration deepConf composers
  * @returns {Descriptor} Standardised descriptor
  */
 function standardiseDescriptor(descr: ExtendedDescriptor): Descriptor {
@@ -775,12 +745,11 @@ staticUtils.deepConf = staticUtils.deepConfiguration;
 /**
  * Create and return a Stamp.
  *
- * Per the stamp specification, `stampit` takes a *list of composables* (each an
- * `ExtendedDescriptor` or a Stamp) and returns a new Stamp. `StampitArgs<T>`
- * wraps the arguments so that, inside any descriptor's `methods`/`init`, `this`
- * is the produced instance, and `OptionsAll<T>` derives the factory's options
- * from the initializers — all without `ExtendedDescriptor` itself carrying any
- * `this`/instance typing (it stays a plain bag).
+ * Per the stamp specification, `stampit` takes a _list of composables_ (each an `ExtendedDescriptor` or a Stamp) and
+ * returns a new Stamp. `StampitArgs<T>` wraps the arguments so that, inside any descriptor's `methods`/`init`, `this`
+ * is the produced instance, and `OptionsAll<T>` derives the factory's options from the initializers — all without
+ * `ExtendedDescriptor` itself carrying any `this`/instance typing (it stays a plain bag).
+ *
  * @param {...Composable} args The list of composables (aka plain objects and/or other stamps)
  * @returns {Stamp} The stampit-flavoured Stamp
  */

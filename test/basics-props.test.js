@@ -11,16 +11,8 @@ describe("basics props", () => {
 
   it("stampit().props()", () => {
     const obj = stampit()
-      .props({
-        foo: { bar: "bar" },
-        propsOverride: false,
-        func1() {},
-      })
-      .props({
-        bar: "bar",
-        propsOverride: true,
-        func2() {},
-      })
+      .props({ foo: { bar: "bar" }, propsOverride: false, func1() {} })
+      .props({ bar: "bar", propsOverride: true, func2() {} })
       .create();
 
     assert.equal(obj.foo.bar, "bar", "Should set default props.");
@@ -31,18 +23,8 @@ describe("basics props", () => {
   });
 
   it("stampit({ props }).props()", () => {
-    const obj = stampit({
-      props: {
-        foo: { bar: "bar" },
-        propsOverride: false,
-        func1() {},
-      },
-    })
-      .props({
-        bar: "bar",
-        propsOverride: true,
-        func2() {},
-      })
+    const obj = stampit({ props: { foo: { bar: "bar" }, propsOverride: false, func1() {} } })
+      .props({ bar: "bar", propsOverride: true, func2() {} })
       .create();
 
     assert.equal(obj.foo.bar, "bar", "Should set default props.");
@@ -53,16 +35,7 @@ describe("basics props", () => {
   });
 
   it("stampit().props(a, b)", () => {
-    const obj = stampit()
-      .props(
-        {
-          a: "a",
-        },
-        {
-          b: "b",
-        },
-      )
-      .create();
+    const obj = stampit().props({ a: "a" }, { b: "b" }).create();
 
     assert.ok(obj.a && obj.b, "Should mixIn objects when multiple objects are passed.");
   });

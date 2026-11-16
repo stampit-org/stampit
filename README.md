@@ -18,10 +18,7 @@ Find many more examples in [this series of mini blog posts](https://medium.com/@
 import stampit from "stampit";
 
 const Character = stampit({
-  props: {
-    name: null,
-    health: 100,
-  },
+  props: { name: null, health: 100 },
   init({ name = this.name }) {
     this.name = name;
   },
@@ -29,9 +26,7 @@ const Character = stampit({
 
 const Fighter = Character.compose({
   // inheriting
-  props: {
-    stamina: 100,
-  },
+  props: { stamina: 100 },
   init({ stamina = this.stamina }) {
     this.stamina = stamina;
   },
@@ -45,9 +40,7 @@ const Fighter = Character.compose({
 
 const Mage = Character.compose({
   // inheriting
-  props: {
-    mana: 100,
-  },
+  props: { mana: 100 },
   init({ mana = this.mana }) {
     this.mana = mana;
   },
@@ -93,8 +86,7 @@ See https://stampit.js.org
 
 Prototypal OO is great, and JavaScript's capabilities give us some really powerful tools to explore it, but it could be easier to use.
 
-Basic questions like "how do I inherit privileged methods and private data?" and
-"what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
+Basic questions like "how do I inherit privileged methods and private data?" and "what are some good alternatives to inheritance hierarchies?" are stumpers for many JavaScript users.
 
 Let's answer both of these questions at the same time.
 
@@ -120,9 +112,7 @@ const Availability = stampit({
 
 // Here's a stamp with public methods, and some state:
 const Membership = stampit({
-  props: {
-    members: {},
-  },
+  props: { members: {} },
   methods: {
     add(member) {
       this.members[member.name] = member;
@@ -136,10 +126,7 @@ const Membership = stampit({
 
 // Let's set some defaults:
 const Defaults = stampit({
-  props: {
-    name: "The Saloon",
-    specials: "Whisky, Gin, Tequila",
-  },
+  props: { name: "The Saloon", specials: "Whisky, Gin, Tequila" },
   init({ name, specials }) {
     this.name = name || this.name;
     this.specials = specials || this.specials;

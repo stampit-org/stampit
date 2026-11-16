@@ -17,11 +17,7 @@ describe("basics statics", () => {
   });
 
   it("stampit({statics})", () => {
-    const stamp1 = stampit({
-      statics: {
-        foo: 42,
-      },
-    });
+    const stamp1 = stampit({ statics: { foo: 42 } });
 
     assert.equal(stamp1.foo, 42, "Should accept statics in options.");
   });
@@ -34,34 +30,21 @@ describe("basics statics", () => {
     });
 
     const stamp2 = stampit()
-      .statics({
-        foo() {},
-      })
+      .statics({ foo() {} })
       .compose(stamp1);
 
     assert.equal(stamp2.foo(), "override", "Should override props during composition.");
   });
 
   it("stampit().statics(arg1, arg2)", () => {
-    const stamp1 = stampit().statics(
-      {
-        foo1() {},
-      },
-      {
-        foo2() {},
-      },
-    );
+    const stamp1 = stampit().statics({ foo1() {} }, { foo2() {} });
 
     assert.ok(stamp1.foo1, "Should accept multiple args.");
     assert.ok(stamp1.foo2, "Should accept multiple args.");
   });
 
   it("stampit({statics}).statics()", () => {
-    const stamp1 = stampit({
-      statics: {
-        foo1: "foo1 value",
-      },
-    }).statics({
+    const stamp1 = stampit({ statics: { foo1: "foo1 value" } }).statics({
       foo2() {
         return "foo2 value";
       },
