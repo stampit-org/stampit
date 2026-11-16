@@ -488,7 +488,8 @@ function assignOne(dst: any, src: any): any {
     // We need to copy regular props, symbols, getters and setters.
     for (const key of getOwnPropertyKeys(src)) {
       const srcValueDesc = defineProp(dst, src, key);
-      if (srcValueDesc) dst[key] = srcValueDesc.value;
+      // Define rather than assign, so getters/setters up the prototype chain and read-only props (e.g. a function's `name`) are overridden instead of throwing.
+      if (srcValueDesc) Object.defineProperty(dst, key, srcValueDesc);
     }
   }
   return dst;
