@@ -456,25 +456,28 @@ function getOwnPropertyKeys(obj: any): Array<string | symbol> {
 }
 
 /**
- * Returns `undefined` if the prop was assigned. Otherwise, returns the JS property descriptor of the `src[key]`
+ * Copies the `src[key]` property (regular prop, getter or setter) to `dst`. Regular props with `undefined` values are skipped.
+ * Defines rather than assigns, so getters/setters up the prototype chain and read-only props (e.g. a function's `name`) are overridden instead of throwing.
  * @param dst destination object
  * @param src source object
  * @param key the key to copy from src to dst
- * @returns {PropertyDescriptor|undefined} The `undefined` will be returned if the prop does not need to be copied.
+ * @param shouldMerge merge regular prop values into the existing `dst[key]` instead of overwriting
  */
-function defineProp(dst: any, src: any, key: any): PropertyDescriptor | undefined {
+function defineProp(dst: any, src: any, key: any, shouldMerge: boolean): void {
   const desc = Object.getOwnPropertyDescriptor(src, key)!;
   // is this a regular property?
   if (desc.hasOwnProperty("value")) {
     // Ignore properties if the existing src prop value is 'undefined'.
-    if (desc.value !== undefined) {
-      return desc;
-    }
-  } else {
-    // nope, it looks like a getter/setter
-    // Make it rewritable because two stamps can have same named getter/setter
-    Object.defineProperty(dst, key, desc);
+    if (desc.value === undefined) return;
+    // merge the property into the existing one. Recursion!
+    if (shouldMerge)
+      desc.value = mergeOne(isPlainObject(dst[key]) || Array.isArray(desc.value) ? dst[key] : {}, desc.value);
+    // Behave like an assignment even if src is frozen
+    desc.writable = desc.enumerable = true;
   }
+  // Make it rewritable because two stamps can have same named props, getters or setters
+  desc.configurable = true;
+  Object.defineProperty(dst, key, desc);
 }
 
 /**
@@ -486,11 +489,7 @@ function defineProp(dst: any, src: any, key: any): PropertyDescriptor | undefine
 function assignOne(dst: any, src: any): any {
   if (src) {
     // We need to copy regular props, symbols, getters and setters.
-    for (const key of getOwnPropertyKeys(src)) {
-      const srcValueDesc = defineProp(dst, src, key);
-      // Define rather than assign, so getters/setters up the prototype chain and read-only props (e.g. a function's `name`) are overridden instead of throwing.
-      if (srcValueDesc) Object.defineProperty(dst, key, srcValueDesc);
-    }
+    for (const key of getOwnPropertyKeys(src)) defineProp(dst, src, key, false);
   }
   return dst;
 }
@@ -516,15 +515,7 @@ function mergeOne(dst: any, src: any): any {
   // Note that functions are also assigned! We do not deep merge functions.
   if (!isPlainObject(src)) return src;
 
-  for (const key of getOwnPropertyKeys(src)) {
-    const srcValueDesc = defineProp(dst, src, key);
-    if (srcValueDesc)
-      // deep merge each property. Recursion!
-      dst[key] = mergeOne(
-        isPlainObject(dst[key]) || Array.isArray(srcValueDesc.value) ? dst[key] : {},
-        srcValueDesc.value,
-      );
-  }
+  for (const key of getOwnPropertyKeys(src)) defineProp(dst, src, key, true);
 
   return dst;
 }
